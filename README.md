@@ -14,10 +14,6 @@ Aim : To create a web application with a user-friendly interface that allows new
 
 *All animations, vectors and vector spaces will be plotted on a 3D grid representing the Euclidean space.
 
-Category
-	
-
-User Story
 
 Admin
 	
