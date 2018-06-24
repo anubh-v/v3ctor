@@ -11,6 +11,7 @@ function init() {
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
   camera.position.set(0, 5, 1.5).setLength(100);
 
+
   var stage = document.getElementById("stage");
 
   renderer = new THREE.WebGLRenderer({canvas: stage, antialias: true});
@@ -35,6 +36,7 @@ function init() {
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
   axes.add(gridYZ); 
+
 
   axes.add(allObjects);
   scene.add(axes);
@@ -77,7 +79,7 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
 
   // canvas contents will be used for a texture
   var texture = new THREE.Texture(canvas)
-    texture.minFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearFilter;
   texture.needsUpdate = true;
 
   var spriteMaterial = new THREE.SpriteMaterial({
@@ -90,7 +92,6 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
   sprite.position.set(xCoord, yCoord, zCoord);
   return sprite;
 }
-
 
 function createVector1(xCoord, yCoord, zCoord) { 
 
@@ -167,7 +168,6 @@ function createVector(x,y,z,origin,hex) {
   return arrowHelper
 }
 
-//function creating a plane object passing through the origin 
 function createPlane(v1,v2,sizeOfPlane) {
   // unit vector perpendicular to the plane
   var normal = v1.cross(v2).normalize();
@@ -230,7 +230,6 @@ function lc(a,b,v1,v2) {
   push(v1,new THREE.Vector3( 0, 0, 0 ),0x000000);
   push(v2,new THREE.Vector3( 0, 0, 0 ),0x000000);
 
-
   // mutating the two vectors and wrapping two mutated vectors in 3d obj, in blue
   v1.multiplyScalar(a);
   v2.multiplyScalar(b);
@@ -246,4 +245,3 @@ function lc(a,b,v1,v2) {
 
   return allObjects;
 }
-
