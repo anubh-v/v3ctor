@@ -93,66 +93,6 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
   return sprite;
 }
 
-function createVector1(xCoord, yCoord, zCoord) { 
-
-  var geometry = new THREE.Geometry();
-  geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-  geometry.vertices.push(new THREE.Vector3(xCoord, yCoord, zCoord));
-
-  var material = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 3  });
-
-  var newLine = new THREE.Line(geometry, material);
-  allObjects.add(newLine);
-}
-
-/* read the vectorStack and draw the vectors on the grid */
-function drawAllVectors(vectorQueue) {
-  // first, clear existing vectors
-  axes.remove(allObjects);
-  allObjects = new THREE.Object3D;
-  axes.add(allObjects);
-
-  for (var i = 0; i < vectorQueue.length; i++) {
-
-    var currentVectorObj = vectorQueue[i];
-    var vector = createVector(currentVectorObj.xCoord.value, currentVectorObj.yCoord.value, currentVectorObj.zCoord.value,
-        new THREE.Vector3(0,0,0),0x00ffff);
-    
-    /* Store the created threeJS object into the vector object in the Queue [to facilitate deletion of vectors] */
-    vectorQueue[i].graphic = vector;
-    
-    /* Add the created threeJS object to the scene */
-    allObjects.add(vector);
-  }  
-}
-
-/*
-precond: m: 3 * n matrix of n LI column vectors, where n = [0,1,2,3] 
- */
-function drawSpan(m) {
-  var obj;
-  // identify the number of vectors to span
-  var numVectors = m[0].length
-    if (numVectors == 0) {
-      alert("no vector input!");
-    } else {
-      if (numVectors == 1) {
-        obj = createLine(new THREE.Vector3(m[0][0],m[1][0],m[2][0]),50);
-      } else if (numVectors == 2) {
-        obj = createPlane(
-            new THREE.Vector3(m[0][0],m[1][0],m[2][0]),
-            new THREE.Vector3(m[0][1],m[1][1],m[2][1]),
-            50
-            )
-      } else {
-        obj = createCube();
-      }
-
-      allObjects.add(obj); 
-    }
-
-}
-
 
 // function to plot vector in the form of an arrow
 function createVector(x,y,z,origin,hex) {
@@ -166,16 +106,6 @@ function createVector(x,y,z,origin,hex) {
   var arrowHelper = new THREE.ArrowHelper( direction, origin, length, hex);
   arrowHelper.line.material.linewidth = 3; // set width of the vector
   return arrowHelper
-}
-
-function createPlane(v1,v2,sizeOfPlane) {
-  // unit vector perpendicular to the plane
-  var normal = v1.cross(v2).normalize();
-  //note that distance of plane from origin is always 0 since it passes through orgin
-  var plane = new THREE.Plane( new THREE.Vector3(normal.getComponent(0), normal.getComponent(1), normal.getComponent(2) ), 0 );
-  var color = 0xffff00;
-  var planeHelper = new THREE.PlaneHelper( plane, sizeOfPlane, color );
-  return planeHelper;
 }
 
 // function creating a 3D object consisting of the vector and a line spanned by the vector 
@@ -199,6 +129,28 @@ function createLine(vector,scale) {
   allObj.add(line); 
   return allObj;
 }
+
+//function creating v1 and v2 obj and also a plane object  passing through the origin 
+function createPlane(v1,v2,sizeOfPlane) {
+  // unit vector perpendicular to the plane
+  var normal = v1.cross(v2).normalize();
+  //note that distance of plane from origin is always 0 since it passes through orgin
+  var plane = new THREE.Plane( new THREE.Vector3(normal.getComponent(0), normal.getComponent(1), normal.getComponent(2) ), 0 );
+  var color = 0xffff00;
+  var obj = new THREE.Object3D();
+  var planeHelper = new THREE.PlaneHelper( plane, sizeOfPlane, color );
+  var V1 = createVector(
+    v1.getComponent(0),v1.getComponent(1),v1.getComponent(2),
+    new THREE.Vector3(0,0,0), 0x000000);
+  var V2 = createVector(
+    v2.getComponent(0),v2.getComponent(1),v2.getComponent(2),
+    new THREE.Vector3(0,0,0), 0x000000);
+  obj.add(V1);
+  obj.add(V2);
+  obj.add(planeHelper);
+  return obj;
+}
+
 
 function createCube() {
   var size = 100;
@@ -245,3 +197,52 @@ function lc(a,b,v1,v2) {
 
   return allObjects;
 }
+
+/* read the vectorStack and draw the vectors on the grid */
+function drawAllVectors(vectorQueue) {
+  // first, clear existing vectors
+  axes.remove(allObjects);
+  allObjects = new THREE.Object3D;
+  axes.add(allObjects);
+
+  for (var i = 0; i < vectorQueue.length; i++) {
+
+    var currentVectorObj = vectorQueue[i];
+    var vector = createVector(currentVectorObj.xCoord.value, currentVectorObj.yCoord.value, currentVectorObj.zCoord.value,
+        new THREE.Vector3(0,0,0),0x00ffff);
+    
+    /* Store the created threeJS object into the vector object in the Queue [to facilitate deletion of vectors] */
+    vectorQueue[i].graphic = vector;
+    
+    /* Add the created threeJS object to the scene */
+    allObjects.add(vector);
+  }  
+}
+
+/*
+precond: m: 3 * n matrix of n LI column vectors, where n = [0,1,2,3] 
+ */
+function drawSpan(m) {
+  var obj;
+  // identify the number of vectors to span
+  var numVectors = m[0].length
+    if (numVectors == 0) {
+      alert("no vector input!");
+    } else {
+      if (numVectors == 1) {
+        obj = createLine(new THREE.Vector3(m[0][0],m[1][0],m[2][0]),50);
+      } else if (numVectors == 2) {
+        obj = createPlane(
+            new THREE.Vector3(m[0][0],m[1][0],m[2][0]),
+            new THREE.Vector3(m[0][1],m[1][1],m[2][1]),
+            100
+            )
+      } else {
+        obj = createCube();
+      }
+
+      allObjects.add(obj); 
+    }
+
+}
+
