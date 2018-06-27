@@ -59,6 +59,12 @@ function init() {
     axes.add(sprY);   
     axes.add(sprZ);
   }
+  var xLabel = makeTextSprite("x", undefined, 60,0,0);
+  axes.add(xLabel);
+  var yLabel = makeTextSprite("y", undefined,5,60,0);
+  axes.add(yLabel);
+  var zLabel = makeTextSprite("z", undefined, 0,0,55);
+  axes.add(zLabel);
 }
 
 function animate() {
