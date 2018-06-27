@@ -25,6 +25,7 @@
 .label:hover {
   font-size: 50;
   background-color: yellow;
+  cursor: pointer;
 }
 
 
