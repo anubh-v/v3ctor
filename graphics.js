@@ -1,6 +1,7 @@
 var camera, scene, renderer, controls;
 var axes = new THREE.Object3D;
 var allObjects = new THREE.Object3D;
+var renderQueue = [render];
 
 /*a separate var storing ref to an obj3d for containing all graphical elements 
  related to the span section */
@@ -17,7 +18,6 @@ function init() {
   scene.background = new THREE.Color( 0xffffff );
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
   camera.position.set(0, 5, 1.5).setLength(100);
-
 
   var stage = document.getElementById("stage");
 
@@ -69,7 +69,10 @@ function init() {
 
 function animate() {
   requestAnimationFrame(animate);
-  render();
+  
+  renderQueue.forEach(function(playable) {
+    playable();
+  });
 }
 
 function render() {
