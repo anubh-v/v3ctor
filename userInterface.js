@@ -17,6 +17,8 @@ renderBtn.onclick = () => { drawAllVectors(vectorList); };
 var deleteVectorBtn = document.getElementById("deleteVector");
 deleteVectorBtn.onclick = deleteLastVector;
 
+var animateComboBtn = document.getElementById("animateCombo");
+animateComboBtn.onclick = () => { new Playable(vectorList); };
  
 /* add a set of text input boxes representing 1 vector to the web page
    Then, store references to these input boxes in an object and add this object
