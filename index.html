@@ -32,16 +32,69 @@
 
         <div id=spansMenu class=menu> 
             <text> Spans </text>
-            <div id=spansForm class=form>
-                <div id = "spanBtns"> 
+            <div id= spanSideBar class=form>
+                <div id = spanInputs >
                     <button id = "span"> span </button>
                 </div>
+                <div id = spanDisplay>
+                    <div id = spanTable>
+                        <div id = spanTableHeader class = tableHeader>
+                            <h1>subspace No</h1>
+                            <h1> Basis Vectors</h1>
+                        </div>
+                        <div id = spanTableBody class = tableBody>
+                        </div>
+                    </div>
+                </div>           
             </div>
         </div>
 
         <div id=matricesMenu class=menu> 
             <text> Matrices </text> 
-            <div id=matricesForm class=form>
+            <div id=matricesSideBar class=form>
+                <div id = matricesInputs>
+                    <div id = matricesButns>
+                        <button id = vTransform>transformVector</button>
+                        <button id = columnSpace>columnSpace</button>
+                        <button id = nullSpace> nullSpace</button>
+                        <button id = transformSubspace> transformSubspace</button>
+                        <button id = eigenValues> eigenValues </button>
+                        <button id = eigenSpace> eigenSpace </button>
+                    </div>
+                    <div id = eigenValueSelector> 
+                        <select id = evSelector> </select>
+                    </div>
+                    <div id = matricesTextsInputs>
+                        <div id = matrixInput>
+                            <input id = m11 class = "matrixInput"> </input>
+                            <input id = m12 class = "matrixInput"> </input>
+                            <input id = m13 class = "matrixInput"> </input>
+                            <input id = m21 class = "matrixInput"> </input>
+                            <input id = m22 class = "matrixInput"> </input>
+                            <input id = m23 class = "matrixInput"> </input>
+                            <input id = m31 class = "matrixInput"> </input>
+                            <input id = m32 class = "matrixInput"> </input>
+                            <input id = m33 class = "matrixInput"> </input>
+                        </div>
+                        <div id = vectorInput>
+                            <input id = x class = "matrixInput"> </input>
+                            <input id = y class = "matrixInput"> </input>
+                            <input id = z class = "matrixInput"> </input>
+                        </div>
+                    </div>
+                </div>
+                <div id = matricesDisplay>
+                    <div id = matricesTextDisplay> </div>
+                    <div id = matricesTable>
+                        <div id = matricesTableHeader class = tableHeader>
+                            <h1>subspace No</h1>
+                            <h1> Basis Vectors</h1>
+                        </div>
+                        <div id = matricesTableBody class = tableBody>
+                            <!--how to add n basis vectors in a grid on the same row-->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -49,6 +102,7 @@
         <script src="matrix.js"></script>
 		<script src="js/three.js"></script>
   		<script src="js/OrbitControls.js"></script>
+        <script src="js/numeric_1.2.6.js"></script>
 		<script src="graphics.js"></script>
         <script src = "userInterface.js"></script>
 
