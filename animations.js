@@ -24,7 +24,6 @@ function Playable(vectorList) {
         
         /* obtain the intended scaling factor for this vector  */
         var scale = parseFloat(vectorObj.coeff.value)
-        alert("scale is " + scale);
         
         /* add a comparator that indicates if the scaling animation has been completed */
         conditions.push(() => { 
