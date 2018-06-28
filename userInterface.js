@@ -58,10 +58,10 @@ function addControls() {
   // wrap key data into an object  
   var vectorObj = {
     label: vectorLabel,
-    xCoord: inputXCoord,
-    yCoord: inputYCoord,
-    zCoord: inputZCoord,
-    coeff: inputCoeff,
+    xCoord: inputXCoord.childNodes[0],
+    yCoord: inputYCoord.childNodes[0],
+    zCoord: inputZCoord.childNodes[0],
+    coeff: inputCoeff.childNodes[0],
     hex: undefined, // store the color of this vector [in future]
     graphic: undefined // store the threeJS object for this vector, once it's created
   };
