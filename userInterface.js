@@ -51,8 +51,8 @@ function addControls() {
   vectorsInnerForm.appendChild(inputCoeff);
   
   // create and add 1 checkbox to webpage
-  var checkBox = makeCheckBox();
-  vectorsInnerForm.appendChild(checkBox);
+  var checkBoxContainer = makeCheckBox();
+  vectorsInnerForm.appendChild(checkBoxContainer);
 
 
   // wrap key data into an object  
@@ -67,7 +67,7 @@ function addControls() {
   };
 
   vectorList.push(vectorObj);
-  checkBoxList.push(checkBox);
+  checkBoxList.push(checkBoxContainer.firstElementChild);
 
 
   /* clicking the vector's label should hide or unhide the vector 
