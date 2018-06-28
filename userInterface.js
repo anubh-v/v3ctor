@@ -38,20 +38,20 @@ function addControls() {
   vectorsInnerForm.appendChild(vectorLabel);
   
   // create and add 4 textboxes
-  var inputXCoord = makeInputBox("text");
+  var inputXCoord = makeTextBox();
   vectorsInnerForm.appendChild(inputXCoord);
 
-  var inputYCoord = makeInputBox("text");
+  var inputYCoord = makeTextBox();
   vectorsInnerForm.appendChild(inputYCoord);
   
-  var inputZCoord = makeInputBox("text");
+  var inputZCoord = makeTextBox();
   vectorsInnerForm.appendChild(inputZCoord);
 
-  var inputCoeff = makeInputBox("text");   
+  var inputCoeff = makeTextBox();   
   vectorsInnerForm.appendChild(inputCoeff);
   
   // create and add 1 checkbox to webpage
-  var checkBox = makeInputBox("checkbox");
+  var checkBox = makeCheckBox();
   vectorsInnerForm.appendChild(checkBox);
 
 
@@ -131,19 +131,39 @@ function deleteLastVector() {
         
 }
 
-/* use to create either textboxes or checkboxes
-   returns a reference to the created inputBox */
+/* use to create either textboxes
+   returns a reference to the created text inputBox */
 function makeInputBox(inputType) {
   
-  var textBox = document.createElement("INPUT");
-  textBox.setAttribute("type", inputType);
-  
-  return textBox;
+  var inputBox = document.createElement("INPUT");
+  inputBox.setAttribute("type", inputType );
+
+  return inputBox;
 }
 
+function makeDiv(type) {
+  
+  var container = document.createElement("div");
+  container.className = type;
 
+  return container;
+}
 
+function makeTextBox() {
+  
+  var container = makeDiv("ui input");
+  container.appendChild(makeInputBox("text"));
+  return container;
 
+}
+
+function makeCheckBox() {
+  
+  var container = makeDiv("ui checkbox");
+  container.appendChild(makeInputBox("checkbox"));
+  return container;
+
+}
 /*------------------SPANS SECTION-------------------------------*/
 
 function addLabelEffects(labelElement, graphic) {
@@ -603,6 +623,4 @@ function eigenSpaceBtnHelper(valueObj) {
   // adding labels and graphics to fields subsp and basisVectors of subspObj
   helper(vectorsToSpan,display, "EigenSpace", subspObj);
 }
-
-
 
