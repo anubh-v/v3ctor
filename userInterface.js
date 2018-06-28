@@ -1,11 +1,62 @@
+/*------------------GENERAL SECTION-------------------------------*/
+/*------CONTAINS GENERAL HELPER FUNCTIONS FOR USER INTERFACE------*/
+
+/* used to create either textboxes or checkboxes
+   returns a reference to the created text inputBox */
+function makeInputBox(inputType) {
+  
+  var inputBox = document.createElement("INPUT");
+  inputBox.setAttribute("type", inputType );
+
+  return inputBox;
+}
+
+/* used to create a div element */
+function makeDiv(type) {
+  
+  var container = document.createElement("div");
+  container.className = type;
+
+  return container;
+}
+
+/* used to create a SemanticUI textbox*/
+function makeTextBox() {
+  
+  var container = makeDiv("ui input");
+  container.appendChild(makeInputBox("text"));
+  return container;
+
+}
+
+/* used to create a SemanticUI checkbox */
+function makeCheckBox() {
+  
+  var container = makeDiv("ui checkbox");
+  var emptyLabel = document.createElement("label");
+  container.appendChild(makeInputBox("checkbox"));
+  container.appendChild(emptyLabel);
+  return container;
+
+}
+
+/* Given an enabled Semantic UI textbox, this function disables it */
+function disableTextBox(textBox) {
+    textBox.className = "ui disabled input";
+}
+
+/* Given a disabled Semantic UI textbox, this function enables it */
+function enableTextBox(textBox) {
+    textBox.className = "ui input";
+}
+
+/*------------------VECTORS SECTION-------------------------------*/
+
 /* Key variables for the Vectors Tab */
 var numVectors = 0; // storet the number of vectors 
 
 var vectorList = []; // store the list of vectors entered by the user
 var checkBoxList = []; // store the list of checkboxes on the Vectors Form
-
-
-/*------------------VECTORS SECTION-------------------------------*/
 
 /* register event handlers */
 var addVectorBtn = document.getElementById("addVector");
@@ -18,7 +69,9 @@ var deleteVectorBtn = document.getElementById("deleteVector");
 deleteVectorBtn.onclick = deleteLastVector;
 
 var animateComboBtn = document.getElementById("animateCombo");
-animateComboBtn.onclick = () => { new Playable(vectorList); };
+animateComboBtn.onclick = () => { 
+    var linComboAnimation = new linComboPlayable(vectorList); 
+};
  
 /* add a set of text input boxes representing 1 vector to the web page
    Then, store references to these input boxes in an object and add this object
@@ -79,9 +132,19 @@ function addControls() {
     if (opac === "1") {
       vectorLabel.style.opacity = "0.5";
       allObjects.remove(vectorObj.graphic);
+
+      disableTextBox(inputXCoord);
+      disableTextBox(inputYCoord);
+      disableTextBox(inputZCoord);
+      disableTextBox(inputCoeff);
     } else {
       vectorLabel.style.opacity = "1";
       allObjects.add(vectorObj.graphic);
+      
+      enableTextBox(inputXCoord);
+      enableTextBox(inputYCoord);
+      enableTextBox(inputZCoord);
+      enableTextBox(inputCoeff);
     }
   };
 
@@ -96,6 +159,7 @@ function addControls() {
     };
     
 }
+
 
 /* Remove the last vector from the Scene and the Web page.
    This means: 
@@ -131,41 +195,6 @@ function deleteLastVector() {
         
 }
 
-/* use to create either textboxes
-   returns a reference to the created text inputBox */
-function makeInputBox(inputType) {
-  
-  var inputBox = document.createElement("INPUT");
-  inputBox.setAttribute("type", inputType );
-
-  return inputBox;
-}
-
-function makeDiv(type) {
-  
-  var container = document.createElement("div");
-  container.className = type;
-
-  return container;
-}
-
-function makeTextBox() {
-  
-  var container = makeDiv("ui input");
-  container.appendChild(makeInputBox("text"));
-  return container;
-
-}
-
-function makeCheckBox() {
-  
-  var container = makeDiv("ui checkbox");
-  var emptyLabel = document.createElement("label");
-  container.appendChild(makeInputBox("checkbox"));
-  container.appendChild(emptyLabel);
-  return container;
-
-}
 /*------------------SPANS SECTION-------------------------------*/
 
 function addLabelEffects(labelElement, graphic) {
