@@ -160,7 +160,9 @@ function makeTextBox() {
 function makeCheckBox() {
   
   var container = makeDiv("ui checkbox");
+  var emptyLabel = document.createElement("label");
   container.appendChild(makeInputBox("checkbox"));
+  container.appendChild(emptyLabel);
   return container;
 
 }
