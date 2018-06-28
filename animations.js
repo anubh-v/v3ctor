@@ -1,9 +1,13 @@
-function Playable(vectorList) {
+function linComboPlayable(vectorList) {
     
-    var conditions = [];
-    var actions = [];
-    var postActions = [];
+    this.conditions = [];
+    this.actions = [];
+    this.postActions = [];
     
+    var conditions = this.conditions;
+    var actions = this.actions;
+    var postActions = this.postActions;
+ 
     vectorList.map(function(vectorObj) {
 
         var animatedObj = { };
@@ -90,6 +94,7 @@ function Playable(vectorList) {
 
         });
 
+
         var resVectorObj = { };
         resVectorObj.graphic = resVector;
         resVectorObj.x = resX;
@@ -99,43 +104,32 @@ function Playable(vectorList) {
         return resVectorObj;
     });      
           
-
-      this.conditions = conditions;
-      this.actions = actions;
-      this.postActions = postActions;
-
       this.currentCondition = conditions[0];
       this.currentAction = actions[0];
 
       this.play = () => {
-
+        
         if (actions.length == 0) {
-            // remove this Playable from the head of the render queue 
-            renderQueue.shift();
-        } else {
-            
-            if (this.currentCondition() == false) {
-              // terminating condition not met, continue current animation
-              this.currentAction();
-            } else {
+          // remove this Playable from the head of the render queue 
+          renderQueue.shift();
+        } else {       
+          if (this.currentCondition() == false) {
+            // terminating condition not met, continue current animation
+            this.currentAction();
+          } else {
+            // terminating condition met, proceed to next action      
+            this.postActions[0]();
+            this.postActions.shift();
+                    
+            this.conditions.shift();
+            this.actions.shift();
 
-              // terminating condition met, proceed to next action
-              
-              this.postActions[0]();
-              this.postActions.shift();
-                
-              this.conditions.shift();
-              this.actions.shift();
-
-              this.currentCondition = conditions[0];
-              this.currentAction = actions[0];
-
-           }
+            this.currentCondition = conditions[0];
+            this.currentAction = actions[0];
+          }
         }
       }
 
       renderQueue.unshift(this.play);
 
 }
-
-
