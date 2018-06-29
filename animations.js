@@ -111,7 +111,7 @@ function linComboPlayable(vectorList) {
         
         if (actions.length == 0) {
           // remove this Playable from the head of the render queue 
-          renderQueue.shift();
+          removeFromRenderQueue(this.play);
         } else {       
           if (this.currentCondition() == false) {
             // terminating condition not met, continue current animation
@@ -131,5 +131,16 @@ function linComboPlayable(vectorList) {
       }
 
       renderQueue.unshift(this.play);
+
+}
+
+
+/* remove a given function from the render queue. 
+   IMPORTANT: The given function MUST be present in the render queue */
+function removeFromRenderQueue(funcToBeRemoved) {
+    /* filter the renderQueue, so that only the target function is removed */   
+    renderQueue = renderQueue.filter((renderFunction) => return renderFunction !== funcToBeRemoved);
+}
+
 
 }
