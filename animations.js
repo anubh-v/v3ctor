@@ -13,7 +13,7 @@ function linComboPlayable(vectorList) {
         var animatedObj = { };
 
         var vector = createVector(vectorObj.xCoord.value, vectorObj.yCoord.value, vectorObj.zCoord.value,
-            new THREE.Vector3(0,0,0),0x00ffff);
+            new THREE.Vector3(0,0,0),0xff0066);
 
         /* add the endpoints of this vector as properties of the vector object */
         animatedObj.x = parseFloat(vectorObj.xCoord.value);
@@ -84,7 +84,7 @@ function linComboPlayable(vectorList) {
         var resY = prevVector.y + nextVector.y;
         var resZ = prevVector.z + nextVector.z;
 
-        var resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0),0x00ffff);
+        var resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0),0xff0066);
 
       
         postActions.push(() => {

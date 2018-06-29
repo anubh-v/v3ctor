@@ -179,16 +179,16 @@ function deleteLastVector() {
 
     /* remove associated labels, textboxes from webpage */
     lastVector.label.remove();
-    lastVector.xCoord.remove();
-    lastVector.yCoord.remove();
-    lastVector.zCoord.remove();
-    lastVector.coeff.remove();
+    lastVector.xCoord.parentElement.remove();
+    lastVector.yCoord.parentElement.remove();
+    lastVector.zCoord.parentElement.remove();
+    lastVector.coeff.parentElement.remove();
 
     /* remove last checkbox from the checkbox list */
     var lastCheckBox = checkBoxList.pop();
     
     /* remove checkbox from webpage */
-    lastCheckBox.remove();
+    lastCheckBox.parentElement.remove();
 
     /* decrement counter */
     numVectors = numVectors - 1;
@@ -448,7 +448,7 @@ function tranformVButnhelper() {
   }
 
   // add graphic
-  var graphic = drawOneVector(vectorArr[0],vectorArr[1],vectorArr[2],0x000000,matricesGraphics);
+  var graphic = drawOneVector(vectorArr[0],vectorArr[1],vectorArr[2],0xff0066,matricesGraphics);
   matricesObj.transformedVector.graphic = graphic;
 
   // add label and its eventListener
@@ -596,7 +596,7 @@ function transformSubspButnhelper() {
   // original set of basis vectors of the subspace as a 3 * r matrix
   var originalBasis = filterRedundancy(checkedVectors);
   // assign subsp and basisVectors attributes
-  helper(findRestrictedRange(currentMatrix,originalBasis), display, "nullSpace", matricesObj.nullSpace); 
+  helper(findRestrictedRange(currentMatrix,originalBasis), display, "transformedSubspace", matricesObj.nullSpace); 
 }
 
 

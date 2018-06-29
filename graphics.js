@@ -148,7 +148,7 @@ function createLine(vector,scale) {
       endPt1,
       endPt2
       );
-  var material = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 5 });
+  var material = new THREE.LineBasicMaterial({ color: 0xb38600, linewidth: 5 });
   var line = new THREE.Line(geometry, material);
 
   var allObj = new THREE.Object3D();
@@ -244,7 +244,7 @@ function drawAllVectors(vectorQueue) {
 
     var currentVectorObj = vectorQueue[i];
     var vector = createVector(currentVectorObj.xCoord.value, currentVectorObj.yCoord.value, currentVectorObj.zCoord.value,
-        new THREE.Vector3(0,0,0),0x00ffff);
+        new THREE.Vector3(0,0,0),0xff0066);
     
     /* Store the created threeJS object into the vector object in the Queue [to facilitate deletion of vectors] */
     vectorQueue[i].graphic = vector;
@@ -268,7 +268,7 @@ function drawSpan(m,container) {
     var x = m[0][0];
     var y = m[1][0];
     var z = m[2][0];
-    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),0x000000);
+    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),0xff0066);
     var line = createLine(new THREE.Vector3(x,y,z),36);
     arr.push(line);
     arr.push(v);
@@ -284,10 +284,10 @@ function drawSpan(m,container) {
     var plane = createPlane(
         new THREE.Vector3(x1,y1,z1),
         new THREE.Vector3(x2,y2,z2),
-        100,0xffff00
+        100,0xb38600
         )
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0x000000);
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0x000000);
+    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0xff0066);
+    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0xff0066);
     arr.push(plane);
     arr.push(v1);
     arr.push(v2);
@@ -305,9 +305,9 @@ function drawSpan(m,container) {
     var y3 = m[1][2];
     var z3 = m[2][2];
     var cube = createCube();
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0x000000);
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0x000000);
-    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),0x000000);
+    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0xff0066);
+    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0xff0066);
+    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),0xff0066);
     arr.push(cube);
     arr.push(v1);
     arr.push(v2);
