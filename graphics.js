@@ -11,6 +11,14 @@ var spanGraphics = new THREE.Object3D;
 var matricesGraphics = new THREE.Object3D;
 
 init();
+// add eventListener to adjust 
+window.addEventListener("resize", function() {
+  var width = 3*(window.innerWidth / 4);
+  var height = 8*(window.innerHeight / 9);
+  renderer.setSize(width, height);
+  camera.aspect = width/height;
+  camera.updateProjectionMatrix();
+});
 animate();
 
 function init() {
