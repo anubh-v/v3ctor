@@ -13,19 +13,21 @@ var matricesGraphics = new THREE.Object3D;
 init();
 // add eventListener to adjust 
 window.addEventListener("resize", function() {
-  var width = 3*(window.innerWidth / 4);
-  var height = 8*(window.innerHeight / 9);
-  renderer.setSize(width, height);
-  camera.aspect = width/height;
-  camera.updateProjectionMatrix();
+	var width = 3*(window.innerWidth / 4);
+	var height = 8*(window.innerHeight / 9);
+	renderer.setSize(width, height);
+	camera.aspect = width/height;
+	camera.updateProjectionMatrix();
 });
+
 animate();
+
 
 function init() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0xffffff );
+  scene.background = new THREE.Color( 0x002233 );
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
-  camera.position.set(0, 5, 1.5).setLength(100);
+  camera.position.set(0, 5, 1.5).setLength(120);
 
   var stage = document.getElementById("stage");
 
@@ -36,17 +38,17 @@ function init() {
   //setting up xyz axis
   //GridHelper( size of the entire grid, divisions : number of divisions on the grid, colorCenterLine : Color, colorGrid : Color (0x00ff00) ) --> 
   // green central line
-  var gridXZ = new THREE.GridHelper(100, 10,0x000000,0x00ff00);
+  var gridXZ = new THREE.GridHelper(100, 10,0xffffff, 0x33bbff);
   gridXZ.position.set(0,0,0);
   axes.add(gridXZ);
   // red central line
-  var gridXY = new THREE.GridHelper(100,10,0x000000,0xff0000);
+  var gridXY = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   gridXY.position.set(0,0,0);
   // rotation about x axis by 90 degrees
   gridXY.rotation.x = Math.PI/2;
   axes.add(gridXY);
   // blue central line
-  var gridYZ = new THREE.GridHelper(100,10,0x000000,0x0000FF);
+  var gridYZ = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   gridYZ.position.set(0,0,0);
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
@@ -100,7 +102,7 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
   var textWidth = metrics.width;
 
   // text color
-  context.fillStyle = 'rgba(0, 0, 0, 1.0)';
+  context.fillStyle = 'rgb(51, 187, 255)';
   context.fillText(message, 0, fontsize);
 
   // canvas contents will be used for a texture

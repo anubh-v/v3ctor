@@ -287,7 +287,14 @@ function spanBtnhelper() {
     alert("no vector input!");
   } else {   
     numSubps++;
-    var display = document.getElementById("spanTableBody");
+    var tableBody = document.getElementById("spanTableBody");
+    // create the current row and two columns
+    var row = document.createElement("tr");
+    tableBody.appendChild(row);
+    var firstCol = document.createElement("td");
+    row.appendChild(firstCol);
+    var secondCol = document.createElement("td");
+    row.appendChild(secondCol);
     // a 3*r matrix where 1 <= r <= 3
     var vectorsToSpan = filterRedundancy(checkedVectors);
     /*printMatrix(vectorsToSpan); */
@@ -296,10 +303,10 @@ function spanBtnhelper() {
 
     // creating subsp obj and adding event handlers
     var subspGraphic= arr[0];
-    var subspLabel = document.createElement("h1");
+    var subspLabel = document.createElement("h2");
     subspLabel.innerHTML = "Subp: " + numSubps;
     subspLabel.setAttribute("class", "label");
-    display.appendChild(subspLabel);
+    firstCol.appendChild(subspLabel);
     var subsp = {
     label: subspLabel,
     graphic: subspGraphic
@@ -326,7 +333,7 @@ function spanBtnhelper() {
       var x = vectorsToSpan[0][i-1];
       var y = vectorsToSpan[1][i-1];
       var z = vectorsToSpan[2][i-1];
-      var vLabel = document.createElement("h1");
+      var vLabel = document.createElement("h2");
       // setting the vLabel to be of class "label"
       vLabel.setAttribute("class", "label");
       vLabel.innerHTML = 
@@ -337,7 +344,7 @@ function spanBtnhelper() {
       addLabelEffects(vLabel, vGraphic);
       vlabels.push(vLabel);
     }
-    display.appendChild(vlabelContainer);
+    secondCol.appendChild(vlabelContainer);
     //push the newly added subpObj into the list
     var obj = {
       subsp : subsp,
@@ -350,6 +357,17 @@ function spanBtnhelper() {
 
 /*------------------MATRICES SECTION-------------------------------*/
 /* obj caching all info for matrices section , may need to modify it*/ 
+/* menu effects*/
+var buttonsMenu = document.getElementById("buttonsMenu");
+var dropdown = document.getElementById("buttonDropDown");
+dropdown.onmouseenter = () => {
+    buttonsMenu.style.display = "grid";
+  };
+dropdown.onmouseleave = () => {
+  buttonsMenu.style.display = "none";
+};
+
+
 
 // initializing the object
 var matricesObj= {
@@ -458,14 +476,21 @@ and fill in respective attributes 2. update it to matricesObj
 
 problem: how to apply it to eigenspace?(eigenspace is a bit more complicated need the selection )
 */
-function helper(vectorsToSpan, display, type, typeObj) { // typeObj: an attribute of matricesObj, ie.matricesObj.nullSpace
+function helper(vectorsToSpan, matricesTableBody, type, typeObj) { // typeObj: an attribute of matricesObj, ie.matricesObj.nullSpace
   // if basisVectors is empty then, it's a zero space
   if (vectorsToSpan[0].length == 0) {
     alert("a zero space!");
   } else {
     // return an arr with first index as the ref to subsp graphic and behind ref to basis vectors in order
     var resultArr= drawSpan(vectorsToSpan, matricesGraphics);
-    
+    var tableBody = document.getElementById("matricesTableBody");
+    // create the current row and two columns
+    var row = document.createElement("tr");
+    tableBody.appendChild(row);
+    var firstCol = document.createElement("td");
+    row.appendChild(firstCol);
+    var secondCol = document.createElement("td");
+    row.appendChild(secondCol);
     // subsp section
     //creating and assigning label and graphic attribute of subsp
     var subspGraphic = resultArr[0];
@@ -474,7 +499,7 @@ function helper(vectorsToSpan, display, type, typeObj) { // typeObj: an attribut
     typeObj.subsp.label = subspLabel;
     subspLabel.innerHTML = type;
     subspLabel.setAttribute("class", "label");
-    display.appendChild(subspLabel);
+    firstCol.appendChild(subspLabel);
     //add eventListner to label and graphic pair
     addLabelEffects(subspLabel,subspGraphic);
 
@@ -496,7 +521,7 @@ function helper(vectorsToSpan, display, type, typeObj) { // typeObj: an attribut
       //add eventListener to label graphic pair
       addLabelEffects(currentVLabel, currentVGraphic);
     }
-    display.appendChild(vlabelContainer);
+    secondCol.appendChild(vlabelContainer);
   }
 }
 
@@ -596,11 +621,11 @@ function eigenValuesBtnhelper() {
   }
   var selector = document.getElementById("evSelector");
   //check if there is already an option element in selector, if so clear it
-  if(selector.length != 0) {
+  if(selector.length != 1) {
     var length = selector.length;
-    for (var j = 0; j < length; j++) {
+    for (var j = 1; j < length; j++) {
       //console.log("counter++");
-      selector.remove(0);
+      selector.remove(1);
     }
   }
   // assign fields
