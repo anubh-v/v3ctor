@@ -11,7 +11,7 @@ README
 
  
 
-The current version can be accessed [here] (visual-vector.com)
+The current version can be accessed [here](visual-vector.com)
 
 Below are our user stories.
 
