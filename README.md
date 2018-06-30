@@ -12,7 +12,7 @@ To create a web application with a user-friendly interface that allows new stude
 
 *All animations, vectors and vector spaces will be plotted on a 3D grid representing the Euclidean space.
 
-The current version can be accessed [here](visual-vector.firebaseapp.com)
+The current version can be accessed [here](https://visual-vector.firebaseapp.com/)
 
 Below are our user stories.
 
