@@ -50,6 +50,72 @@ function enableTextBox(textBox) {
     textBox.className = "ui input";
 }
 
+/* register event handlers */
+var resetCameraBtn = document.getElementById("resetCameraButton");
+resetCameraBtn.onclick = () => {
+    setCamera();
+};
+
+var rotateGridXBtn = document.getElementById("rotateXButton");
+var rotateGridYBtn = document.getElementById("rotateYButton");
+var rotateGridZBtn = document.getElementById("rotateZButton");
+
+rotateGridXBtn.onclick = rotateX;
+rotateGridYBtn.onclick = rotateY;
+rotateGridZBtn.onclick = rotateZ;
+
+function rotateX() {
+    alert("rotate x");
+    var rotateFunc = () => rotateGrid("x");
+    renderQueue.unshift(rotateFunc);
+
+    rotateGridXBtn.removeEventListener("onclick", rotateX);
+    
+    function stopRotation() {
+        removeFromRenderQueue(rotateFunc);
+        rotateGridXBtn.removeEventListener("onclick", stopRotation);
+        rotateGridXBtn.onclick = rotateX;
+    }
+
+    rotateGridXBtn.onclick = stopRotation;
+
+}
+
+function rotateY() {
+    
+    var rotateFunc = () => rotateGrid("y");
+    renderQueue.unshift(rotateFunc);
+
+    rotateGridYBtn.removeEventListener("onclick", rotateY);
+    
+    function stopRotation() {
+        removeFromRenderQueue(rotateFunc);
+        rotateGridYBtn.removeEventListener("onclick", stopRotation);
+        rotateGridYBtn.onclick = rotateY;
+    }
+
+    rotateGridYBtn.onclick = stopRotation;
+
+}
+
+function rotateZ() {
+    
+    var rotateFunc = () => rotateGrid("z");
+    renderQueue.unshift(rotateFunc);
+
+    rotateGridZBtn.removeEventListener("onclick", rotateZ);
+    
+    function stopRotation() {
+        removeFromRenderQueue(rotateFunc);
+        rotateGridZBtn.removeEventListener("onclick", stopRotation);
+        rotateGridZBtn.onclick = rotateZ;
+    }
+
+    rotateGridZBtn.onclick = stopRotation;
+
+}
+
+
 /*------------------VECTORS SECTION-------------------------------*/
 
 /* Key variables for the Vectors Tab */

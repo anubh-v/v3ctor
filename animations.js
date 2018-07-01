@@ -139,8 +139,5 @@ function linComboPlayable(vectorList) {
    IMPORTANT: The given function MUST be present in the render queue */
 function removeFromRenderQueue(funcToBeRemoved) {
     /* filter the renderQueue, so that only the target function is removed */   
-    renderQueue = renderQueue.filter((renderFunction) => return renderFunction !== funcToBeRemoved);
-}
-
-
+    renderQueue = renderQueue.filter((renderFunction) => renderFunction !== funcToBeRemoved);
 }

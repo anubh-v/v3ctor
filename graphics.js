@@ -27,7 +27,7 @@ function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color( 0x002233 );
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
-  camera.position.set(0, 5, 1.5).setLength(120);
+  setCamera();
 
   var stage = document.getElementById("stage");
 
@@ -39,17 +39,14 @@ function init() {
   //GridHelper( size of the entire grid, divisions : number of divisions on the grid, colorCenterLine : Color, colorGrid : Color (0x00ff00) ) --> 
   // green central line
   var gridXZ = new THREE.GridHelper(100, 10,0xffffff, 0x33bbff);
-  gridXZ.position.set(0,0,0);
   axes.add(gridXZ);
   // red central line
   var gridXY = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
-  gridXY.position.set(0,0,0);
   // rotation about x axis by 90 degrees
   gridXY.rotation.x = Math.PI/2;
   axes.add(gridXY);
   // blue central line
   var gridYZ = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
-  gridYZ.position.set(0,0,0);
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
   axes.add(gridYZ); 
@@ -58,6 +55,7 @@ function init() {
   axes.add(allObjects);
   axes.add(spanGraphics);
   axes.add(matricesGraphics);
+  setGrid();
   scene.add(axes);
 
   // create labels for axes
@@ -88,6 +86,18 @@ function animate() {
 function render() {
   renderer.render(scene, camera);
 };
+
+/* Sets the Grid to the default rotation */
+function setGrid() {
+  //  axes.position.set(0, 0, 0);
+}
+
+/* Sets the Camera to the Default View */
+function setCamera() {    
+  camera.position.set(70, 70, 70);  
+  camera.updateProjectionMatrix();
+  
+}
 
 function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
   var parameters = opts || {};
@@ -330,4 +340,6 @@ function scale(mesh, factor) {
   mesh.scale.z *= factor;
 }
 
-
+function rotateGrid(axisToRotate) {
+    axes.rotation[axisToRotate] += 0.01;
+}
