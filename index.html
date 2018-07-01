@@ -16,14 +16,14 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.2/components/table.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.2/components/popup.css" />
                
-        <link rel="stylesheet" href="admin.css"/>
-        <link rel="stylesheet" href="toolbars.css"/>        
+        <link rel="stylesheet" href="css/admin.css"/>
+        <link rel="stylesheet" href="css/toolbars.css"/>        
 
     </head>
     <body>
         
         <div id="navBar">
-            <img src="logo_darkBlue.jpg" alt="V3ctor logo" style = " position: absolute; left: 0.5%;width :8%; height: 100%">;
+            <img src="assets/logo_darkBlue.jpg" alt="V3ctor logo" style = " position: absolute; left: 0.5%;width :8%; height: 100%">;
         </div>
         
         <div id=vectorsMenu class=menus> 
@@ -155,31 +155,31 @@
                 </div>
             </div>
         </div>
-        <div id="controlsMenu" class="tiny compact four ui inverted toggle primary basic buttons">
-                <div id="rotateXButton" class="circular ui toggle icon button">
+        <div id="controlsMenu" class="five tiny compact ui inverted primary basic buttons">
+                <div id="rotateXButton" class="ui button">
                     x
                 </div>
-                <div id="rotateYButton" class="circular ui button">
+                <div id="rotateYButton" class="ui button">
                     y
                 </div>
-                <div id="rotateZButton" class="circular ui button">
+                <div id="rotateZButton" class="ui button">
                     z
                 </div>
-                <div id="resetCameraButton" class="circular ui icon button">
+                <div id="resetCameraButton" class="ui icon button">
                     <i class="redo icon"></i>
                 </div>
-                <div id="clearButton" class="circular ui icon button">
+                <div id="clearButton" class="ui icon button">
                     <i class="eraser icon"></i>
-                </div>
+                </div>        
         </div>
 
         <canvas id="stage"></canvas>
-        <script src="js/three.js"></script>
-        <script src="js/OrbitControls.js"></script>
-        <script src="js/numeric_1.2.6.js"></script>
-        <script src="matrix.js"></script>
-        <script src="graphics.js"></script>
-        <script src="animations.js"></script>
-        <script src="userInterface.js"></script>
+        <script src="libraries/three.js"></script>
+        <script src="libraries/OrbitControls.js"></script>
+        <script src="libraries/numeric_1.2.6.js"></script>
+        <script src="logic/matrix.js"></script>
+        <script src="logic/graphics.js"></script>
+        <script src="logic/animations.js"></script>
+        <script src="logic/userInterface.js"></script>
     </body>
 </html>
