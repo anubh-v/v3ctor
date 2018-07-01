@@ -89,12 +89,12 @@ function render() {
 
 /* Sets the Grid to the default rotation */
 function setGrid() {
-  //  axes.position.set(0, 0, 0);
+  axes.position.set(0, 0, 0);
 }
 
 /* Sets the Camera to the Default View */
 function setCamera() {    
-  camera.position.set(70, 70, 70);  
+  camera.position.set(40, 120, 0);  
   camera.updateProjectionMatrix();
   
 }
