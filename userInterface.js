@@ -65,7 +65,6 @@ rotateGridYBtn.onclick = rotateY;
 rotateGridZBtn.onclick = rotateZ;
 
 function rotateX() {
-    alert("rotate x");
     var rotateFunc = () => rotateGrid("x");
     renderQueue.unshift(rotateFunc);
 
