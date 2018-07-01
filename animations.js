@@ -1,15 +1,19 @@
-function Playable(vectorList) {
+function linComboPlayable(vectorList) {
     
-    var conditions = [];
-    var actions = [];
-    var postActions = [];
+    this.conditions = [];
+    this.actions = [];
+    this.postActions = [];
     
+    var conditions = this.conditions;
+    var actions = this.actions;
+    var postActions = this.postActions;
+ 
     vectorList.map(function(vectorObj) {
 
         var animatedObj = { };
 
         var vector = createVector(vectorObj.xCoord.value, vectorObj.yCoord.value, vectorObj.zCoord.value,
-            new THREE.Vector3(0,0,0),0x00ffff);
+            new THREE.Vector3(0,0,0),0xff0066);
 
         /* add the endpoints of this vector as properties of the vector object */
         animatedObj.x = parseFloat(vectorObj.xCoord.value);
@@ -53,18 +57,21 @@ function Playable(vectorList) {
     }).reduce(function(prevVector, nextVector) {
       
         /* use an interval of 180 steps --> complete animation in 3s */
+        var numOfSteps = 180;
         var xDistance = nextVector.x - prevVector.graphic.position.x;
-        var xStep = xDistance / 180;
+        var xStep = xDistance / numOfSteps;
 
         var yDistance = nextVector.y - prevVector.graphic.position.y;
-        var yStep = yDistance / 180;
+        var yStep = yDistance / numOfSteps;
 
         var zDistance = nextVector.z - prevVector.graphic.position.z;
-        var zStep = zDistance / 180;
+        var zStep = zDistance / numOfSteps;
+
+        var translationCounter = 0;
 
         conditions.push(() => {
-          return ((Math.floor(prevVector.graphic.position.x) == nextVector.x) && (Math.floor(prevVector.graphic.position.y) == nextVector.y) && (Math.floor     (prevVector.graphic.position.z) == nextVector.z));
-            
+          //return ((Math.floor(prevVector.graphic.position.x) == nextVector.x) && (Math.floor(prevVector.graphic.position.y) == nextVector.y) && (Math.floor     (prevVector.graphic.position.z) == nextVector.z));
+          return translationCounter == numOfSteps;    
         });
 
         actions.push(() => {
@@ -72,6 +79,7 @@ function Playable(vectorList) {
           prevVector.graphic.position.x += xStep;
           prevVector.graphic.position.y += yStep;
           prevVector.graphic.position.z += zStep;
+          translationCounter++;
        
         });
 
@@ -80,7 +88,7 @@ function Playable(vectorList) {
         var resY = prevVector.y + nextVector.y;
         var resZ = prevVector.z + nextVector.z;
 
-        var resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0),0x00ffff);
+        var resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0),0xff0066);
 
       
         postActions.push(() => {
@@ -89,6 +97,7 @@ function Playable(vectorList) {
           allObjects.remove(nextVector.graphic);
 
         });
+
 
         var resVectorObj = { };
         resVectorObj.graphic = resVector;
@@ -99,38 +108,29 @@ function Playable(vectorList) {
         return resVectorObj;
     });      
           
-
-      this.conditions = conditions;
-      this.actions = actions;
-      this.postActions = postActions;
-
       this.currentCondition = conditions[0];
       this.currentAction = actions[0];
 
       this.play = () => {
-
+        
         if (actions.length == 0) {
-            // remove this Playable from the head of the render queue 
-            renderQueue.shift();
-        } else {
-            
-            if (this.currentCondition() == false) {
-              // terminating condition not met, continue current animation
-              this.currentAction();
-            } else {
+          // remove this Playable from the head of the render queue 
+          removeFromRenderQueue(this.play);
+        } else {       
+          if (this.currentCondition() == false) {
+            // terminating condition not met, continue current animation
+            this.currentAction();
+          } else {
+            // terminating condition met, proceed to next action      
+            this.postActions[0]();
+            this.postActions.shift();
+                    
+            this.conditions.shift();
+            this.actions.shift();
 
-              // terminating condition met, proceed to next action
-              
-              this.postActions[0]();
-              this.postActions.shift();
-                
-              this.conditions.shift();
-              this.actions.shift();
-
-              this.currentCondition = conditions[0];
-              this.currentAction = actions[0];
-
-           }
+            this.currentCondition = conditions[0];
+            this.currentAction = actions[0];
+          }
         }
       }
 
@@ -139,3 +139,9 @@ function Playable(vectorList) {
 }
 
 
+/* remove a given function from the render queue. 
+   IMPORTANT: The given function MUST be present in the render queue */
+function removeFromRenderQueue(funcToBeRemoved) {
+    /* filter the renderQueue, so that only the target function is removed */   
+    renderQueue = renderQueue.filter((renderFunction) => renderFunction !== funcToBeRemoved);
+}
