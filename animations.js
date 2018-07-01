@@ -57,18 +57,21 @@ function linComboPlayable(vectorList) {
     }).reduce(function(prevVector, nextVector) {
       
         /* use an interval of 180 steps --> complete animation in 3s */
+        var numOfSteps = 180;
         var xDistance = nextVector.x - prevVector.graphic.position.x;
-        var xStep = xDistance / 180;
+        var xStep = xDistance / numOfSteps;
 
         var yDistance = nextVector.y - prevVector.graphic.position.y;
-        var yStep = yDistance / 180;
+        var yStep = yDistance / numOfSteps;
 
         var zDistance = nextVector.z - prevVector.graphic.position.z;
-        var zStep = zDistance / 180;
+        var zStep = zDistance / numOfSteps;
+
+        var translationCounter = 0;
 
         conditions.push(() => {
-          return ((Math.floor(prevVector.graphic.position.x) == nextVector.x) && (Math.floor(prevVector.graphic.position.y) == nextVector.y) && (Math.floor     (prevVector.graphic.position.z) == nextVector.z));
-            
+          //return ((Math.floor(prevVector.graphic.position.x) == nextVector.x) && (Math.floor(prevVector.graphic.position.y) == nextVector.y) && (Math.floor     (prevVector.graphic.position.z) == nextVector.z));
+          return translationCounter == numOfSteps;    
         });
 
         actions.push(() => {
@@ -76,6 +79,7 @@ function linComboPlayable(vectorList) {
           prevVector.graphic.position.x += xStep;
           prevVector.graphic.position.y += yStep;
           prevVector.graphic.position.z += zStep;
+          translationCounter++;
        
         });
 
@@ -139,8 +143,10 @@ function linComboPlayable(vectorList) {
    IMPORTANT: The given function MUST be present in the render queue */
 function removeFromRenderQueue(funcToBeRemoved) {
     /* filter the renderQueue, so that only the target function is removed */   
-    renderQueue = renderQueue.filter((renderFunction) => return renderFunction !== funcToBeRemoved);
+    renderQueue = renderQueue.filter((renderFunction) => { return renderFunction !== funcToBeRemoved;});
 }
 
 
-}
+
+
+
