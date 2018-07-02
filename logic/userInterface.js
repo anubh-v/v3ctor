@@ -53,7 +53,9 @@ function enableTextBox(textBox) {
 /* register event handlers */
 var resetCameraBtn = document.getElementById("resetCameraButton");
 resetCameraBtn.onclick = () => {
-    setCamera();
+
+    setGrid();
+    controls.reset();
 };
 
 var rotateGridXBtn = document.getElementById("rotateXButton");

@@ -75,6 +75,9 @@ function init() {
   axes.add(zLabel);
 }
 
+/* this function iterates through renderQueue and executes each function in the queue. 
+   We must call this function once per frame of animation. This is done using 
+   requestAnimationFrame. */
 function animate() {
   requestAnimationFrame(animate);
   
@@ -83,6 +86,7 @@ function animate() {
   });
 }
 
+/* add this function to the renderQueue to render the scene */
 function render() {
   renderer.render(scene, camera);
 };
@@ -90,13 +94,16 @@ function render() {
 /* Sets the Grid to the default rotation */
 function setGrid() {
   axes.position.set(0, 0, 0);
+  axes.rotation.set(0, 0, 0);
 }
 
 /* Sets the Camera to the Default View */
 function setCamera() {    
-  camera.position.set(40, 120, 0);  
+  camera.position.set(40, 120, 0);
+  camera.lookAt(0, 0, 0);
+  camera.up.set(0, 1, 0);
   camera.updateProjectionMatrix();
-  
+
 }
 
 function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
@@ -338,8 +345,4 @@ function scale(mesh, factor) {
   mesh.scale.x *= factor;
   mesh.scale.y *= factor;
   mesh.scale.z *= factor;
-}
-
-function rotateGrid(axisToRotate) {
-    axes.rotation[axisToRotate] += 0.01;
 }

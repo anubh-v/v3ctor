@@ -145,3 +145,8 @@ function removeFromRenderQueue(funcToBeRemoved) {
     /* filter the renderQueue, so that only the target function is removed */   
     renderQueue = renderQueue.filter((renderFunction) => renderFunction !== funcToBeRemoved);
 }
+
+/* add this function to the renderQueue to rotate the grid about a specified axis */
+function rotateGrid(axisToRotate) {
+    axes.rotation[axisToRotate] += 0.01;
+}
