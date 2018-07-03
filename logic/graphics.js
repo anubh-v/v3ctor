@@ -341,6 +341,9 @@ function drawSpan(m,container) {
     arr.push(v);
     obj.add(line);
     obj.add(v);
+
+    lineVectorToCartesian([x, y, z], [0, 0, 0]);
+
   } else if (numVectors == 2) {
     var x1 = m[0][0];
     var y1 = m[1][0];

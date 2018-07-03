@@ -103,6 +103,7 @@ function printMatrix(matrix) {
 		}
 		output += "]" + "\n";
 	}
+    console.log(output);
 }
 
 // mutating the matrix by swapping row1 and row2
@@ -135,6 +136,29 @@ function multiply(A,B) {
 		}
 	}
 	return output;
+}
+
+/*
+   precond: 2 m*n matrices A and B
+   postcond: 1 m*n matrix representing A + B */
+function add(A, B) {
+    
+    let numRows = A.length;
+    let numColumns = A[0].length;
+
+    // initialise the outputMatrix
+    let output = setMatrix(numRows);
+
+    // iterate through each row
+    for (let i = 0; i < numRows; i++) {
+        // iterate through each column
+        for (let j= 0; j < numColums; j++) {
+            // entry wise addition
+            ouput[i][j] = A[i][j] + B[i][j];
+        }
+    }
+
+    return output;
 }
 
 /*function mutating a m*n matrix into REF, where n is the number of column vectors. 
@@ -290,7 +314,7 @@ function findColumnSpace(M){
 		if (vectorsProperty[index][1]) {
 			appendColumn(outputMatrix,vectorsProperty[index][0]);
 		}
-	}
+	}   
 	return outputMatrix;
 }
 
@@ -559,20 +583,20 @@ function crossProduct(vectorA, vectorB) {
 function dotProduct(vectorA, vectorB) {
     // use the multiply function to compute dot product
     // multiply function will return a 1*1 matrix
-   let ans = multiply([vectorA], [ [vectorB[0]], [vectorB[1]], [vectorB[2]] ]);
+   let ans = multiply([vectorA], matrixify(vectorB));
 
    // extract and return the scalar value from the 1*1 matrix
    return ans[0][0];
 }
 
-/* precond: 2 linearly independent row vectors and 1 point on the plane
+/* precond: 2 linearly independent row vectors and 1 point, defining a plane
             Note: A plane is defined by 1 point and 2 linearly independent vectors
                   e.g --> plane a:= (0, 0, 0) + s(1, 0, 0) + r(0, 1, 0), where r and s are arbitrary parameters
             The vectors and the point will both be row vectors (3 element arrays)
 
    postcond: coefficients (x, y, z) of the Cartesian equation "ax + by + cz = d" of the plane defined 
              by these 2 vectors and 1 point. The coefficients are returned as an array [a, b, c, d] */
-function vectorToCartesian(vectorA, vectorB, pointOnPlane) {
+function planeVectorToCartesian(vectorA, vectorB, pointOnPlane) {
     
     // obtain a vector perpendicular to the plane defined by the 2 vectors
     let normalVector = crossProduct(vectorA, vectorB);
@@ -581,13 +605,61 @@ function vectorToCartesian(vectorA, vectorB, pointOnPlane) {
     let unitNormalVector = getUnitVector(normalVector);
 
     // take the dot product of the point with the unitNormalVector
-    let d = dotProduct(pointOnPlane, unitNormalVector);
-    let a = unitNormalVector[0];
-    let b = unitNormalVector[1];
-    let c = unitNormalVector[2];
+    let d = dotProduct(pointOnPlane, normalVector);
+    let a = normalVector[0];
+    let b = normalVector[1];
+    let c = normalVector[2];
     
     return [a, b, c, d];  // ax + by + cz = d
 }
+
+
+/* precond: 1 row vectors and 1 point, defining a line
+            Note: A line is defined by 1 point and 1 vector
+                  e.g --> line a:= (0, 0, 0) + s(1, 0, 0), where s is an arbitrary parameter
+            The vector and the point will both be row vectors (3 element arrays)
+
+   postcond: coefficients (x, y, z) of the Cartesian equations "ax + by + cz = d" of the 2 planes intersecting
+             at the given line. 
+             The coefficients are returned as a 2*4 array
+    
+             e.g. Cartesian Eqn 1: ax + by + cz = d
+                  Cartesian Eqn 2: ex + fy + gz = h
+                  output array: [ [a, b, c, d], [e, f, g, h] ] */
+function lineVectorToCartesian(vectorA, pointOnLine) {
+
+    /* write the given vectorA into a 1*3 matrix */
+    let lineMatrix = [vectorA];
+    
+        /* solve for the null space of this matrix.
+       Every vector in the null space will be orthogonal to the 
+       vectors of the given line. */
+    let nullSpaceBasis = findNullSpace(lineMatrix);
+
+    /* in this case, the null space has dimension 2 */
+    /* there will be 2 vectors in nullSpaceBasis */
+
+    /* retrieve the 2 vectors */
+    printMatrix(nullSpaceBasis);
+    let vectorB = [nullSpaceBasis[0][0], nullSpaceBasis[1][0], nullSpaceBasis[2][0]];
+    let vectorC = [nullSpaceBasis[0][1], nullSpaceBasis[1][1], nullSpaceBasis[2][1]];
+
+    /* get the cartesian eqn of the plane spanned by vector A and B*/
+    let planeAB = planeVectorToCartesian(vectorA, vectorB, pointOnLine);
+
+    /* get the cartesian eqn of the plane spanned by vector A and C*/
+    let planeAC = planeVectorToCartesian(vectorA, vectorC, pointOnLine);    
+    
+    printCartesianEqn(planeAB);
+    printCartesianEqn(planeAC);
+
+    /* return the 2 planes */
+    return [planeAB, planeAC]
+
+
+
+}
+
 
 /* precond: the coefficients of a cartesian equation defining a subspace
             the coefficients will be in a 4 element array
@@ -599,9 +671,21 @@ function vectorToCartesian(vectorA, vectorB, pointOnPlane) {
    postcond: a n*3 matrix, where n is the number of linearly independent vectors
              each vector is a basis vector of the given subspace */
 function cartesianToVector(cartesianCoeffs) {
+    
 
 
 
 
+
+}
+
+/* print a cartesian equation, given the equation coeffcients as a 4 element array 
+   For debugging. */
+function printCartesianEqn(cartesianCoeffs) {
+    
+    let eqn = cartesianCoeffs[0] + "x + " + cartesianCoeffs[1] + "y + " + cartesianCoeffs[2] + "z = ";
+    eqn = eqn + cartesianCoeffs[3];
+    
+    console.log(eqn);
 
 }
