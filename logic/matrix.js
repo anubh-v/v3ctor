@@ -103,7 +103,6 @@ function printMatrix(matrix) {
 		}
 		output += "]" + "\n";
 	}
-	console.log(output);
 }
 
 // mutating the matrix by swapping row1 and row2
@@ -121,6 +120,7 @@ function swap_row(matrix, row1, row2) {
 function multiply(A,B) {
 	var m = A.length;
 	var n = B[0].length;
+
 	// initialize the outputArr
 	var output = setMatrix(m);
 	for (var r = 0; r < m; r++) {
@@ -506,4 +506,102 @@ function findRestrictedRange(matrix,Vectors) {
 	var outputMatrix = filterRedundancy(tranformedVectors);
 	printMatrix(outputMatrix);
 	return outputMatrix;
+}
+
+/* precond: 1 row vector (3 element array)
+   postcond: length of the vector */
+function vectorLength(vector) {
+    
+    // our vector is [a, b, c]
+    // calculate a^2 + b^2 + c^2
+    let squaredSum = vector.reduce(function(accSquaredSum, nextCoord) {
+        let squaredNextCoord = Math.pow(nextCoord, 2);
+        return accSquaredSum + squaredNextCoord;
+   });
+
+   // return sqrt(squaredSum);
+   return Math.sqrt(squaredSum);
+
+}
+
+
+/* precond: 1 row vector (3 element array)
+   postcond: a unit vector in the same direction as the given vector */
+function getUnitVector(vector) {
+    
+    // get the length of the given vector
+    let magnitude = vectorLength(vector);
+    // scale the vector to a unit vector
+    let scaledUnitVector = vector.map(function(coordinate) {
+        return coordinate / magnitude;
+    });
+
+    return scaledUnitVector;
+}
+
+/* precond: 2 row vectors (each vector is a 3 element array)
+   postcond: 1 vector that is orthogonal to both the given vectors, in a 3 element array */
+function crossProduct(vectorA, vectorB) {
+
+    /* this is the cross product formula,
+       derived using the distributive property of cross product */
+    
+    let resultantX = vectorA[2]*vectorB[1] - vectorA[1]*vectorB[2];
+    let resultantY = -1*vectorA[0]*vectorB[2] + vectorA[2]*vectorB[0];
+    let resultantZ = vectorA[0]*vectorB[1] - vectorA[1]*vectorB[0];
+
+    return [resultantX, resultantY, resultantZ];
+
+}
+
+/* precond: 2 row vectors (each vector is a 3 element array)
+   postcond: the dot product of the two vectors */
+function dotProduct(vectorA, vectorB) {
+    // use the multiply function to compute dot product
+    // multiply function will return a 1*1 matrix
+   let ans = multiply([vectorA], [ [vectorB[0]], [vectorB[1]], [vectorB[2]] ]);
+
+   // extract and return the scalar value from the 1*1 matrix
+   return ans[0][0];
+}
+
+/* precond: 2 linearly independent row vectors and 1 point on the plane
+            Note: A plane is defined by 1 point and 2 linearly independent vectors
+                  e.g --> plane a:= (0, 0, 0) + s(1, 0, 0) + r(0, 1, 0), where r and s are arbitrary parameters
+            The vectors and the point will both be row vectors (3 element arrays)
+
+   postcond: coefficients (x, y, z) of the Cartesian equation "ax + by + cz = d" of the plane defined 
+             by these 2 vectors and 1 point. The coefficients are returned as an array [a, b, c, d] */
+function vectorToCartesian(vectorA, vectorB, pointOnPlane) {
+    
+    // obtain a vector perpendicular to the plane defined by the 2 vectors
+    let normalVector = crossProduct(vectorA, vectorB);
+    
+    // obtain a unit vector in same direction as normal Vector;
+    let unitNormalVector = getUnitVector(normalVector);
+
+    // take the dot product of the point with the unitNormalVector
+    let d = dotProduct(pointOnPlane, unitNormalVector);
+    let a = unitNormalVector[0];
+    let b = unitNormalVector[1];
+    let c = unitNormalVector[2];
+    
+    return [a, b, c, d];  // ax + by + cz = d
+}
+
+/* precond: the coefficients of a cartesian equation defining a subspace
+            the coefficients will be in a 4 element array
+            ax + by + cz = d --> [a, c, c, d]
+            
+            note: since only 1 equation is provided, the subspace will be either
+            a plane or the whole 3D space
+
+   postcond: a n*3 matrix, where n is the number of linearly independent vectors
+             each vector is a basis vector of the given subspace */
+function cartesianToVector(cartesianCoeffs) {
+
+
+
+
+
 }
