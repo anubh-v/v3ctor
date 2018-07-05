@@ -37,15 +37,14 @@
         
             <text>Vectors</text>
             <div id=vectorsForm class=form>
-                    <button id="addVector" class="ui labeled icon button" data-tooltip="generate boxes to add x,y,z coordinates" data-position="bottom right"> Add Vector 
+                    <button id="addVector" class="ui labeled icon button" > Add Vector 
                         <i class="plus icon"></i>
                     </button>
-                    <button id="deleteVector" class="ui icon button" data-tooltip="remove the last vector" data-position="bottom right">
+                    <button id="deleteVector" class="ui icon button">
                         <i class="trash icon"></i>
                     </button>
-                    <button id="renderVectors" class="ui labeled icon button" data-tooltip="draw all vectors in the canvas" data-position="bottom right"> Draw Vectors
-                        <i class="pencil alternate icon"></i>                       
-                    </button>
+                    <button id="renderVectors" class="ui labeled icon button"> Draw Vectors
+                        <i class="pencil alternate icon"></i>            </button>
                     <button id="animateCombo" class="ui button" data-tooltip="animate linear combination of checked vectors" data-position="bottom right"> Animate Linear Combo </button>
                     <div id=vectorsInnerForm>
                         <h1>    </h1>
@@ -53,7 +52,7 @@
                         <h1> Y: </h1>
                         <h1> Z: </h1>
                         <h1> Coefficient </h1>
-                        <h1> Include in Span </h1>
+                        <h1> Select Vector </h1>
                     </div> 
             </div>
         </div>
@@ -95,7 +94,7 @@
                                 </button>
                                 <button id = nullSpace class="ui button" data-tooltip="generate nullspace of the input matrix" data-position="bottom right"><i class = "paint brush icon"> </i> nullSpace
                                 </button>
-                                <button id = transformSubspace class="ui button" data-tooltip="tranform subspace spanned by checked vectors by the input matrix" data-position="bottom right"><i class="angle double right icon"> </i> transformSubspace
+                                <button id = restrictedRange class="ui button" data-tooltip="restrict the domain of the matrix and find the new range" data-position="bottom left"><i class="angle double right icon"> </i> transformSubspace
                                 </button>
                                 <button id = eigenValues class="ui button" data-tooltip="find eigenvalues of the input matrix" data-position="bottom right"><i class="angle search icon"></i> eigenValues 
                                 </button>
