@@ -661,21 +661,65 @@ function lineVectorToCartesian(vectorA, pointOnLine) {
 }
 
 
-/* precond: the coefficients of a cartesian equation defining a subspace
+/* precond: the coefficients of a cartesian equation defining a space
             the coefficients will be in a 4 element array
             ax + by + cz = d --> [a, c, c, d]
             
-            note: since only 1 equation is provided, the subspace will be either
+            note: since only 1 equation is provided, the space will be either
             a plane or the whole 3D space
 
-   postcond: a n*3 matrix, where n is the number of linearly independent vectors
-             each vector is a basis vector of the given subspace */
+   postcond: a 3*(n + 1) matrix, where n is the number of linearly independent vectors
+             each vector is a basis vector of the given space.
+             The last column in a point in the space */
 function cartesianToVector(cartesianCoeffs) {
     
+    /* solve for the null space of the 1*3 matrix [a b c] */
+    let nullSpaceBasis = findNullSpace([ [cartesianCoeffs[0], cartesianCoeffs[1], cartesianCoeffs[2]] ]);
+    
+    /* check if nullSpace dimension is 3 */
+    if (nullSpaceBasis[0].length === 3) {   
+        /* check if d !== 0 here, for example 0x + 0y + 0z = 1 --> no solutions exist */        
+        if (cartesianCoeffs[3] !== 0) {
+            alert("equation has no solutions");
+        } else {     
+            /* if not, return the whole 3d space, together with the point (0, 0, 0) */
+            appendColumn(nullSpaceBasis, [0, 0, 0]);
+            return nullSpaceBasis;   
+        }     
+    } else {
+      /* now, we have the vectors defining the plane given */
+      /* next, we need to find 1 point in the plane given */
 
+      /* null space MUST have dimension 2  in this case */
+      /* --> one of the coefficients, a, b, c must be non zero */
 
+      /* find the first non zero coefficient, starting from a */
+      let foundFirstNonZero = false;
+      let counter = 0;
 
+      while ((counter < 3) && (foundFirstNonZero === false)) {  
+        if (cartesianCoeffs[counter] !== 0) {
+          foundFirstNonZero = true; 
+        } else {
+          counter++;
+        }
+      }
+      
+      let firstNonZeroIndex = counter; 
 
+      /* we substitute 0 into the other variables */
+      /* divide d by the first non zero coefficient */
+
+      let dividedD = cartesianCoeffs[3] / cartesianCoeffs[firstNonZeroIndex];
+      
+      /* construct a point in the given plane using this info */
+      let pointInSpace = [0, 0, 0];
+      pointInSpace[firstNonZeroIndex] = dividedD;
+      
+      appendColumn(nullSpaceBasis, pointInSpace);
+      return nullSpaceBasis;
+     
+    }
 
 }
 
