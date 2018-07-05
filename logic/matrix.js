@@ -570,7 +570,7 @@ function crossProduct(vectorA, vectorB) {
     /* this is the cross product formula,
        derived using the distributive property of cross product */
     
-    let resultantX = vectorA[2]*vectorB[1] - vectorA[1]*vectorB[2];
+    let resultantX = vectorA[1]*vectorB[2] - vectorA[2]*vectorB[1];
     let resultantY = -1*vectorA[0]*vectorB[2] + vectorA[2]*vectorB[0];
     let resultantZ = vectorA[0]*vectorB[1] - vectorA[1]*vectorB[0];
 
@@ -655,9 +655,6 @@ function lineVectorToCartesian(vectorA, pointOnLine) {
 
     /* return the 2 planes */
     return [planeAB, planeAC]
-
-
-
 }
 
 
@@ -723,13 +720,26 @@ function cartesianToVector(cartesianCoeffs) {
 
 }
 
-/* print a cartesian equation, given the equation coeffcients as a 4 element array 
-   For debugging. */
+/* precond: a 4 element array containing the coefficients of a Cartesian equation.
+            --> e.g. If the eqn is x + y + z = 1, the array will be: [1, 1, 1, 1]
+
+   postcod: a string containing the LaTeX expression for this Cartesian equation */
 function printCartesianEqn(cartesianCoeffs) {
     
-    let eqn = cartesianCoeffs[0] + "x + " + cartesianCoeffs[1] + "y + " + cartesianCoeffs[2] + "z = ";
-    eqn = eqn + cartesianCoeffs[3];
-    
-    console.log(eqn);
+    const variables = ["x", "y", "z"];    
 
+    let currentEqn = "\\[" + cartesianCoeffs[0] + variables.shift();
+
+    for(let i = 1; i < 3; i++) {
+        let nextCoeff = cartesianCoeffs[i];
+
+        if (nextCoeff >= 0) {
+            currentEqn = currentEqn + "+ " + nextCoeff + variables.shift();
+        } else {  
+            currentEqn = currentEqn + nextCoeff + variables.shift();
+        }
+    }      
+     
+    currentEqn = currentEqn + "= " + cartesianCoeffs[3] + "\\]";
+    return currentEqn;
 }
