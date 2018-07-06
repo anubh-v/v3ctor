@@ -403,13 +403,25 @@ function scale(mesh, factor) {
 
 
 /*
-precond: coefficients: a 4-elements 1d array, at least one of 
-A,B,C != 0 , i.e. [A,B,C,D] ----> Ax + By + Cz = D
-postcond: draw the plane in a 3D grid
+precond: coefficients: a 4-elements 1d array,i.e. [A,B,C,D] ---->
+ Ax + By + Cz = D; case1: A == B == C == 0 && D !=0 ; case2: A == B == C == 0 && D == 0;
+ case 3: other case3: at least one of A/B/C != 0
+postcond: draw the plane in a 3D grid 
+case1: return empty outputObj,i.e outputObj.children.length ==0 
+case2: return outputObj containing cube 
+case 3: return outputObj containing plane 
 */
-function createPlaneFromCartesian(coefficients,sizeOfPlane,color) {
-
+function createObj3DFromCartesian(coefficients,size,color) {
   var outputObj = new THREE.Object3D();
+
+  if (coefficients[0] == 0 && coefficients[1] == 0 &&coefficients[2] == 0) {
+    if (coefficients[3] != 0) {
+      alert("invalid cartesianEquation input!");
+    } else {
+      outputObj.push(createCube()); 
+    }
+    return outputObj;
+  }
   var normal = [coefficients[0],coefficients[1],coefficients[2]];
   var unitNormal = getUnitVector(normal);
   var perpDistanceFromOrigin = -1 * coefficients[3] / vectorLength(normal);
@@ -424,8 +436,10 @@ function createPlaneFromCartesian(coefficients,sizeOfPlane,color) {
 }
 
 /*
-postcond: a function drawing 
+precond: augmentedMatrix: m*n matrix representing a system of linear equations
+postcond: returning Object3D from a linear system represented by the augmentedMatrix
 */
-function createObjFromLinearSystem() {
+function createObjFromLinearSystem(augmentedMatrix) {
+  let outputObj = new THREE.Object3D();
 
 }
