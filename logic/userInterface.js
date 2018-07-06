@@ -133,8 +133,10 @@ function createCartesianEqnLabel(basisMatrix) {
     
     /* create a <h2> element */
     let equationElement = document.createElement("h2");
-
-    if (numVectors === 3) {       
+    if (numVectors === 0) {
+    	/* case where it is a zero space */
+    	equationElement.textContent = "\\[x = 0, y = 0, z = 0\\]";
+    } else if (numVectors === 3) {       
         /* if the subspace is the whole space, generate the zero equation */
         equationElement.textContent = "\\[0x + 0y + 0z = 0\\]";    
     } else if (numVectors === 2) {
@@ -410,8 +412,7 @@ function getCheckedVectors(checkBoxList, vectorsList) {
 
 /*
 */
-function generalSpanHelper(rawVectors, tableBody, labelDesc, spanObj) {
-
+function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     /* create the current row and two columns */    
     const row = document.createElement("tr");
     const firstCol = document.createElement("td");
@@ -420,17 +421,6 @@ function generalSpanHelper(rawVectors, tableBody, labelDesc, spanObj) {
     row.appendChild(firstCol);
     row.appendChild(secondCol);
 
-    /*  Filter out the redundant vectors. Result is a 3*r matrix where 1 <= r <= 3 */
-    const vectorsToSpan = filterRedundancy(rawVectors);
-        
-    /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
-       "drawSpan" also returns an array containing the ref to the graphics representing the span
-        and the basis vectors of the span */
-    const arr = drawSpan(vectorsToSpan, spanGraphics);    
-
-   /* Extract the span's graphic from the array */
-    const subspGraphic = arr[0];
-    
     /* Create the label for this subspace */
     /* First, create an overall container for the labels */
     const subspLabel = document.createElement("div");
@@ -448,7 +438,21 @@ function generalSpanHelper(rawVectors, tableBody, labelDesc, spanObj) {
     subspLabel.appendChild(cartesianEqnLabel);
     firstCol.appendChild(subspLabel);
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
+    
+    // if it's a zero space, alert and return the function straight away
+    if (vectorsToSpan[0].length == 0) {
+		alert("a zero space!");
+		return;
+	}
 
+
+    /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
+    "drawSpan" also returns an array containing the ref to the graphics representing the span
+    and the basis vectors of the span */
+    const arr = drawSpan(vectorsToSpan, spanGraphics);    
+
+   /* Extract the span's graphic from the array */
+    const subspGraphic = arr[0];
     /* adding mouse over effects to the descriptorLabel */
     addLabelEffects(descriptorLabel, subspGraphic); 
 
@@ -533,7 +537,9 @@ function spanBtnHelper() {
     var tableBody = document.getElementById("spanTableBody");
     const subspObj = { };
 
-    generalSpanHelper(checkedVectors, tableBody, "Subsp: " + numSubps, subspObj);
+    /*  Filter out the redundant vectors. Result is a 3*r matrix where 1 <= r <= 3 */
+    const vectorsToSpan = filterRedundancy(checkedVectors);
+    generalSpanHelper(vectorsToSpan, tableBody, "Subsp: " + numSubps, subspObj);
     
     /* push the newly added subpObj into the global subsp list */
     subspList.push(subspObj);

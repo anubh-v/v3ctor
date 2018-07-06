@@ -322,7 +322,8 @@ function drawOneVector(x,y,z,hex, container) {
 }
 
 /*
-precond: m: 3 * n matrix of n LI column vectors, where  1<= n <= 3 container: the Object3D to put all graphics generated into
+precond: m: 3 * n matrix of n LI column vectors, where  1<= n <= 3 
+container: the Object3D to put all graphics generated into
 postcond : generating graphics of vectors and subsp in the canvas, then return an array containing 
 their ref. index 0: ref to subp graphic ; >=index 1 : reference to basis vectors(orders are preserved)  
  */
