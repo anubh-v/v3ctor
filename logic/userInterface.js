@@ -411,6 +411,10 @@ function getCheckedVectors(checkBoxList, vectorsList) {
 }
 
 /*
+precond: 
+1.vectorsToSpan: m*n matrix consisting of n basis column vectors of the subsp to be spanned
+  0 <= n <= m. i.e. if n == 0 --> zero space; if n == m --> whole vector space
+  note: vectorsToSpan does not contain NaN.
 */
 function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     /* create the current row and two columns */    
@@ -529,6 +533,8 @@ function spanBtnHelper() {
   if (checkedVectors[0].length == 0) {
     /* if no input vectors, alert the user */
     alert("no vector input!");
+  } else if (hasNaN(checkedVectors)) {
+  	alert("please fill in all checked input boxes!");
   } else {   
     /* increment the global counter */
     numSubps++;
