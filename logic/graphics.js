@@ -127,7 +127,7 @@ function render() {
 	// calculate objects intersecting the picking ray
 	var intersects = raycaster.intersectObjects(allObjects.children, true);
         
-    console.log(intersects.length);
+   // console.log(intersects.length);
   
 	for ( var i = 0; i < intersects.length; i++ ) {
 		intersects[ i ].object.material.color.set( 0xffff00 );
@@ -399,4 +399,33 @@ function scale(mesh, factor) {
   mesh.scale.x *= factor;
   mesh.scale.y *= factor;
   mesh.scale.z *= factor;
+}
+
+
+/*
+precond: coefficients: a 4-elements 1d array, at least one of 
+A,B,C != 0 , i.e. [A,B,C,D] ----> Ax + By + Cz = D
+postcond: draw the plane in a 3D grid
+*/
+function createPlaneFromCartesian(coefficients,sizeOfPlane,color) {
+
+  var outputObj = new THREE.Object3D();
+  var normal = [coefficients[0],coefficients[1],coefficients[2]];
+  var unitNormal = getUnitVector(normal);
+  var perpDistanceFromOrigin = -1 * coefficients[3] / vectorLength(normal);
+
+  var plane = new THREE.Plane(
+                new THREE.Vector3(unitNormal[0],unitNormal[1],unitNormal[2]),
+                perpDistanceFromOrigin
+                );
+  var helper = new THREE.PlaneHelper(plane, sizeOfPlane, color);
+  outputObj.push(helper);
+  return outputObj;
+}
+
+/*
+postcond: a function drawing 
+*/
+function createObjFromLinearSystem() {
+
 }

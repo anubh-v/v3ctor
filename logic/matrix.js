@@ -1,3 +1,4 @@
+/*---------------------------for R^n space-------------------------------- */
 /*
 rounding off the number to closest integer if the number is very close to an integer.
 */
@@ -39,6 +40,17 @@ function setMatrix(numRows) {
 		matrix.push(new Array());
 	}
 	return matrix;
+}
+
+// return an m*n matrix with all zero entries
+function setZeroMatrix(m,n) {
+	var out = setMatrix(m);
+	for (var i = 0; i < m; i++) {
+		for (var j = 0; j < n; j++) {
+			out[i][j] = 0;
+		}
+	}
+	return out;
 }
 
 // return a duplicate of matrix
@@ -221,7 +233,7 @@ function findPivots(matrix){
 	var output = new Array();
 	// row:= each row of the output array = each column vector of the original matrix
 	for (var row = 0; row < numCols; row++) {
-		// each row is another array with two indices, initialize all columns to be non- pivot, and the pivot points to be a dummy (-1,-1) 
+		// each row is another array with three indices, initialize all columns to be non- pivot, and the pivot points to be a dummy (-1,-1) 
 		output[row] = [new Array(),false, {r: -1, c: -1}];
 		// record the column vectors in the output matrix 
 		for (var i = 0; i < numRows; i++ ) {
@@ -297,6 +309,99 @@ function guassJordanElimination(matrix) {
 } 
 
 
+/*
+precond: augmentedMatrix: m*n matrix(2d array)
+postcond:
+  
+	case1: last col pivot col --> alert inconsistent.
+	case2: else output a r*c matrix: 1st column as the point 
+		and subsequent columns as direction vectors(or coordinates wrt a 
+		particular arbitrary value). When all columns are pivot columns except the 
+		last column, c= 1 --> the solution is a point/ unique solution.
+note: for linear equations with 3 unknowns(x,y,z), no of col of augmented
+matrix = 4. output: if the augmented is consistent, output a 3*c matrix. 
+cases: c == 1 --> a point, c == 2 --> a line, c == 3 --> a plane, c = 4	--> the whole space
+*/
+function solveAugmentedMatrix(augmentedMatrix) {
+	/*
+	1. duplicate matrix, apply guassian elimination and findPivots 
+	2. based on 1. traverse to get numOfNonPivotColumns and coordinates(array where each index
+	correp to column number of the column vector, if pivot, return the coordiate of the pivot, else
+	return {r:-1,c:-1})
+	3. check if last column pivot column, if so, alert and return 
+	4. else, create an output k * j matrix, where k = numUnkowns, j = 1 + numNonPivotColumns; 
+	set up a state storing the currentCol of arbitraryNum, 
+	traverse through augmentedMatrix(in REF), column by column, from 
+	the second last column/ last unknown, to assign values row by row starting from the last
+	row of the output
+		a.if pivot, set orginal entry at output[currentRow][currentCol] = constantOfTheEquation 
+		create var ans and set it to the original value in the matrix, assign value entry by entry forward on the current row,
+		starting from constant term(using currentOuputCol to traverse through). when assigning each value of output 
+		at (currentOutPutRow,currentOutputCol), traverse through all unknowns after the pivot point on 
+		the same row in the augmented matrix. 
+		b. if non-pivot, simply replace output[currentRow][currentArbitrayCol] = 1
+	*/
+	var matrix = duplicate(augmentedMatrix)
+	var m = matrix.length;
+	var n = matrix[0].length;
+
+	var vectorsProperty = findPivots(matrix);
+
+	// if last column is pivot, alert inconsistent and return an empty 2d array/matrix with m rows
+	if (vectorsProperty[n - 1][1]) {
+		alert("inconsistent linear system!");
+		return setMatrix(m);
+	}
+
+	var numOfNonPivotCols = 0;
+	/* 1d array where each index stores pivot coordinate of the corresp column if any */
+	var coordinates = new Array(); 
+	// traverse through each column of the matrix, except the last column 
+	for (var vectorNum = 0; vectorNum < n - 1; vectorNum++) {
+		//increase the numOfNonPivotCols if encountered
+		if (!vectorsProperty[vectorNum][1]) {
+			numOfNonPivotCols++;
+		}
+		coordinates.push(vectorsProperty[vectorNum][2]);
+	}
+	
+	// (n -1) * (numOfNonPivotCols + 1) output matrix,with all entries 0.
+	var numRowsOfOutput = n - 1;
+	var numColsOfOutput = numOfNonPivotCols + 1;
+	var out = setZeroMatrix(numRowsOfOutput, numColsOfOutput);
+	// state indicating current arbitaray number assigned so far, initialize to the last column of output matrix 
+	var currentArbitrayCol = numOfNonPivotCols;
+
+	/* assign values into the output matrix,starting from the last row of output matrix/ second last column of augmentedMatrix,
+	For each row, assign entry by entry rightwards, starting from the constant entry.
+	*/
+	for (var currentRow = numRowsOfOutput - 1; currentRow >= 0; currentRow--) {
+		var currentPivot = coordinates[currentRow];
+		if (currentPivot.r == -1) {
+			// if non -pivot, assign 1 
+			out[currentRow][currentArbitrayCol] = 1;
+			currentArbitrayCol--;
+		} else {
+			// if pivot, initialize the constant term of the currentRow to the RHS value of the augmented matrix.
+			out[currentRow][0] = matrix[currentPivot.r][n - 1];
+			for (var currentCol = 0; currentCol < numColsOfOutput; currentCol++) {
+				// a state storing the value to be assigned at the current entry
+				var ans = out[currentRow][currentCol];
+				// minus off the components from other unknowns after the pivot
+				for (var augMatrixCol = currentPivot.c + 1; augMatrixCol < n - 1; augMatrixCol++) {
+					ans -= matrix[currentPivot.r][augMatrixCol] * out[augMatrixCol][currentCol];
+				}
+				ans /= matrix[currentPivot.r][currentPivot.c];
+				out[currentRow][currentCol] = ans;
+			}
+		}
+		
+	}
+
+	return out;
+} 
+
+
 /* 
 precond: matrix: m*n matrix
 postCond: returning a 2d m*k matrix indicating k column vectors that span the Column space of the matrix. 
@@ -317,6 +422,8 @@ function findColumnSpace(M){
 	}   
 	return outputMatrix;
 }
+
+
 
 /* 
 precond: m*n matrix
@@ -532,6 +639,9 @@ function findRestrictedRange(matrix,Vectors) {
 	return outputMatrix;
 }
 
+
+
+
 /* precond: 1 row vector (3 element array)
    postcond: length of the vector */
 function vectorLength(vector) {
@@ -562,6 +672,10 @@ function getUnitVector(vector) {
 
     return scaledUnitVector;
 }
+
+
+
+/*--------------------------- for R^3 space-------------------------------- */
 
 /* precond: 2 row vectors (each vector is a 3 element array)
    postcond: 1 vector that is orthogonal to both the given vectors, in a 3 element array */
@@ -743,3 +857,5 @@ function printCartesianEqn(cartesianCoeffs) {
     currentEqn = currentEqn + "= " + cartesianCoeffs[3] + "\\]";
     return currentEqn;
 }
+
+
