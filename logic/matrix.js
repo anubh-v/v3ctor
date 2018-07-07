@@ -87,10 +87,10 @@ function shiftColumn(matrix) {
 	}
 }
 // return kth column of m*n matrix M as a 1d array
-function getCol(M,k){
+function getCol(matrix,k){
 	var outArr = new Array();
-	for (var i = 0; i < m.length; i++) {
-		outArr.push(M[i][k]);
+	for (var i = 0; i < matrix.length; i++) {
+		outArr.push(matrix[i][k]);
 	}
 	return outArr;
 }
@@ -318,8 +318,7 @@ function guassJordanElimination(matrix) {
 /*
 precond: augmentedMatrix: m*n matrix(2d array)
 postcond:
-  
-	case1: last col pivot col --> alert inconsistent.
+	case1: last col pivot col --> alert inconsistent, output an empty matrix
 	case2: else output a r*c matrix: 1st column as the point 
 		and subsequent columns as direction vectors(or coordinates wrt a 
 		particular arbitrary value). When all columns are pivot columns except the 

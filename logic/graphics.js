@@ -182,6 +182,13 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
   return sprite;
 }
 
+/* function enlarging the object by a certain factor */
+function scale(mesh, factor) {
+  mesh.scale.x *= factor;
+  mesh.scale.y *= factor;
+  mesh.scale.z *= factor;
+}
+
 
 /*------------------VECTOR GRAPHICS-------------------------------*/
 
@@ -198,6 +205,13 @@ function createVector(x,y,z,origin,hex) {
   return arrowHelper;
 }
 
+/* plot one vector onto a particular container in the canvas
+ and return reference to the 3d graphicObj*/
+function drawOneVector(x,y,z,hex, container) {
+  var graphic = createVector(x,y,z,new THREE.Vector3(0,0,0),hex);
+  container.add(graphic);
+  return graphic;
+}
 
 /* read the vectorlist and draw the vectors on the grid */
 function drawAllVectors(vectorQueue) {
@@ -225,7 +239,7 @@ function drawAllVectors(vectorQueue) {
 
 // function creating a line graphic spanned by the vector 
 // vector: vector wrapped in Vector3 object; scale: the upper bound of x,y,z axis 
-function createLine(vector,scale) {
+function createSpannedLine(vector,scale,hex) {
   //var arrow = createVector(vector.getComponent(0),vector.getComponent(1),vector.getComponent(2),new THREE.Vector3( 0, 0, 0 ),0x000000);
   var vectorMaxLength = Math.sqrt(scale * scale * 3); 
   var scaleFactor = vectorMaxLength / (vector.length());  
@@ -236,7 +250,7 @@ function createLine(vector,scale) {
       endPt1,
       endPt2
       );
-  var material = new THREE.LineBasicMaterial({ color: 0xb38600, linewidth: 5 });
+  var material = new THREE.LineBasicMaterial({ color: hex, linewidth: 5 });
   var line = new THREE.Line(geometry, material);
 
   var allObj = new THREE.Object3D();
@@ -246,22 +260,13 @@ function createLine(vector,scale) {
 }
 
 //function creating a plane graphic  passing through the origin 
-function createPlane(v1,v2,sizeOfPlane,color) {
+function createSpannedPlane(v1,v2,sizeOfPlane,color) {
   // unit vector perpendicular to the plane
   var normal = v1.cross(v2).normalize();
   //note that distance of plane from origin is always 0 since it passes through orgin
   var plane = new THREE.Plane( new THREE.Vector3(normal.getComponent(0), normal.getComponent(1), normal.getComponent(2) ), 0 );
   var obj = new THREE.Object3D();
   var planeHelper = new THREE.PlaneHelper( plane, sizeOfPlane, color );
-  /*
-  var V1 = createVector(
-    v1.getComponent(0),v1.getComponent(1),v1.getComponent(2),
-    new THREE.Vector3(0,0,0), 0x000000);
-  var V2 = createVector(
-    v2.getComponent(0),v2.getComponent(1),v2.getComponent(2),
-    new THREE.Vector3(0,0,0), 0x000000);
-  obj.add(V1);
-  obj.add(V2);*/
   obj.add(planeHelper);
   return obj;
 }
@@ -313,13 +318,6 @@ function lc(a,b,v1,v2) {
   return allObjects;
 }
 
-/* plot one vector onto a particular container in the canvas
- and return reference to the 3d graphicObj*/
-function drawOneVector(x,y,z,hex, container) {
-  var graphic = createVector(x,y,z,new THREE.Vector3(0,0,0),hex);
-  container.add(graphic);
-  return graphic;
-}
 
 /*
 precond: 1. m: 3 * n matrix of n LI column vectors, where  1<= n <= 3
@@ -338,7 +336,7 @@ function drawSpan(m,container) {
     var y = m[1][0];
     var z = m[2][0];
     var v = createVector(x,y,z,new THREE.Vector3(0,0,0),0xff0066);
-    var line = createLine(new THREE.Vector3(x,y,z),36);
+    var line = createSpannedLine(new THREE.Vector3(x,y,z),36,0xb38600);
     arr.push(line);
     arr.push(v);
     obj.add(line);
@@ -353,7 +351,7 @@ function drawSpan(m,container) {
     var x2 = m[0][1];
     var y2 = m[1][1];
     var z2 = m[2][1];
-    var plane = createPlane(
+    var plane = createSpannedPlane(
         new THREE.Vector3(x1,y1,z1),
         new THREE.Vector3(x2,y2,z2),
         100,0xb38600
@@ -396,11 +394,80 @@ function drawSpan(m,container) {
   return arr;
 }
 
-/* function enlarging the object by a certain factor */
-function scale(mesh, factor) {
-  mesh.scale.x *= factor;
-  mesh.scale.y *= factor;
-  mesh.scale.z *= factor;
+/*-------------------------------Plotter graphics ------------------------------------ */
+/*
+precond: pointMatrix: 3*1 array
+postcond: return a Points object
+*/
+function pointPlotter(pointMatrix) {
+  var sizeOfPoint = 1.0;
+  var hex = 0xf45641;
+  var geometry = new THREE.Geometry();
+  var material = new THREE.PointsMaterial({ color: hex, size: sizeOfPoint});
+  var vector = new THREE.Vector3();
+  vector.x = pointMatrix[0][0];
+  vector.y = pointMatrix[1][0];
+  vector.z = pointMatrix[2][0];
+  geometry.vertices.push(vector);
+  var point = new THREE.Points(geometry,material);
+  return point;
+}
+
+/*
+precond: lineMatrix: 3*2 array
+postcond:
+method1: plot a line through origin and then translate position by the postion vector
+method2: determine 2 points on the line by a suitabel proportion
+*/
+function linePlotter(lineMatrix) {
+  var scaleOfAxis = 50; 
+  var hex = 0xb38600;
+  // find point and direction as 3-elements 1d array
+  var positionV = getCol(lineMatrix,0);
+  var directionV = getCol(lineMatrix,1);
+  var spannedLine = createSpannedLine(
+                      new THREE.Vector3(directionV[0],directionV[1],directionV[2]),
+                      scaleOfAxis,hex);
+  // traverse the spannedline by the position vector
+  spannedLine.position.set(positionV[0],positionV[1],positionV[2]);
+  return spannedLine;
+}
+
+
+/*
+precond: unitNormal: 1d array with 3 elements; 
+postcond: return a planehelper described by the parameters
+*/
+function planePlotTemp(unitNormal, perpDistanceFromOrigin, sizeOfPlane, color) {
+    var plane = new THREE.Plane(
+                new THREE.Vector3(unitNormal[0],unitNormal[1],unitNormal[2]),
+                perpDistanceFromOrigin
+                );
+    var helper = new THREE.PlaneHelper(plane, sizeOfPlane, color);
+    return helper;
+}
+
+/*
+precond: planeMatrix: 3*3 array
+postcond: return a planehelper described by the parameters
+method1: create a subspace using createSpannedPlane() and then translate accordingly
+*/
+function planePlotter(planeMatrix) {
+  var hex = 0xb38600;
+  var sizeOfPlane = 100;
+  // 3 1d arrays with 3 elements each.
+  var positionV =  getCol(planeMatrix,0);
+  var directionV1 = getCol(planeMatrix,1);
+  var directionV2 = getCol(planeMatrix,2);
+
+  var spannedPlane = createSpannedPlane(
+                      new THREE.Vector3(directionV1[0],directionV1[1],directionV1[2]),
+                      new THREE.Vector3(directionV2[0],directionV2[1],directionV2[2]),
+                      sizeOfPlane, hex
+                     );
+  spannedPlane.position.set(positionV[0],positionV[1],positionV[2]);
+  return spannedPlane;                    
+
 }
 
 
@@ -413,35 +480,56 @@ case1: return empty outputObj,i.e outputObj.children.length ==0
 case2: return outputObj containing cube 
 case 3: return outputObj containing plane 
 */
-function createObj3DFromCartesian(coefficients,size,color) {
+function createObj3DFromCartesian(coefficients) {
   var outputObj = new THREE.Object3D();
 
   if (coefficients[0] == 0 && coefficients[1] == 0 &&coefficients[2] == 0) {
     if (coefficients[3] != 0) {
       alert("invalid cartesianEquation input!");
     } else {
-      outputObj.push(createCube()); 
+      outputObj.add(createCube()); 
     }
     return outputObj;
   }
+  var sizeOfPlane = 100;
+  var hex = 0xb38600;
   var normal = [coefficients[0],coefficients[1],coefficients[2]];
   var unitNormal = getUnitVector(normal);
   var perpDistanceFromOrigin = -1 * coefficients[3] / vectorLength(normal);
 
-  var plane = new THREE.Plane(
-                new THREE.Vector3(unitNormal[0],unitNormal[1],unitNormal[2]),
-                perpDistanceFromOrigin
-                );
-  var helper = new THREE.PlaneHelper(plane, sizeOfPlane, color);
-  outputObj.push(helper);
+  var helper = planePlotTemp(unitNormal, perpDistanceFromOrigin, sizeOfPlane, hex);
+  outputObj.add(helper);
+ 
   return outputObj;
 }
 
+function createObj3DFromCartesianTemp(coefficients) {
+  // wrap it in 2d array as augmented matrix
+  var augmentedMatrix = [coefficients];
+  return createObjFromLinearSystem(augmentedMatrix);
+}
 /*
-precond: augmentedMatrix: m*n matrix representing a system of linear equations
+precond: augmentedMatrix: m*4 matrix representing a system of linear equations with 3 unknowns
+each row is a cartesian equation.
 postcond: returning Object3D from a linear system represented by the augmentedMatrix
+case1: inconsistent linear system, no real solution, output an empty Object3D 
+case2: consistent 
+        case1.1: unique solution/ a point, i.e. no nonPivotCol among 1st 3 columns 
+        case2.2: line ,i.e 1 nonPivotColumns among 1st 3 columns 
+        case2.3: plane, i.e. 2 nonPivotColumns among 1st 3 columns 
+        case2.4: cube, i.e 3 nonPivotColumns among 1st 3 columns 
 */
 function createObjFromLinearSystem(augmentedMatrix) {
   let outputObj = new THREE.Object3D();
+  let solutions = solveAugmentedMatrix(augmentedMatrix);
+
+  // case where linear system is inconsistent 
+  if (solutions[0].length == 0) {
+    alert("inconsistent, no real solution!");
+    return outputObj;
+  }
+
+
+  return outputObj;
 
 }
