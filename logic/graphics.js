@@ -224,7 +224,7 @@ function drawAllVectors(vectorQueue) {
 
     var currentVectorObj = vectorQueue[i];
     var vector = createVector(currentVectorObj.xCoord.value, currentVectorObj.yCoord.value, currentVectorObj.zCoord.value,
-        new THREE.Vector3(0,0,0),0xff0066);
+        new THREE.Vector3(0,0,0), getRandomColour());
     
     /* Store the created threeJS object into the vector object in the Queue [to facilitate deletion of vectors] */
     vectorQueue[i].graphic = vector;
