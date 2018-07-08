@@ -5,7 +5,7 @@
    returns a reference to the created text inputBox */
 function makeInputBox(inputType) {
   
-  var inputBox = document.createElement("INPUT");
+  const inputBox = document.createElement("INPUT");
   inputBox.setAttribute("type", inputType );
 
   return inputBox;
@@ -14,7 +14,7 @@ function makeInputBox(inputType) {
 /* used to create a div element */
 function makeDiv(type) {
   
-  var container = document.createElement("div");
+  const container = document.createElement("div");
   container.className = type;
 
   return container;
@@ -23,7 +23,7 @@ function makeDiv(type) {
 /* used to create a SemanticUI textbox*/
 function makeTextBox() {
   
-  var container = makeDiv("ui input");
+  const container = makeDiv("ui input");
   container.appendChild(makeInputBox("text"));
   return container;
 
@@ -32,8 +32,8 @@ function makeTextBox() {
 /* used to create a SemanticUI checkbox */
 function makeCheckBox() {
   
-  var container = makeDiv("ui checkbox");
-  var emptyLabel = document.createElement("label");
+  const container = makeDiv("ui checkbox");
+  const emptyLabel = document.createElement("label");
   container.appendChild(makeInputBox("checkbox"));
   container.appendChild(emptyLabel);
   return container;
@@ -51,23 +51,23 @@ function enableTextBox(textBox) {
 }
 
 /* register event handlers */
-var resetCameraBtn = document.getElementById("resetCameraButton");
+const resetCameraBtn = document.getElementById("resetCameraButton");
 resetCameraBtn.onclick = () => {
 
     setGrid();
     controls.reset();
 };
 
-var rotateGridXBtn = document.getElementById("rotateXButton");
-var rotateGridYBtn = document.getElementById("rotateYButton");
-var rotateGridZBtn = document.getElementById("rotateZButton");
+const rotateGridXBtn = document.getElementById("rotateXButton");
+const rotateGridYBtn = document.getElementById("rotateYButton");
+const rotateGridZBtn = document.getElementById("rotateZButton");
 
 rotateGridXBtn.onclick = rotateX;
 rotateGridYBtn.onclick = rotateY;
 rotateGridZBtn.onclick = rotateZ;
 
 function rotateX() {
-    var rotateFunc = () => rotateGrid("x");
+    const rotateFunc = () => rotateGrid("x");
     renderQueue.unshift(rotateFunc);
 
     rotateGridXBtn.removeEventListener("onclick", rotateX);
@@ -84,7 +84,7 @@ function rotateX() {
 
 function rotateY() {
     
-    var rotateFunc = () => rotateGrid("y");
+    const rotateFunc = () => rotateGrid("y");
     renderQueue.unshift(rotateFunc);
 
     rotateGridYBtn.removeEventListener("onclick", rotateY);
@@ -101,7 +101,7 @@ function rotateY() {
 
 function rotateZ() {
     
-    var rotateFunc = () => rotateGrid("z");
+    const rotateFunc = () => rotateGrid("z");
     renderQueue.unshift(rotateFunc);
 
     rotateGridZBtn.removeEventListener("onclick", rotateZ);
@@ -129,10 +129,11 @@ function rotateZ() {
 function createCartesianEqnLabel(basisMatrix) {
     
     /* identify number of basis vectors */
-    let numVectors = basisMatrix[0].length;
+    const numVectors = basisMatrix[0].length;
     
     /* create a <h2> element */
-    let equationElement = document.createElement("h2");
+    const equationElement = document.createElement("h2");
+    
     if (numVectors === 0) {
     	/* case where it is a zero space */
     	equationElement.textContent = "\\[x = 0, y = 0, z = 0\\]";
@@ -145,15 +146,15 @@ function createCartesianEqnLabel(basisMatrix) {
            'planeVectorToCartesian' function in matrix.js */
 
         /* extract both basis vectors for the given matrix */
-        let vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
-        let vectorB = [basisMatrix[0][1], basisMatrix[1][1], basisMatrix[2][1]];
+        const vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
+        const vectorB = [basisMatrix[0][1], basisMatrix[1][1], basisMatrix[2][1]];
 
         /* since this plane is a span, the origin is one point that lies on the plane */
-        let pointOnPlane = [0, 0, 0];
+        const pointOnPlane = [0, 0, 0];
 
         /* 'planeVectorToCartesian' returns the coefficients of the plane's cartesian eqn,
            given the plane's 2 direction vectors and a point on the plane */
-        let cartesianCoeffs = planeVectorToCartesian(vectorA, vectorB, pointOnPlane);
+        const cartesianCoeffs = planeVectorToCartesian(vectorA, vectorB, pointOnPlane);
 
         /* add the equation text to the equation <h2> element */
         equationElement.textContent = printCartesianEqn(cartesianCoeffs);
@@ -161,10 +162,10 @@ function createCartesianEqnLabel(basisMatrix) {
 
         /* if the subspace is a line, pass 1 basis vector and the origin into the 
            'lineVectorToCartesian' function in matrix.js */
-        let vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
-        let pointOnLine = [0, 0, 0];
+        const vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
+        const pointOnLine = [0, 0, 0];
         
-        let cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnLine);
+        const cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnLine);
 
         /* add the equation text to the equation <h2> element */
         equationElement.textContent = printCartesianEqn(cartesianCoeffs[0]) 
@@ -176,10 +177,75 @@ function createCartesianEqnLabel(basisMatrix) {
 }
 
 
+function getRandomColour() {
+      
+      function getRandomInt(lowerLimit, upperLimit) {
+
+        const randomFloat = Math.random();
+
+        const scaledRandom = ((upperLimit + 1) - lowerLimit)*randomFloat + lowerLimit;
+        return Math.floor(scaledRandom);
+
+      }
+
+  function rgbToHex(red, green, blue) {
+
+    function decimalToHex(decimalNum) {
+
+      const symbolsMap = {
+        "0" : "0",
+        "1" : "1",
+        "2" : "2",
+        "3" : "3",
+        "4" : "4",
+        "5" : "5",
+        "6" : "6",
+        "7" : "7",
+        "8" : "8",
+        "9" : "9",
+        "10" : "a",
+        "11" : "b",
+        "12" : "c",
+        "13" : "d",
+        "14" : "e",
+        "15" : "f"
+      }
+
+      const remainder = decimalNum % 16;
+      const quotient = (decimalNum - remainder) / 16;
+
+      if (quotient < 16) {
+        return symbolsMap[quotient] + symbolsMap[remainder];
+      } else {
+        return decimalToHex(quotient) + symbolsMap[remainder];
+      }
+    }
+    
+    const prelimHex = (decimalToHex(red) + decimalToHex(green) + decimalToHex(blue));
+    return +('0x' + prelimHex);
+  }
+
+  const redGreenFlag = getRandomInt(0, 1);
+  let red = 0;
+  let green = 0;
+  const blue = getRandomInt(0, 200);
+
+  if (redGreenFlag === 1) {
+    red = getRandomInt(200, 255);
+    green = getRandomInt(0, 255);
+  } else {
+    red = getRandomInt(0, 255);
+    green = getRandomInt(200, 255);
+  }
+  
+  return rgbToHex(red, green, blue);
+}
+
+
 /*------------------VECTORS SECTION-------------------------------*/
 
 /* Key variables for the Vectors Tab */
-var numVectors = 0; // storet the number of vectors 
+var numVectors = 0; // store the number of vectors 
 
 var vectorList = []; // store the list of vectors entered by the user
 var checkBoxList = []; // store the list of checkboxes on the Vectors Form
