@@ -484,44 +484,56 @@ function getCheckedVectors(checkBoxList, vectorsList) {
   return m;
 }
 
-/*
-precond: 
-1.vectorsToSpan: m*n matrix consisting of n basis column vectors of the subsp to be spanned
-  0 <= n <= m. i.e. if n == 0 --> zero space; if n == m --> whole vector space
-  note: vectorsToSpan does not contain NaN.
-*/
+/* precond: 
+   1. vectorsToSpan: m*n matrix consisting of n basis column vectors of the subsp to be spanned
+      0 <= n <= m. i.e. if n == 0 --> zero space; if n == m --> whole vector space
+      note: vectorsToSpan does not contain NaN.
+   2. tableBody: the body of the table where details of this span will be placed
+   3. labelDesc: the description that we want for the main label for this span
+   4. spanObj: the object for this span
+
+  postcond:
+  This function does the following:
+    - Sets up the span's table with labels, buttons and label effects
+    - Draws the span graphic on the threejs grid
+    - Adds the span labels and graphic into the span's object */
 function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
-    /* create the current row and two columns */    
+    
+    /* create a header row */    
+    const headerRow = document.createElement("tr");
+    const headerCol = document.createElement("td");
+    headerRow.appendChild(headerCol); 
+    tableBody.appendChild(headerRow);  
+
+    /* create a new row and two columns */    
+    /* one row for the Cartesian Equation, and one for the basis vectors */
     const row = document.createElement("tr");
     row.className = "collapsible";
     const firstCol = document.createElement("td");
     const secondCol = document.createElement("td");
-
     firstCol.style.width = "50%";
     secondCol.style.width = "50%";
 
     row.appendChild(firstCol);
-    row.appendChild(secondCol);
-
-    const headerRow = document.createElement("tr"); 
-    const headerCol = document.createElement("td");
-    tableBody.appendChild(headerRow);   
-    headerRow.appendChild(headerCol); 
+    row.appendChild(secondCol); 
     tableBody.appendChild(row);
 
-    const btn = document.createElement("button");
-    btn.className = "ui circular icon button";
-    btn.appendChild(makeIcon("minus icon"));
-    headerRow.appendChild(btn);
+    /* create a button that will collapse / un-collapse the span information */
+    const collapseBtn = document.createElement("button");
+    collapseBtn.className = "ui circular icon button";
+    collapseBtn.appendChild(makeIcon("minus icon"));
 
+    /* add the button to the header row */
+    headerRow.appendChild(collapseBtn);
 
     /* Create a label that will read "Subp: X", where X is number of the subspace */
     const descriptorLabel = document.createElement("h3");
-    descriptorLabel.innerHTML = labelDesc;
+    descriptorLabel.textContent = labelDesc;
     descriptorLabel.setAttribute("class", "label");
 
     /* Create the Cartesian equation label */
     const cartesianEqnLabel = createCartesianEqnLabel(vectorsToSpan);
+    cartesianEqnLabel.className = "content";
     cartesianEqnLabel.style.transition = "opacity 0.5s";
     
     /* add labels into the HTML page */    
@@ -534,7 +546,6 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 		alert("a zero space!");
 		return;
 	}
-
 
     /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
     "drawSpan" also returns an array containing the ref to the graphics representing the span
@@ -594,10 +605,15 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
     spanObj.subsp = subspObj;
     spanObj.basisVectors = basisVectors;
+   
 
-    const rowHeight = row.scrollHeight;    
+    /* At this point, the labels, cartesian equation and graphic
+       have been added onto the webpage. Now, we need to make the span info
+       collapsible */
 
-    btn.onclick = () => {
+    const rowHeight = row.scrollHeight; 
+
+    collapseBtn.onclick = () => {
       if(row.style.height !== "0px") {
         cartesianEqnLabel.style.opacity = "0";
         vlabelContainer.style.opacity = "0";
@@ -607,7 +623,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
           vlabelContainer.style.display = "none";
           row.style.height = row.scrollHeight;
           row.style.height = "0px";
-          btn.children[0].className = "plus icon";
+          collapseBtn.children[0].className = "plus icon";
         }, 400);
 
       } else {
@@ -618,7 +634,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
           vlabelContainer.style.display = "";
           cartesianEqnLabel.style.opacity = "1";
           vlabelContainer.style.opacity = "1";
-          btn.children[0].className = "minus icon";
+          collapseBtn.children[0].className = "minus icon";
          }, 1200);
       }
     };
