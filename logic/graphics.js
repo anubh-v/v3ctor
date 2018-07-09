@@ -29,6 +29,8 @@ var spanGraphics = new THREE.Object3D;
  related to the matrices section */
 var matricesGraphics = new THREE.Object3D;
 
+let equationGraphics = new THREE.Object3D;
+
 function onMouseMove(event) {
 
 	// calculate mouse position in normalized device coordinates
@@ -86,6 +88,7 @@ function init() {
   axes.add(allObjects);
   axes.add(spanGraphics);
   axes.add(matricesGraphics);
+  axes.add(equationGraphics);
   setGrid();
   scene.add(axes);
 
@@ -492,7 +495,7 @@ function createObj3DFromCartesian(coefficients) {
     return outputObj;
   }
   var sizeOfPlane = 100;
-  var hex = 0xb38600;
+  var hex = getRandomColour();
   var normal = [coefficients[0],coefficients[1],coefficients[2]];
   var unitNormal = getUnitVector(normal);
   var perpDistanceFromOrigin = -1 * coefficients[3] / vectorLength(normal);
