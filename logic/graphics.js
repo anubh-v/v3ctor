@@ -335,8 +335,8 @@ function drawSpan(m,container) {
     var x = m[0][0];
     var y = m[1][0];
     var z = m[2][0];
-    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),0xff0066);
-    var line = createSpannedLine(new THREE.Vector3(x,y,z),36,0xb38600);
+    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),getRandomColour());
+    var line = createSpannedLine(new THREE.Vector3(x,y,z),36,getRandomColour());
     arr.push(line);
     arr.push(v);
     obj.add(line);
@@ -354,10 +354,10 @@ function drawSpan(m,container) {
     var plane = createSpannedPlane(
         new THREE.Vector3(x1,y1,z1),
         new THREE.Vector3(x2,y2,z2),
-        100,0xb38600
+        100,getRandomColour()
         )
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0xff0066);
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0xff0066);
+    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
+    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
     arr.push(plane);
     arr.push(v1);
     arr.push(v2);
@@ -376,9 +376,9 @@ function drawSpan(m,container) {
     var y3 = m[1][2];
     var z3 = m[2][2];
     var cube = createCube();
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),0xff0066);
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),0xff0066);
-    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),0xff0066);
+    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
+    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
+    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),getRandomColour());
     arr.push(cube);
     arr.push(v1);
     arr.push(v2);
