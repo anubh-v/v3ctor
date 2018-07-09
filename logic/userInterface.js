@@ -40,6 +40,16 @@ function makeCheckBox() {
 
 }
 
+/* used to create a SemanticUI icon element
+   The icon to be created can be specified by passing 
+   a string 'iconClass' into the function */
+function makeIcon(iconClass) {
+    
+    const icon = document.createElement("i");
+    icon.className = iconClass;
+    return icon;
+}
+
 /* Given an enabled Semantic UI textbox, this function disables it */
 function disableTextBox(textBox) {
     textBox.className = "ui disabled input";
@@ -131,8 +141,8 @@ function createCartesianEqnLabel(basisMatrix) {
     /* identify number of basis vectors */
     const numVectors = basisMatrix[0].length;
     
-    /* create a <h2> element */
-    const equationElement = document.createElement("h2");
+    /* create a <h3> element */
+    const equationElement = document.createElement("p");
     
     if (numVectors === 0) {
     	/* case where it is a zero space */
@@ -172,7 +182,7 @@ function createCartesianEqnLabel(basisMatrix) {
                                       + " " + printCartesianEqn(cartesianCoeffs[1]);
     }
     
-    /* return the <h2> element */
+    /* return the <h3> element */
     return equationElement;
 }
 
@@ -228,7 +238,7 @@ function getRandomColour() {
   const redGreenFlag = getRandomInt(0, 1);
   let red = 0;
   let green = 0;
-  const blue = getRandomInt(0, 200);
+  const blue = getRandomInt(0, 150);
 
   if (redGreenFlag === 1) {
     red = getRandomInt(200, 255);
@@ -445,12 +455,10 @@ function addLabelEffects(labelElement, graphic) {
     // depending on the type of subp, changing the states of material of line, plane, or cube
     // when mouse move over the label
     labelElement.onmouseover = () => {
-      console.log("enlarged");
       scale(graphic,2);
     };
 
     labelElement.onmouseleave = () => {
-      console.log("smallened");
       scale(graphic,0.5);
     };
 }
@@ -485,28 +493,40 @@ precond:
 function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     /* create the current row and two columns */    
     const row = document.createElement("tr");
+    row.className = "collapsible";
     const firstCol = document.createElement("td");
     const secondCol = document.createElement("td");
-    tableBody.appendChild(row);
+
+    firstCol.style.width = "50%";
+    secondCol.style.width = "50%";
+
     row.appendChild(firstCol);
     row.appendChild(secondCol);
 
-    /* Create the label for this subspace */
-    /* First, create an overall container for the labels */
-    const subspLabel = document.createElement("div");
+    const headerRow = document.createElement("tr"); 
+    const headerCol = document.createElement("td");
+    tableBody.appendChild(headerRow);   
+    headerRow.appendChild(headerCol); 
+    tableBody.appendChild(row);
+
+    const btn = document.createElement("button");
+    btn.className = "ui circular icon button";
+    btn.appendChild(makeIcon("minus icon"));
+    headerRow.appendChild(btn);
+
 
     /* Create a label that will read "Subp: X", where X is number of the subspace */
-    const descriptorLabel = document.createElement("h2");
+    const descriptorLabel = document.createElement("h3");
     descriptorLabel.innerHTML = labelDesc;
     descriptorLabel.setAttribute("class", "label");
 
     /* Create the Cartesian equation label */
     const cartesianEqnLabel = createCartesianEqnLabel(vectorsToSpan);
+    cartesianEqnLabel.style.transition = "opacity 0.5s";
     
     /* add labels into the HTML page */    
-    subspLabel.appendChild(descriptorLabel);
-    subspLabel.appendChild(cartesianEqnLabel);
-    firstCol.appendChild(subspLabel);
+    headerCol.appendChild(descriptorLabel);
+    firstCol.appendChild(cartesianEqnLabel);
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
     
     // if it's a zero space, alert and return the function straight away
@@ -528,7 +548,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
     /* Wrap the graphic and labels in a subspace object */
     const subspObj = {
-      label: subspLabel,
+      label: cartesianEqnLabel,
       graphic: subspGraphic
     };
 
@@ -540,6 +560,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     const vlabels = [];
     const vgraphics = [];
     const vlabelContainer = document.createElement("div");
+    vlabelContainer.style.transition = "opacity 0.5s";
 
     /* Traverse across arr  to setup the graphic and label 
        for each basis vector */
@@ -552,7 +573,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
       const y = vectorsToSpan[1][i-1];
       const z = vectorsToSpan[2][i-1];
 
-      const vLabel = document.createElement("h2");
+      const vLabel = document.createElement("h3");
       vLabel.setAttribute("class", "label");
       vLabel.innerHTML = 
         "Vector" + i + ": (" + x + ", " 
@@ -574,6 +595,33 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     spanObj.subsp = subspObj;
     spanObj.basisVectors = basisVectors;
 
+    const rowHeight = row.scrollHeight;    
+
+    btn.onclick = () => {
+      if(row.style.height !== "0px") {
+        cartesianEqnLabel.style.opacity = "0";
+        vlabelContainer.style.opacity = "0";
+        
+        setTimeout(() => {
+          cartesianEqnLabel.style.display = "none";
+          vlabelContainer.style.display = "none";
+          row.style.height = row.scrollHeight;
+          row.style.height = "0px";
+          btn.children[0].className = "plus icon";
+        }, 400);
+
+      } else {
+        row.style.height = "" + rowHeight + "px";
+
+        setTimeout(() => {
+          cartesianEqnLabel.style.display = "";
+          vlabelContainer.style.display = "";
+          cartesianEqnLabel.style.opacity = "1";
+          vlabelContainer.style.opacity = "1";
+          btn.children[0].className = "minus icon";
+         }, 1200);
+      }
+    };
 }
 
 
@@ -742,7 +790,7 @@ function columnSpaceButnhelper(){
   }
   var display = document.getElementById("matricesTableBody");
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findColumnSpace(currentMatrix), display, "columnSpace", matricesObj.columnSpace);
+  generalSpanHelper(findColumnSpace(currentMatrix), display, "Column Space", matricesObj.columnSpace);
 }
 
 
@@ -761,7 +809,7 @@ function nullSpaceButnhelper(){
   }
   var display = document.getElementById("matricesTableBody");
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findNullSpace(currentMatrix), display, "nullSpace", matricesObj.nullSpace);
+  generalSpanHelper(findNullSpace(currentMatrix), display, "Null Space", matricesObj.nullSpace);
 }
 
 
@@ -868,6 +916,6 @@ function eigenSpaceBtnHelper(valueObj) {
 
   var vectorsToSpan = findEigenSpace(M,eigenValue);
   // adding labels and graphics to fields subsp and basisVectors of subspObj
-  generalSpanHelper(vectorsToSpan,display, "EigenSpace", subspObj);
+  generalSpanHelper(vectorsToSpan,display, "Eigenspace", subspObj);
 }
 
