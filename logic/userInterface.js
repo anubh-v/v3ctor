@@ -935,3 +935,76 @@ function eigenSpaceBtnHelper(valueObj) {
   generalSpanHelper(vectorsToSpan,display, "Eigenspace", subspObj);
 }
 
+/*------------------PLOTTER SECTION-------------------------------*/
+
+/* register event handlers */
+const addEqnBtn = document.getElementById("addEqnBtn");
+addEqnBtn.onclick = drawEqn;
+
+
+/* global variables */
+let numEqns = 0;
+let eqnList = [];
+let eqnCheckList = [];
+
+function drawEqn() {
+
+  numEqns++;    
+    
+  // get a reference to the plotter display table body
+  const eqnTableBody = document.getElementById("eqnTableBody");
+
+  const xCoeff = document.getElementById("xCoeff").value;
+  const yCoeff = document.getElementById("yCoeff").value;
+  const zCoeff = document.getElementById("zCoeff").value;
+  const dConstant = document.getElementById("dConstant").value;
+  const cartesianCoeffs = [xCoeff, yCoeff, zCoeff, dConstant];
+
+  const vectors = cartesianToVector(cartesianCoeffs);
+
+  const graphic = createObj3DFromCartesian(cartesianCoeffs);
+  equationGraphics.add(graphic);
+
+  const headerRow = document.createElement("tr");
+  const headerCol = document.createElement("td");
+  headerRow.appendChild(headerCol);
+  eqnTableBody.appendChild(headerRow);
+
+  const descriptorLabel = document.createElement("p");
+  descriptorLabel.textContent = "Equation " + numEqns;
+  descriptorLabel.className = "label";
+  addLabelEffects(descriptorLabel, graphic);
+  headerCol.appendChild(descriptorLabel);
+
+  const collapseButton = document.createElement("button");
+  collapseButton.className = "ui circular icon button";
+  collapseButton.appendChild(makeIcon("minus icon"));
+  headerRow.appendChild(collapseButton);
+
+  const intersectCheckBox = makeCheckBox();
+  headerRow.appendChild(intersectCheckBox);
+
+  const row = document.createElement("tr");
+  const firstCol = document.createElement("td");
+  const secondCol = document.createElement("td");
+  firstCol.style.width = "50%";
+  secondCol.style.width = "50%";
+
+  row.appendChild(firstCol);
+  eqnTableBody.appendChild(row);
+
+  const cartesianEqnLabel = document.createElement("p");
+  cartesianEqnLabel.textContent = printCartesianEqn(cartesianCoeffs);
+  firstCol.appendChild(cartesianEqnLabel);
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]); 
+
+  const vectorLabels = document.createElement("p");
+  vectorLabels.textContent = "vector labels placeholder";
+  secondCol.appendChild(vectorLabels);
+
+
+}
+
+
+
+
