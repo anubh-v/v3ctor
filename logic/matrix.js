@@ -1,3 +1,4 @@
+/*---------------------------for R^n space-------------------------------- */
 /*
 rounding off the number to closest integer if the number is very close to an integer.
 */
@@ -41,6 +42,17 @@ function setMatrix(numRows) {
 	return matrix;
 }
 
+// return an m*n matrix with all zero entries
+function setZeroMatrix(m,n) {
+	var out = setMatrix(m);
+	for (var i = 0; i < m; i++) {
+		for (var j = 0; j < n; j++) {
+			out[i][j] = 0;
+		}
+	}
+	return out;
+}
+
 // return a duplicate of matrix
 function duplicate(matrix) {
 	var numRows = matrix.length;
@@ -53,7 +65,7 @@ function duplicate(matrix) {
 	}
 	return outputMatrix;
 }
-//function mutating matrix by appending another column vector to the existing m*n matrix consisting of n column vectors
+//function mutating matrix by appending a row vector to the existing m*n matrix consisting of n column vectors
 // matrix: 2d array m*n, colVector: 1d array 1 * m
 function appendColumn(matrix, colVector) {
 	for (var row = 0; row < matrix.length; row++ ) {
@@ -68,11 +80,17 @@ function appendMatrix(m1,m2) {
 		}
 	}
 }
+// function mutating a m * n matrix by removing its first column 
+function shiftColumn(matrix) {
+	for (var row = 0; row < matrix.length; row++) {
+		matrix[row].shift();
+	}
+}
 // return kth column of m*n matrix M as a 1d array
-function getCol(M,k){
+function getCol(matrix,k){
 	var outArr = new Array();
-	for (var i = 0; i < m.length; i++) {
-		outArr.push(M[i][k]);
+	for (var i = 0; i < matrix.length; i++) {
+		outArr.push(matrix[i][k]);
 	}
 	return outArr;
 }
@@ -221,7 +239,7 @@ function findPivots(matrix){
 	var output = new Array();
 	// row:= each row of the output array = each column vector of the original matrix
 	for (var row = 0; row < numCols; row++) {
-		// each row is another array with two indices, initialize all columns to be non- pivot, and the pivot points to be a dummy (-1,-1) 
+		// each row is another array with three indices, initialize all columns to be non- pivot, and the pivot points to be a dummy (-1,-1) 
 		output[row] = [new Array(),false, {r: -1, c: -1}];
 		// record the column vectors in the output matrix 
 		for (var i = 0; i < numRows; i++ ) {
@@ -297,6 +315,98 @@ function guassJordanElimination(matrix) {
 } 
 
 
+/*
+precond: augmentedMatrix: m*n matrix(2d array)
+postcond:
+	case1: last col pivot col --> alert inconsistent, output an empty matrix
+	case2: else output a r*c matrix: 1st column as the point 
+		and subsequent columns as direction vectors(or coordinates wrt a 
+		particular arbitrary value). When all columns are pivot columns except the 
+		last column, c= 1 --> the solution is a point/ unique solution.
+note: for linear equations with 3 unknowns(x,y,z), no of col of augmented
+matrix = 4. output: if the augmented is consistent, output a 3*c matrix. 
+cases: c == 1 --> a point, c == 2 --> a line, c == 3 --> a plane, c = 4	--> the whole space
+*/
+function solveAugmentedMatrix(augmentedMatrix) {
+	/*
+	1. duplicate matrix, apply guassian elimination and findPivots 
+	2. based on 1. traverse to get numOfNonPivotColumns and coordinates(array where each index
+	correp to column number of the column vector, if pivot, return the coordiate of the pivot, else
+	return {r:-1,c:-1})
+	3. check if last column pivot column, if so, alert and return 
+	4. else, create an output k * j matrix, where k = numUnkowns, j = 1 + numNonPivotColumns; 
+	set up a state storing the currentCol of arbitraryNum, 
+	traverse through augmentedMatrix(in REF), column by column, from 
+	the second last column/ last unknown, to assign values row by row starting from the last
+	row of the output
+		a.if pivot, set orginal entry at output[currentRow][currentCol] = constantOfTheEquation 
+		create var ans and set it to the original value in the matrix, assign value entry by entry forward on the current row,
+		starting from constant term(using currentOuputCol to traverse through). when assigning each value of output 
+		at (currentOutPutRow,currentOutputCol), traverse through all unknowns after the pivot point on 
+		the same row in the augmented matrix. 
+		b. if non-pivot, simply replace output[currentRow][currentArbitrayCol] = 1
+	*/
+	var matrix = duplicate(augmentedMatrix)
+	var m = matrix.length;
+	var n = matrix[0].length;
+
+	var vectorsProperty = findPivots(matrix);
+
+	// if last column is pivot, alert inconsistent and return an empty 2d array/matrix with m rows
+	if (vectorsProperty[n - 1][1]) {
+		alert("inconsistent linear system!");
+		return setMatrix(m);
+	}
+
+	var numOfNonPivotCols = 0;
+	/* 1d array where each index stores pivot coordinate of the corresp column if any */
+	var coordinates = new Array(); 
+	// traverse through each column of the matrix, except the last column 
+	for (var vectorNum = 0; vectorNum < n - 1; vectorNum++) {
+		//increase the numOfNonPivotCols if encountered
+		if (!vectorsProperty[vectorNum][1]) {
+			numOfNonPivotCols++;
+		}
+		coordinates.push(vectorsProperty[vectorNum][2]);
+	}
+	
+	// (n -1) * (numOfNonPivotCols + 1) output matrix,with all entries 0.
+	var numRowsOfOutput = n - 1;
+	var numColsOfOutput = numOfNonPivotCols + 1;
+	var out = setZeroMatrix(numRowsOfOutput, numColsOfOutput);
+	// state indicating current arbitaray number assigned so far, initialize to the last column of output matrix 
+	var currentArbitrayCol = numOfNonPivotCols;
+
+	/* assign values into the output matrix,starting from the last row of output matrix/ second last column of augmentedMatrix,
+	For each row, assign entry by entry rightwards, starting from the constant entry.
+	*/
+	for (var currentRow = numRowsOfOutput - 1; currentRow >= 0; currentRow--) {
+		var currentPivot = coordinates[currentRow];
+		if (currentPivot.r == -1) {
+			// if non -pivot, assign 1 
+			out[currentRow][currentArbitrayCol] = 1;
+			currentArbitrayCol--;
+		} else {
+			// if pivot, initialize the constant term of the currentRow to the RHS value of the augmented matrix.
+			out[currentRow][0] = matrix[currentPivot.r][n - 1];
+			for (var currentCol = 0; currentCol < numColsOfOutput; currentCol++) {
+				// a state storing the value to be assigned at the current entry
+				var ans = out[currentRow][currentCol];
+				// minus off the components from other unknowns after the pivot
+				for (var augMatrixCol = currentPivot.c + 1; augMatrixCol < n - 1; augMatrixCol++) {
+					ans -= matrix[currentPivot.r][augMatrixCol] * out[augMatrixCol][currentCol];
+				}
+				ans /= matrix[currentPivot.r][currentPivot.c];
+				out[currentRow][currentCol] = ans;
+			}
+		}
+		
+	}
+
+	return out;
+} 
+
+
 /* 
 precond: matrix: m*n matrix
 postCond: returning a 2d m*k matrix indicating k column vectors that span the Column space of the matrix. 
@@ -320,13 +430,47 @@ function findColumnSpace(M){
 
 /* 
 precond: m*n matrix
+postcond: returning a n * k matrix, where n is numOfCol of matrix 
+and k is the number of none- pivot columns, each column of the result 
+is a basis vector of the nullspace, 
+when k = 0/ when 2d arr is empty --> nullspace is a zero space.
+
+nullspace of a 3*3 matrix: 3 cases: 1 pivot column, 2 pivot columns, 3 pivot columns: an identity matrix in RREF -> nullspace is zero space.
+for the prev 2 cases, can be solved mathematically through RREF, by setting unknowns(algebra). 
+*/
+function findNullSpace(M) {
+	let augmentedMatrix = duplicate(M);
+	let zeroVector = [];
+	for (var i = 0; i < augmentedMatrix.length; i++) {
+		zeroVector.push(0);
+	}
+	// appending zero vetor to augmentedMatrix
+	appendColumn(augmentedMatrix,zeroVector);
+	var output = solveAugmentedMatrix(augmentedMatrix);
+	shiftColumn(output);
+	return output;
+}
+
+/* 
+precond: augmentedMatrix: m *n matrix, made up of n -1 linearly independent vectors,
+i.e. all n columns are pivot columns except the last column
+
+postcond: return a 2D array/ n -1 * 1 col vector, representing the unique solution/coordinate vector of the redundant vector(last col)
+*/ 
+function backSubst(augmentedMatrix) {
+	return solveAugmentedMatrix(augmentedMatrix);
+}
+
+
+
+/* 
+precond: m*n matrix
 postcond: returning a n * k matrix, where n is numOfCol of matrix and k is the number of none- pivot columns, each column of the result is a basis vector of the nullspace 
 when k = 0/ when 2d arr is empty --> nullspace is a zero space.
 nullspace of a 3*3 matrix: 3 cases: 1 pivot column, 2 pivot columns, 3 pivot columns: an identity matrix in RREF -> nullspace is zero space.
 for the prev 2 cases, can be solved mathematically through RREF, by setting unknowns(algebra). 
-
 */
-function findNullSpace(M) {
+function findNullSpaceOld(M) {
 	/*
 	case1: For the case where all columns are pivot columns, the nullspcae is zero space
 	case2: existence of non-pivot columns.
@@ -399,11 +543,12 @@ function findNullSpace(M) {
 	return output;
 }
 
+
 /* 
 precond: m * n vectorMatrix is made up of n -1 linearly independent vectors,i.e. all n columns are pivot columns except the last column
-postcond: return a 1D array/ row vector of size n-1, representing the unique solution/coordinate vector of the redundant vector(last col)
+postcond: return a 2D array/ n -1 * 1 col vector, representing the unique solution/coordinate vector of the redundant vector(last col)
 */ 
-function backSubst(vectorMatrixOriginal) {
+function backSubstOld(vectorMatrixOriginal) {
 	var vectorMatrix = duplicate(vectorMatrixOriginal);
 	var m = vectorMatrix.length;
 	var n = vectorMatrix[0].length;
@@ -414,7 +559,7 @@ function backSubst(vectorMatrixOriginal) {
 	var output = new Array(n - 1);
 	// starting from the last pivot point at (n-2,n-2), perform the algorithm to find the output. update the pivot point position by moving (-1,1)
 	var currentPivot = n - 2;// all pivots having same row and column
-	printMatrix(vectorMatrix);
+	//printMatrix(vectorMatrix);
 	while(currentPivot >= 0) {
 		var pivotValue = vectorMatrix[currentPivot][currentPivot];
 		// initialize ans to be the element at the last column at currentRow.
@@ -427,19 +572,18 @@ function backSubst(vectorMatrixOriginal) {
 		output[currentPivot] = ans;
 		currentPivot--;
 	}
-	return output;
+	return matrixify(output);
 }
 
 
 /*
 precond: M : m*n matrix with first n-1 columns as basis vectors of a subspace and the last column as the redundant vector
-postCond: returning a n-1 * 1 row vector correponding to the coordinate vector of the redundant vector
+postCond: returning a 1 * n-1 column vector correponding to the coordinate vector of the redundant vector
 coefficient vector of a redundant vecotr in the plane. As good as evaluating a system of linear equations.
 three possible cases: subspace spanned by 1) 1 vector 2) 2 vectors 3) 3 vectors. 1) is nothing more than finding the scaling factor 2) && 3): using back substitution to solve foe equation. note: case 2 solution is a 2d vector, case 3 solution is a 3d vector.
 
 for case 1: just apply scaling.
 for case2: to express a redundant vector in terms of 2 LI vector, one can just use the idea to find nullspace of a 3*3.
-precond: M is a m*n matrix where ONLY the last column is the redundant vector and n - 1 columns before it are the basis vectors
 */
 function expressRedundantVector(M) {
 	return backSubst(M);
@@ -532,6 +676,9 @@ function findRestrictedRange(matrix,Vectors) {
 	return outputMatrix;
 }
 
+
+
+
 /* precond: 1 row vector (3 element array)
    postcond: length of the vector */
 function vectorLength(vector) {
@@ -562,6 +709,10 @@ function getUnitVector(vector) {
 
     return scaledUnitVector;
 }
+
+
+
+/*--------------------------- for R^3 space-------------------------------- */
 
 /* precond: 2 row vectors (each vector is a 3 element array)
    postcond: 1 vector that is orthogonal to both the given vectors, in a 3 element array */
@@ -743,3 +894,5 @@ function printCartesianEqn(cartesianCoeffs) {
     currentEqn = currentEqn + "= " + cartesianCoeffs[3] + "\\]";
     return currentEqn;
 }
+
+

@@ -17,7 +17,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.2/components/popup.css" />
 
 
-
         <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'></script>
 
 
@@ -66,18 +65,24 @@
                     </button>
                 </div>
                 <div id= spanDisplay>
-                    <table class="ui celled table" id= "spanTable">
+                    <table class="collapsible" id= "spanTable" width="100%">
                         <thead id="spanTableHeader">
                             <tr>
-                                <th>Subspace No</th>
-                                <th>Basis Vectors</th> 
+                                <th><h3>Subspace No</h3></th>
+                                <th><h3>Basis Vectors</h3></th> 
                             </tr>
                         </thead>
-                        <tbody id="spanTableBody"></tbody>
+                        <tbody id="spanTableBody">
+                        </tbody>
                     </table>
                 </div>           
             </div>
         </div>
+
+        <script> 
+
+
+        </script>
 
         <div id=matricesMenu class=menus> 
             <text> Matrices </text> 
@@ -88,17 +93,22 @@
                         <div id="buttonDropDown" class="ui dropdown item"> choose button 
                             <i class="dropdown icon"></i>
                             <div id="buttonsMenu" class="menu" style="display:none;" >
-                                <button id = vTransform class="ui button" data-tooltip="transform the input vector by the input matrix" data-position="bottom right"><i class="angle double right icon"></i> transformVector
+                                <button id = vTransform class="ui button" data-tooltip="transform the input vector by the input matrix" data-position="bottom right">
+                                    <i class="angle double right icon"></i> transformVector
                                 </button>
-                                <button id = columnSpace class="ui button" data-tooltip="generate columnspace of the input matrix" data-position="bottom right"><i class = "paint brush icon" > </i>columnSpace 
+                                <button id = columnSpace class="ui button" data-tooltip="generate columnspace of the input matrix" data-position="bottom right">
+                                    <i class = "paint brush icon" > </i>columnSpace 
                                 </button>
-                                <button id = nullSpace class="ui button" data-tooltip="generate nullspace of the input matrix" data-position="bottom right"><i class = "paint brush icon"> </i> nullSpace
+                                <button id = nullSpace class="ui button" data-tooltip="generate nullspace of the input matrix" data-position="bottom right">
+                                    <i class = "paint brush icon"> </i> nullSpace
                                 </button>
-                                <button id = restrictedRange class="ui button" data-tooltip="restrict the domain of the matrix and find the new range" data-position="bottom left"><i class="angle double right icon"> </i> transformSubspace
+                                <button id = restrictedRange class="ui button" data-tooltip="restrict the domain of the matrix and find the new range" data-position="bottom left">             <i class="angle double right icon"> </i> transformSubspace
                                 </button>
-                                <button id = eigenValues class="ui button" data-tooltip="find eigenvalues of the input matrix" data-position="bottom right"><i class="angle search icon"></i> eigenValues 
+                                <button id = eigenValues class="ui button" data-tooltip="find eigenvalues of the input matrix" data-position="bottom right">
+                                    <i class="angle search icon"></i> eigenValues 
                                 </button>
-                                <button id = eigenSpace class="ui button" data-tooltip="select the eigenvalue and find the eigenspace" data-position="bottom right"><i class = "paint brush icon"> </i> eigenSpace 
+                                <button id = eigenSpace class="ui button" data-tooltip="select the eigenvalue and find the eigenspace" data-position="bottom right">
+                                    <i class = "paint brush icon"> </i> eigenSpace 
                                 </button>
                             </div>
                         </div>
@@ -141,15 +151,15 @@
                             </div>
                         </div>
                         <div id = vectorInput>
-                            <div class = "ui input " ><input id = x class = "matrixInput" placeholder="x" > </input> </div>
-                            <div class = "ui input " ><input id = y class = "matrixInput" placeholder="y"class = " two wide column"> </input></div>
-                            <div class = "ui input " ><input id = z class = "matrixInput" placeholder="z" class = "two wide column"> </input></div>
+                            <div class="ui input" ><input id = x class = "matrixInput" placeholder="x" > </input> </div>
+                            <div class="ui input" ><input id = y class = "matrixInput" placeholder="y"class = " two wide column"> </input></div>
+                            <div class="ui input" ><input id = z class = "matrixInput" placeholder="z" class = "two wide column"> </input></div>
                         </div>
                     </div>
                 </div>
                 <div id = matricesDisplay>
                     <div id = matricesTextDisplay> </div>
-                    <table class="ui celled table" id = matricesTable>
+                    <table class="ui celled table" id= matricesTable width="100%">
                         <thead id = "matricesTableHeader">
                             <tr>
                                 <th>Subspace No</th>

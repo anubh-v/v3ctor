@@ -28,7 +28,6 @@
 }
 
 .label:hover {
-  font-size: 50;
   background-color: yellow;
   cursor: pointer;
 }
@@ -106,6 +105,7 @@
   grid-template-columns: 20%;
   grid-column-gap: 1%;
 }
+
 #matricesTextsInputs input {
   width : 10px;
   height : 20px;
@@ -128,4 +128,16 @@
 
 #controlsMenu:hover {
   opacity: 1;
+}
+
+table {
+  background-color: #ffffff;
+}
+
+.collapsible {  
+    transition: height 1s;
+}   
+
+tr:hover {
+  background-color: #eeeeee;
 }
