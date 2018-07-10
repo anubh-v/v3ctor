@@ -58,16 +58,19 @@
                     <button id= "span" class="ui labeled icon button" data-tooltip="generate a subspace spanned by the checked vectors" data-position="right center"> span 
                         <i class= "paint brush icon"></i>
                     </button>
+                    <button id="deleteSpan" class="ui icon button">
+                        <i class ="trash icon"></i>
+                    </button>
                 </div>
                 <div id= spanDisplay>
-                    <table class="collapsible" id= "spanTable" width="100%">
+                    <table id= "spanTable" width="100%">
                         <thead id="spanTableHeader">
                             <tr>
-                                <th><h3>Subspace No</h3></th>
-                                <th><h3>Basis Vectors</h3></th> 
+                                <th>Subspace No</th>
+                                <th>Basis Vectors</th> 
                             </tr>
                         </thead>
-                        <tbody id="spanTableBody" class="ui accordion">
+                        <tbody id="spanTableBody">
                         </tbody>
                     </table>
                 </div>           
@@ -183,10 +186,10 @@
                 <div id="plotterInputs">
                     <h1> Enter equation </h1>
                     <div class="ui input">
-                        <input id="xCoeff" placeholder="ax"/>
+                        <input id="xCoeff" placeholder="a"/>
                     </div>
                     <div class="ui input">
-                        <input id="yCoeff" placeholder="by"/>
+                        <input id="yCoeff" placeholder="b"/>
                     </div>
                     <div class="ui input">
                         <input id="zCoeff" placeholder="cz"/>
