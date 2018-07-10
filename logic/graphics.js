@@ -582,7 +582,7 @@ function drawGraphicsFromLinearSystem(augmentedMatrix,container) {
   } else if (solutions[0].length == 3) {
     solutionGraphic = planePlotter(solutions);
   } else {
-    solutionGraphic = createCube();
+    solutionGraphic = {reference:createCube(), hex: undefined};
   }
   // add graphic to the scene
   container.add(solutionGraphic.reference);

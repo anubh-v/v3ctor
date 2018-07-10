@@ -703,7 +703,7 @@ function vectorLength(vector) {
     let squaredSum = vector.reduce(function(accSquaredSum, nextCoord) {
         let squaredNextCoord = Math.pow(nextCoord, 2);
         return accSquaredSum + squaredNextCoord;
-   });
+   	}, 0);
 
    // return sqrt(squaredSum);
    return Math.sqrt(squaredSum);
