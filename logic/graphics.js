@@ -400,11 +400,11 @@ function drawSpan(m,container) {
 /*-------------------------------Plotter graphics ------------------------------------ */
 /*
 precond: pointMatrix: 3*1 array
-postcond: return a Points object
+postcond: return an object describing the graphic
 */
 function pointPlotter(pointMatrix) {
   var sizeOfPoint = 1.0;
-  var hex = 0xf45641;
+  var hex = getRandomColour();
   var geometry = new THREE.Geometry();
   var material = new THREE.PointsMaterial({ color: hex, size: sizeOfPoint});
   var vector = new THREE.Vector3();
@@ -413,18 +413,19 @@ function pointPlotter(pointMatrix) {
   vector.z = pointMatrix[2][0];
   geometry.vertices.push(vector);
   var point = new THREE.Points(geometry,material);
-  return point;
+  var graphic = {reference: point, hex: hex};
+  return graphic;
 }
 
 /*
 precond: lineMatrix: 3*2 array
-postcond:
+postcond:return an object describing the graphic
 method1: plot a line through origin and then translate position by the postion vector
-method2: determine 2 points on the line by a suitabel proportion
+method2: determine 2 points on the line by a suitable proportion
 */
 function linePlotter(lineMatrix) {
   var scaleOfAxis = 50; 
-  var hex = 0xb38600;
+  var hex = getRandomColour();
   // find point and direction as 3-elements 1d array
   var positionV = getCol(lineMatrix,0);
   var directionV = getCol(lineMatrix,1);
@@ -433,7 +434,8 @@ function linePlotter(lineMatrix) {
                       scaleOfAxis,hex);
   // traverse the spannedline by the position vector
   spannedLine.position.set(positionV[0],positionV[1],positionV[2]);
-  return spannedLine;
+  var graphic = {reference: spannedLine, hex: hex};
+  return graphic;
 }
 
 
@@ -456,7 +458,7 @@ postcond: return a planehelper described by the parameters
 method1: create a subspace using createSpannedPlane() and then translate accordingly
 */
 function planePlotter(planeMatrix) {
-  var hex = 0xb38600;
+  var hex = getRandomColour();
   var sizeOfPlane = 100;
   // 3 1d arrays with 3 elements each.
   var positionV =  getCol(planeMatrix,0);
@@ -469,8 +471,8 @@ function planePlotter(planeMatrix) {
                       sizeOfPlane, hex
                      );
   spannedPlane.position.set(positionV[0],positionV[1],positionV[2]);
-  return spannedPlane;                    
-
+  var graphic = {reference: spannedPlane, hex: hex};
+  return graphic;                  
 }
 
 
@@ -511,28 +513,88 @@ function createObj3DFromCartesianTemp(coefficients) {
   var augmentedMatrix = [coefficients];
   return createObjFromLinearSystem(augmentedMatrix);
 }
+
 /*
-precond: augmentedMatrix: m*4 matrix representing a system of linear equations with 3 unknowns
-each row is a cartesian equation.
-postcond: returning Object3D from a linear system represented by the augmentedMatrix
-case1: inconsistent linear system, no real solution, output an empty Object3D 
-case2: consistent 
-        case1.1: unique solution/ a point, i.e. no nonPivotCol among 1st 3 columns 
-        case2.2: line ,i.e 1 nonPivotColumns among 1st 3 columns 
-        case2.3: plane, i.e. 2 nonPivotColumns among 1st 3 columns 
-        case2.4: cube, i.e 3 nonPivotColumns among 1st 3 columns 
+precond: 
+  vectorMatrix: 3* n matrix of n vectors, where n >= 1
+  container: the Object3D instance to include vector graphics in.
+postcond: draw all vectors in the container and return an array containing 
+graphics, where order is preserved as of that in vectorMatrix. graphics := 
+{reference: undefined, hex: undefined}
 */
-function createObjFromLinearSystem(augmentedMatrix) {
+function drawVectors(vectorMatrix, container) {
+  let outputArr = new Array();
+  // 1d array indicating the postionVector of the vectorMatrix
+  let positionV = getCol(vectorMatrix,0); 
+  // for each column vector, generate 
+  for (var col = 0; col < vectorMatrix[0].length; col++) {
+    let color = getRandomColour();
+    let origin = (col == 0)? new THREE.Vector3(0,0,0) :
+                  new THREE.Vector3(positionV[0],positionV[1],positionV[2]);
+    let ref = createVector(vectorMatrix[0][col],vectorMatrix[1][col],
+                           vectorMatrix[2][col],origin,color);
+    container.add(ref);
+    let vectorGraphic = {reference: ref, hex: color};
+    outputArr.push(vectorGraphic);
+  }
+  return outputArr;
+}
+/*
+precond: 1. augmentedMatrix: m*4 matrix representing a system of linear equations with 3 unknowns
+each row is a cartesian equation. 2. container: object3D wrapper to put graphics in
+3. No NaN entries
+postcond: from a linear system represented by the augmentedMatrix, 
+draw all graphics and return an array
+  -0th index: 3*i solution matrix representing solution of the linear system, where i 
+    is the number of position and direction vectors
+  -1th index: graphic of the solution of the linear system:= 
+  {reference: undefined, hex: undefined } 
+  -2nd index onwards: graphic of vectors, order of vectors are preserved 
+  as in the solution matrix ,each entry := {reference: undefined, hex: undefined } 
+
+case1: inconsistent linear system, no real solution, output an empty array
+case2: consistent 
+        case1.1: unique solution/ a point, i.e. no nonPivotCol among 1st 3 columns, return an array of 2 elements (exclude position/ direction vectors)
+        case2.2: line ,i.e 1 nonPivotColumns among 1st 3 columns, return an array with 4 elements
+        case2.3: plane, i.e. 2 nonPivotColumns among 1st 3 columns,return an array with 5 elements
+        case2.4: cube, i.e 3 nonPivotColumns among 1st 3 columns, return an array with 2 elements(exclude position/ direction vectors)
+*/
+function drawGraphicsFromLinearSystem(augmentedMatrix,container) {
+  let outputArr = new Array();
   let outputObj = new THREE.Object3D();
   let solutions = solveAugmentedMatrix(augmentedMatrix);
 
   // case where linear system is inconsistent 
   if (solutions[0].length == 0) {
     alert("inconsistent, no real solution!");
-    return outputObj;
+    return outputArr;
   }
+  // if there exists real solution, push the solution to the outputArr
+  outputArr.push(solutions);
+  // an object describing graphic of the solution:= {reference: .. , hex:...}
+  let solutionGraphic; 
 
-
-  return outputObj;
-
+  // plot the solution graphic 
+  if (solutions[0].length == 1) {
+    solutionGraphic = pointPlotter(solutions);
+  } else if (solutions[0].length == 2) {
+    solutionGraphic = linePlotter(solutions);
+  } else if (solutions[0].length == 3) {
+    solutionGraphic = planePlotter(solutions);
+  } else {
+    solutionGraphic = createCube();
+  }
+  // add graphic to the scene
+  container.add(solutionGraphic.reference);
+  outputArr.push(solutionGraphic);
+  
+  /*given a line/plane object, plot all vectors and append the 
+  resultant object to the outputArr
+  each entry describes a particular vector graphic := {reference: ..; hex: ..};
+  */
+  if (solutions[0].length == 2 || solutions[0].length == 3) {
+      let vectorArr = drawVectors(solutions,container);
+      appendArr(outputArr, vectorArr);
+  }
+  return outputArr;
 }

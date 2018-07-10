@@ -80,11 +80,25 @@ function appendMatrix(m1,m2) {
 		}
 	}
 }
-// function mutating a m * n matrix by removing its first column 
+
+//function mutating arr1 by appending arr2 to its tail
+//both arr1 and arr2 are 1d array
+function appendArr (arr1, arr2) {
+	// make arr1 a 2d array/matrix with 1 row.
+	var matrix = [arr1];
+	appendMatrix(matrix,[arr2]);
+	return matrix[0];
+}
+
+/* function mutating a m * n matrix by removing its first column and return  
+shifted column as a 1d array / row vector.
+*/
 function shiftColumn(matrix) {
+	var outputArr = new Array()
 	for (var row = 0; row < matrix.length; row++) {
-		matrix[row].shift();
+		outputArr.push(matrix[row].shift());
 	}
+	return outputArr;
 }
 // return kth column of m*n matrix M as a 1d array
 function getCol(matrix,k){
@@ -101,6 +115,7 @@ function matrixify(v) {
 	appendColumn(out,v);
 	return out;
 }
+
 // V: a 2d n * 1 matrix
 // return a 1d 1*n row vector
 function vectorize(V) {
@@ -316,7 +331,7 @@ function guassJordanElimination(matrix) {
 
 
 /*
-precond: augmentedMatrix: m*n matrix(2d array)
+precond: augmentedMatrix: m*n matrix(2d array), no NaN entries
 postcond:
 	case1: last col pivot col --> alert inconsistent, output an empty matrix
 	case2: else output a r*c matrix: 1st column as the point 
