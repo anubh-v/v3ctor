@@ -136,14 +136,11 @@ function rotateZ() {
              This is done using: MathJax.Hub.Queue(["Typeset",MathJax.Hub,"id-of-equation-element"]);
 
              For more info, see: http://docs.mathjax.org/en/latest/advanced/typeset.html */
-function createCartesianEqnLabel(basisMatrix) {
+function updateCartesianEqnLabel(equationElement, basisMatrix) {
     
     /* identify number of basis vectors */
     const numVectors = basisMatrix[0].length;
-    
-    /* create a <h3> element */
-    const equationElement = document.createElement("p");
-    
+       
     if (numVectors === 0) {
     	/* case where it is a zero space */
     	equationElement.textContent = "\\[x = 0, y = 0, z = 0\\]";
@@ -498,7 +495,88 @@ function getCheckedVectors(checkBoxList, vectorsList) {
     - Draws the span graphic on the threejs grid
     - Adds the span labels and graphic into the span's object */
 function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
+
+    const rowLabels = createTableRow(tableBody, labelDesc, false);
+    const descriptorLabel = rowLabels[0];
+    const cartesianEqnLabel = updateCartesianEqnLabel(rowLabels[1], vectorsToSpan);  
+    const vLabelContainer = rowLabels[2];
+
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
     
+    // if it's a zero space, alert and return the function straight away
+    if (vectorsToSpan[0].length == 0) {
+		alert("a zero space!");
+		return;
+	}
+
+    /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
+    "drawSpan" also returns an array containing the ref to the graphics representing the span
+    and the basis vectors of the span */
+    const arr = drawSpan(vectorsToSpan, spanGraphics);    
+
+   /* Extract the span's graphic from the array */
+    const subspGraphic = arr[0];
+    addLabelEffects(descriptorLabel, subspGraphic);
+
+    /* Wrap the graphic and labels in a subspace object */
+    const subspObj = {
+      label: cartesianEqnLabel,
+      graphic: subspGraphic
+    };
+
+    /* now, work on the basisVectors object */
+    /* determine the number of basis vectors */
+    const numVectors = arr.length - 1;
+
+    /* create placeholders to hold the basis vector labels and graphics */
+    const vLabels = [];
+    const vGraphics = [];
+
+    /* Traverse across arr to setup the graphic and label 
+       for each basis vector */
+    for (let i = 1; i < arr.length; i++) {
+       
+      const vGraphic = arr[i];
+      vGraphics.push(vGraphic);
+
+      const x = vectorsToSpan[0][i-1];
+      const y = vectorsToSpan[1][i-1];
+      const z = vectorsToSpan[2][i-1];
+
+      const vLabel = document.createElement("p");
+      vLabel.setAttribute("class", "label");
+      vLabel.textContent = 
+        "Vector" + i + ": (" + x + ", " 
+        +  y + ", " + z + ")";
+
+      vLabelContainer.appendChild(vLabel);
+      // adding hide/unhide & labelling features
+      addLabelEffects(vLabel, vGraphic);
+      vLabels.push(vLabel);
+    }
+
+    const basisVectors = {
+      labels: vLabels, // contain ref to labels of correp vectors
+      graphics: vGraphics// contain ref to graphics of correp vectors
+    };
+
+    spanObj.subsp = subspObj;
+    spanObj.basisVectors = basisVectors;
+
+    rowLabels[4](rowLabels[3].scrollHeight);
+   
+}
+
+/* This function sets up 2 rows in a given table, making way for a new Span / Matrix space / Plot object 
+   The row will be collapsible via a button click, and MAY have a checkbox 
+ 
+   precond:
+     - tableBody: the table where the rows should be inserted
+     - headerLabelDesc: The label for the header row
+     - needCheckBox: a Boolean. If true, a checkbox will be added 
+     - (optional) checkList: the checkboxes will be placed into this checklist */
+function createTableRow(tableBody, headerLabelDesc, needCheckBox, checkList) {
+
     /* create a header row */    
     const headerRow = document.createElement("tr");
     const headerCol = document.createElement("td");
@@ -518,7 +596,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     row.appendChild(secondCol); 
     tableBody.appendChild(row);
 
-    /* create a button that will collapse / un-collapse the span information */
+    /* create a button that will collapse / un-collapse the r information */
     const collapseBtn = document.createElement("button");
     collapseBtn.className = "ui circular icon button";
     collapseBtn.appendChild(makeIcon("minus icon"));
@@ -526,101 +604,43 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     /* add the button to the header row */
     headerRow.appendChild(collapseBtn);
 
+    if (needCheckBox) {
+      const intersectCheckBox = makeCheckBox();
+      checkList.push(intersectCheckBox);
+      headerRow.appendChild(intersectCheckBox);
+    }
+
     /* Create a label that will read "Subp: X", where X is number of the subspace */
-    const descriptorLabel = document.createElement("h3");
-    descriptorLabel.textContent = labelDesc;
+    const descriptorLabel = document.createElement("p");
+    descriptorLabel.textContent = headerLabelDesc;
     descriptorLabel.setAttribute("class", "label");
 
-    /* Create the Cartesian equation label */
-    const cartesianEqnLabel = createCartesianEqnLabel(vectorsToSpan);
-    cartesianEqnLabel.className = "content";
-    cartesianEqnLabel.style.transition = "opacity 0.5s";
-    
+    /* Create an empty Cartesian equation label */
+    const cartesianEqnLabel = document.createElement("p");
+    cartesianEqnLabel.style.transition = "display 0.5s";
+
+    /* Create an empty vector label container */
+    const vLabelContainer = document.createElement("div");
+    vLabelContainer.style.transition = "display 0.5s";
+
     /* add labels into the HTML page */    
     headerCol.appendChild(descriptorLabel);
     firstCol.appendChild(cartesianEqnLabel);
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
-    
-    // if it's a zero space, alert and return the function straight away
-    if (vectorsToSpan[0].length == 0) {
-		alert("a zero space!");
-		return;
-	}
+    secondCol.appendChild(vLabelContainer);
 
-    /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
-    "drawSpan" also returns an array containing the ref to the graphics representing the span
-    and the basis vectors of the span */
-    const arr = drawSpan(vectorsToSpan, spanGraphics);    
-
-   /* Extract the span's graphic from the array */
-    const subspGraphic = arr[0];
-    /* adding mouse over effects to the descriptorLabel */
-    addLabelEffects(descriptorLabel, subspGraphic); 
-
-    /* Wrap the graphic and labels in a subspace object */
-    const subspObj = {
-      label: cartesianEqnLabel,
-      graphic: subspGraphic
-    };
-
-    /* now, work on the basisVectors object */
-    /* determine the number of basis vectors */
-    const numVectors = arr.length - 1;
-
-    /* create placeholders to hold the basis vector labels and graphics */
-    const vlabels = [];
-    const vgraphics = [];
-    const vlabelContainer = document.createElement("div");
-    vlabelContainer.style.transition = "opacity 0.5s";
-
-    /* Traverse across arr  to setup the graphic and label 
-       for each basis vector */
-    for (let i = 1; i < arr.length; i++) {
-       
-      const vGraphic = arr[i];
-      vgraphics.push(vGraphic);
-
-      const x = vectorsToSpan[0][i-1];
-      const y = vectorsToSpan[1][i-1];
-      const z = vectorsToSpan[2][i-1];
-
-      const vLabel = document.createElement("h3");
-      vLabel.setAttribute("class", "label");
-      vLabel.innerHTML = 
-        "Vector" + i + ": (" + x + ", " 
-        +  y + ", " + z + ")";
-
-      vlabelContainer.appendChild(vLabel);
-      // adding hide/unhide & labelling features
-      addLabelEffects(vLabel, vGraphic);
-      vlabels.push(vLabel);
-    }
-
-    secondCol.appendChild(vlabelContainer);
-
-    const basisVectors = {
-      labels: vlabels, // contain ref to labels of correp vectors
-      graphics: vgraphics// contain ref to graphics of correp vectors
-    };
-
-    spanObj.subsp = subspObj;
-    spanObj.basisVectors = basisVectors;
-   
 
     /* At this point, the labels, cartesian equation and graphic
        have been added onto the webpage. Now, we need to make the span info
        collapsible */
 
-    const rowHeight = row.scrollHeight; 
-
-    collapseBtn.onclick = () => {
+    let collapseCurried = (rowHeight) => () => {
       if(row.style.height !== "0px") {
         cartesianEqnLabel.style.opacity = "0";
-        vlabelContainer.style.opacity = "0";
+        vLabelContainer.style.opacity = "0";
         
         setTimeout(() => {
           cartesianEqnLabel.style.display = "none";
-          vlabelContainer.style.display = "none";
+          vLabelContainer.style.display = "none";
           row.style.height = row.scrollHeight;
           row.style.height = "0px";
           collapseBtn.children[0].className = "plus icon";
@@ -631,13 +651,20 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
         setTimeout(() => {
           cartesianEqnLabel.style.display = "";
-          vlabelContainer.style.display = "";
+          vLabelContainer.style.display = "";
           cartesianEqnLabel.style.opacity = "1";
-          vlabelContainer.style.opacity = "1";
+          vLabelContainer.style.opacity = "1";
           collapseBtn.children[0].className = "minus icon";
          }, 1200);
       }
     };
+
+    let attachCollapseBtnListener = (rowHeight) => {
+      
+      collapseBtn.onclick = collapseCurried(rowHeight);
+    };
+
+    return [descriptorLabel, cartesianEqnLabel, vLabelContainer, row, attachCollapseBtnListener];
 }
 
 
@@ -941,11 +968,29 @@ function eigenSpaceBtnHelper(valueObj) {
 const addEqnBtn = document.getElementById("addEqnBtn");
 addEqnBtn.onclick = drawEqn;
 
+const deleteEqnBtn = document.getElementById("deleteEqnBtn");
+deleteEqnBtn.onclick = deleteLastEqn;
+
+const drawIntersectionBtn = document.getElementById("drawIntersectionBtn");
+
 
 /* global variables */
 let numEqns = 0;
 let eqnList = [];
 let eqnCheckList = [];
+
+
+/* Reads the equation input boxes and returns an array [a, b, c, d]
+   indicating the coefficients of the Cartesian Equation given by the user */
+function readEqn() {
+  
+  const xCoeff = parseFloat(document.getElementById("xCoeff").value);
+  const yCoeff = parseFloat(document.getElementById("yCoeff").value);
+  const zCoeff = parseFloat(document.getElementById("zCoeff").value);
+  const dConstant = parseFloat(document.getElementById("dConstant").value);
+  
+  return [xCoeff, yCoeff, zCoeff, dConstant];
+}
 
 function drawEqn() {
 
@@ -954,57 +999,65 @@ function drawEqn() {
   // get a reference to the plotter display table body
   const eqnTableBody = document.getElementById("eqnTableBody");
 
-  const xCoeff = document.getElementById("xCoeff").value;
-  const yCoeff = document.getElementById("yCoeff").value;
-  const zCoeff = document.getElementById("zCoeff").value;
-  const dConstant = document.getElementById("dConstant").value;
-  const cartesianCoeffs = [xCoeff, yCoeff, zCoeff, dConstant];
+  const rowLabels = createTableRow(eqnTableBody, "Equation " + numEqns, true, eqnCheckList);
+  const descriptorLabel = rowLabels[0];
+  const cartesianEqnLabel = rowLabels[1];
+  const vectorLabelContainer = rowLabels[2];
+ 
+  const cartesianCoeffs = readEqn();
 
+  cartesianEqnLabel.textContent = printCartesianEqn(cartesianCoeffs);
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]); 
+  
+  const eqnGraphic = createObj3DFromCartesian(cartesianCoeffs);
+  addLabelEffects(descriptorLabel, eqnGraphic);
+  equationGraphics.add(eqnGraphic);
+
+  /* create vector labels */
   const vectors = cartesianToVector(cartesianCoeffs);
 
-  const graphic = createObj3DFromCartesian(cartesianCoeffs);
-  equationGraphics.add(graphic);
+  /* first, set up direction vector labels */  
+  for(let i = 0; i < vectors[0].length; i++) {
 
-  const headerRow = document.createElement("tr");
-  const headerCol = document.createElement("td");
-  headerRow.appendChild(headerCol);
-  eqnTableBody.appendChild(headerRow);
+    const x = vectors[0][i];
+    const y = vectors[1][i];
+    const z = vectors[2][i];
 
-  const descriptorLabel = document.createElement("p");
-  descriptorLabel.textContent = "Equation " + numEqns;
-  descriptorLabel.className = "label";
-  addLabelEffects(descriptorLabel, graphic);
-  headerCol.appendChild(descriptorLabel);
+    const vectorLabel = document.createElement("p");
+    let vectorDesc; 
+    
+    if (i === vectors[0].length - 1) {
+      vectorDesc = "Position Vector: (";
+    } else {
+      vectorDesc = "Direction Vector: (";
+    }
 
-  const collapseButton = document.createElement("button");
-  collapseButton.className = "ui circular icon button";
-  collapseButton.appendChild(makeIcon("minus icon"));
-  headerRow.appendChild(collapseButton);
+    vectorLabel.textContent = vectorDesc + x + ", " + y + ", " + z + ")";
+    vectorLabelContainer.appendChild(vectorLabel);
+   }
 
-  const intersectCheckBox = makeCheckBox();
-  headerRow.appendChild(intersectCheckBox);
+   rowLabels[4](rowLabels[3].scrollHeight);
 
-  const row = document.createElement("tr");
-  const firstCol = document.createElement("td");
-  const secondCol = document.createElement("td");
-  firstCol.style.width = "50%";
-  secondCol.style.width = "50%";
+   const eqnObj = {       
+     eqnGraphic: eqnGraphic,
+     cartesianCoeffs: cartesianCoeffs
+   };
 
-  row.appendChild(firstCol);
-  eqnTableBody.appendChild(row);
-
-  const cartesianEqnLabel = document.createElement("p");
-  cartesianEqnLabel.textContent = printCartesianEqn(cartesianCoeffs);
-  firstCol.appendChild(cartesianEqnLabel);
-  MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]); 
-
-  const vectorLabels = document.createElement("p");
-  vectorLabels.textContent = "vector labels placeholder";
-  secondCol.appendChild(vectorLabels);
-
+   eqnList.push(eqnObj); 
 
 }
 
 
+function deleteLastEqn() {
 
+  const toBeDeleted = eqnList.pop();
 
+  equationGraphics.remove(toBeDeleted.eqnGraphic);
+
+  const eqnTableBody = document.getElementById("eqnTableBody");
+  eqnTableBody.children[eqnTableBody.children.length - 1].remove();
+  eqnTableBody.children[eqnTableBody.children.length - 1].remove();
+
+  numEqns--;
+
+}
