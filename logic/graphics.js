@@ -68,22 +68,30 @@ function init() {
   renderer.setSize(3*(window.innerWidth / 4), 8*(window.innerHeight / 9));
   controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+  var gridObj = new THREE.Object3D;
+
   //setting up xyz axis
   //GridHelper( size of the entire grid, divisions : number of divisions on the grid, colorCenterLine : Color, colorGrid : Color (0x00ff00) ) --> 
   // green central line
   var gridXZ = new THREE.GridHelper(100, 10,0xffffff, 0x33bbff);
-  axes.add(gridXZ);
+  gridXZ.material.transparent = true;
+  setObjOpacity(gridXZ, 0.2);
   // red central line
   var gridXY = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   // rotation about x axis by 90 degrees
   gridXY.rotation.x = Math.PI/2;
-  axes.add(gridXY);
+  gridXY.material.transparent = true;
+  setObjOpacity(gridXY, 0.2);
   // blue central line
   var gridYZ = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
-  axes.add(gridYZ); 
+  gridYZ.material.transparent = true;
+  setObjOpacity(gridYZ, 0.2);
 
+  axes.add(gridXZ);
+  axes.add(gridXY);
+  axes.add(gridYZ);
 
   axes.add(allObjects);
   axes.add(spanGraphics);
@@ -108,6 +116,11 @@ function init() {
   var zLabel = makeTextSprite("z", undefined, 0,0,55);
   axes.add(zLabel);
 }
+
+function setObjOpacity(obj, newOpacity) {
+  obj.material.opacity = newOpacity;
+}
+
 
 /* this function iterates through renderQueue and executes each function in the queue. 
    We must call this function once per frame of animation. This is done using 
