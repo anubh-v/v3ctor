@@ -1009,12 +1009,14 @@ function drawEqn() {
   cartesianEqnLabel.textContent = printCartesianEqn(cartesianCoeffs);
   MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]); 
   
-  const eqnGraphic = createObj3DFromCartesian(cartesianCoeffs);
+  // an object containing 0. matrix containing position and 
+  //direction vectors ...{reference : .., hex:...} 
+  const parsedLinearSystem = drawGraphicsFromLinearSystem([cartesianCoeffs], equationGraphics);
+  const eqnGraphic = parsedLinearSystem[1].reference;
   addLabelEffects(descriptorLabel, eqnGraphic);
-  equationGraphics.add(eqnGraphic);
 
   /* create vector labels */
-  const vectors = cartesianToVector(cartesianCoeffs);
+  const vectors = parsedLinearSystem[0];
 
   /* first, set up direction vector labels */  
   for(let i = 0; i < vectors[0].length; i++) {
@@ -1026,7 +1028,7 @@ function drawEqn() {
     const vectorLabel = document.createElement("p");
     let vectorDesc; 
     
-    if (i === vectors[0].length - 1) {
+    if (i === 0) {
       vectorDesc = "Position Vector: (";
     } else {
       vectorDesc = "Direction Vector: (";
