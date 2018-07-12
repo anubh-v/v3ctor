@@ -78,9 +78,9 @@ function enableTextBox(textBox) {
 /* Given a <tr> element, add a Semantic UI checkbox to it
    Can we generalise this further?  */
 function addCheckBox(headerRow, checkList) {
-
+  console.log("added");
   const checkBox = makeCheckBox();
-  checkList.push(checkBox);
+  checkList.unshift(checkBox.children[0]);
   headerRow.appendChild(checkBox);
 
 }
@@ -1001,7 +1001,8 @@ addEqnBtn.onclick = drawEqn;
 const deleteEqnBtn = document.getElementById("deleteEqnBtn");
 deleteEqnBtn.onclick = deleteLastEqn;
 
-const drawIntersectionBtn = document.getElementById("drawIntersectionBtn");
+const drawIntersectionBtn = document.getElementById("intersectBtn");
+drawIntersectionBtn.onclick = drawIntersection;
 
 
 /* global variables */
@@ -1095,4 +1096,28 @@ function deleteLastEqn() {
 
   numEqns--;
 
+}
+
+function drawIntersection() {
+
+  let linearSystem = [];
+
+  for (let i = 0; i < eqnCheckList.length; i++) {
+  
+   if (eqnCheckList[i].checked) {
+
+     linearSystem.push(eqnList[i].cartesianCoeffs);
+   }
+
+  }
+
+  if (linearSystem.length == 0) {
+
+    alert("No objects selected for intersection");
+    return;
+  }
+
+  const parsedLinearSystem = drawGraphicsFromLinearSystem(linearSystem, equationGraphics);
+
+      
 }
