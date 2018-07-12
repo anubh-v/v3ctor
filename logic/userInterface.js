@@ -30,9 +30,13 @@ function makeTextBox() {
 
 }
 
+/* Used to create a label (of a given type such as <p>, <h1>, <h2>, etc)
+   Users can pass in a "labelText" to set the text of the label.
+   If no text is passed, the label text will be an empty string by default */
 function makeLabel(labelType, labelText="") {
 
   const label = document.createElement(labelType);
+  // add the 'label' class so the CSS mouseover property is applied
   label.className = "label";
   label.textContent = labelText;
   return label;
