@@ -91,6 +91,8 @@ resetCameraBtn.onclick = () => {
     controls.reset();
 };
 
+const opacSlider = document.getElementById("opacitySlider");
+
 const rotateGridXBtn = document.getElementById("rotateXButton");
 const rotateGridYBtn = document.getElementById("rotateYButton");
 const rotateGridZBtn = document.getElementById("rotateZButton");
@@ -213,7 +215,7 @@ function coeffsToCartesianLatex(coeffsArray) {
 
              For more info, see: http://docs.mathjax.org/en/latest/advanced/typeset.html */
 function vectorsToCartesianLatex(vectors, pointOnPlane) { 
-  return coeffsToCartesian(vectorsToCartesianCoeffs(vectors, pointOnPlane));
+  return coeffsToCartesianLatex(vectorsToCartesianCoeffs(vectors, pointOnPlane));
 }
 
 
