@@ -616,6 +616,7 @@ function createTableRow(tableBody, headerLabelDesc) {
     /* create a new row and two columns */    
     /* one row for the Cartesian Equation, and one for the basis vectors */
     const infoRow = document.createElement("tr");
+    infoRow.className = "collapsible";
     const cartesianCol = document.createElement("td");
     const vectorCol = document.createElement("td");
 
