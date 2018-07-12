@@ -1056,6 +1056,8 @@ function addEqn() {
 
 function drawEqn(parsedLinearSystem, cartesianLatex) {
   numEqns++;    
+
+  console.log(parsedLinearSystem);
     
   // get a reference to the plotter display table body
   const eqnTableBody = document.getElementById("eqnTableBody");
@@ -1091,8 +1093,14 @@ function drawEqn(parsedLinearSystem, cartesianLatex) {
     }
 
     const vectorLabel = makeLabel("p", vectorDesc + x + ", " + y + ", " + z + ")");
-    const vectorGraphic = parsedLinearSystem[2 + i].reference;
-    addLabelEffects(vectorLabel, vectorGraphic);
+
+    /* Only link the vector labels with vector graphics if vector graphics exist.
+       Vector graphics only exist for Planes and Lines.
+       No vector Graphics are provided for Points and Cubes */
+    if (parsedLinearSystem.length > 2) {
+      const vectorGraphic = parsedLinearSystem[2 + i].reference;
+      addLabelEffects(vectorLabel, vectorGraphic);
+    }
 
     vectorLabelContainer.appendChild(vectorLabel);
 
