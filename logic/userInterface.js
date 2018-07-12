@@ -11,7 +11,8 @@ function makeInputBox(inputType) {
   return inputBox;
 }
 
-/* used to create a div element */
+/* used to create a Semantic UI div element
+   for a Semantic UI textbox / checkbox */
 function makeDiv(type) {
   
   const container = document.createElement("div");
@@ -20,7 +21,7 @@ function makeDiv(type) {
   return container;
 }
 
-/* used to create a SemanticUI textbox*/
+/* used to create a Semantic UI textbox*/
 function makeTextBox() {
   
   const container = makeDiv("ui input");
@@ -29,7 +30,15 @@ function makeTextBox() {
 
 }
 
-/* used to create a SemanticUI checkbox */
+function makeLabel(labelType, labelText="") {
+
+  const label = document.createElement(labelType);
+  label.className = "label";
+  label.textContent = labelText;
+  return label;
+
+}
+/* used to create a Semantic UI checkbox */
 function makeCheckBox() {
   
   const container = makeDiv("ui checkbox");
@@ -40,7 +49,7 @@ function makeCheckBox() {
 
 }
 
-/* used to create a SemanticUI icon element
+/* used to create a Semantic UI icon element
    The icon to be created can be specified by passing 
    a string 'iconClass' into the function */
 function makeIcon(iconClass) {
@@ -50,14 +59,26 @@ function makeIcon(iconClass) {
     return icon;
 }
 
-/* Given an enabled Semantic UI textbox, this function disables it */
+/* Given an enabled Semantic UI textbox, this function disables it 
+   Note: This can be generalised to any Semantic UI control */
 function disableTextBox(textBox) {
     textBox.className = "ui disabled input";
 }
 
-/* Given a disabled Semantic UI textbox, this function enables it */
+/* Given a disabled Semantic UI textbox, this function enables it
+    Note: This can be generalised to any Semantic UI control  */
 function enableTextBox(textBox) {
     textBox.className = "ui input";
+}
+
+/* Given a <tr> element, add a Semantic UI checkbox to it
+   Can we generalise this further?  */
+function addCheckBox(headerRow, checkList) {
+
+  const checkBox = makeCheckBox();
+  checkList.push(checkBox);
+  headerRow.appendChild(checkBox);
+
 }
 
 /* register event handlers */
@@ -129,24 +150,24 @@ function rotateZ() {
 /* precond: a 3*n matrix, where n is the number of basis vectors in a given subspace. 
             Each column is a basis vector.
    
-   postcond: 1 <h2> element containing the MathJax equation
-             Note: To use the equation element, give it an ID and add it to the HTML page
+   postcond: 1 string containing the LaTeX expression for the Cartesian equation
+             Note: To use the equation element, add it as the text content of an HTML element
              After adding it to the page, we need to ask MathJax to render the newly added
              mathematics content. 
-             This is done using: MathJax.Hub.Queue(["Typeset",MathJax.Hub,"id-of-equation-element"]);
+             This is done using: MathJax.Hub.Queue(["Typeset",MathJax.Hub, "ref-to-equation-element"]);
 
              For more info, see: http://docs.mathjax.org/en/latest/advanced/typeset.html */
-function updateCartesianEqnLabel(equationElement, basisMatrix) {
+function basisToCartesianLatex(basisMatrix) {
     
     /* identify number of basis vectors */
     const numVectors = basisMatrix[0].length;
        
     if (numVectors === 0) {
     	/* case where it is a zero space */
-    	equationElement.textContent = "\\[x = 0, y = 0, z = 0\\]";
+    	return "\\[x = 0, y = 0, z = 0\\]";
     } else if (numVectors === 3) {       
         /* if the subspace is the whole space, generate the zero equation */
-        equationElement.textContent = "\\[0x + 0y + 0z = 0\\]";    
+        return "\\[0x + 0y + 0z = 0\\]";    
     } else if (numVectors === 2) {
 
         /* if the subspace is a plane, pass the basis vectors and the origin into the 
@@ -164,7 +185,7 @@ function updateCartesianEqnLabel(equationElement, basisMatrix) {
         const cartesianCoeffs = planeVectorToCartesian(vectorA, vectorB, pointOnPlane);
 
         /* add the equation text to the equation <h2> element */
-        equationElement.textContent = printCartesianEqn(cartesianCoeffs);
+        return printCartesianEqn(cartesianCoeffs);
     } else {
 
         /* if the subspace is a line, pass 1 basis vector and the origin into the 
@@ -175,12 +196,10 @@ function updateCartesianEqnLabel(equationElement, basisMatrix) {
         const cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnLine);
 
         /* add the equation text to the equation <h2> element */
-        equationElement.textContent = printCartesianEqn(cartesianCoeffs[0]) 
+        return printCartesianEqn(cartesianCoeffs[0]) 
                                       + " " + printCartesianEqn(cartesianCoeffs[1]);
     }
     
-    /* return the <h3> element */
-    return equationElement;
 }
 
 
@@ -284,9 +303,7 @@ function addControls() {
   var vectorsInnerForm = document.getElementById("vectorsInnerForm");
 
   // create a label representing the new vector
-  var vectorLabel = document.createElement("h1");
-  vectorLabel.innerHTML = "Vector " + numVectors;
-  vectorLabel.setAttribute("class","label");
+  var vectorLabel = makeLabel("h1", "Vector" + numVectors);
   vectorsInnerForm.appendChild(vectorLabel);
   
   // create and add 4 textboxes
@@ -496,18 +513,18 @@ function getCheckedVectors(checkBoxList, vectorsList) {
     - Adds the span labels and graphic into the span's object */
 function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
-    const rowLabels = createTableRow(tableBody, labelDesc, false);
-    const descriptorLabel = rowLabels[0];
-    const cartesianEqnLabel = updateCartesianEqnLabel(rowLabels[1], vectorsToSpan);  
-    const vLabelContainer = rowLabels[2];
-
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
-    
     // if it's a zero space, alert and return the function straight away
     if (vectorsToSpan[0].length == 0) {
 		alert("a zero space!");
 		return;
 	}
+
+    const headerRow = createTableRow(tableBody, labelDesc);
+    const descriptorLabel = headerRow.getElementsByTagName("p")[0];
+    const infoRow = headerRow.nextElementSibling;
+    const vLabelContainer = infoRow.getElementsByTagName("div")[0];
+
+    fillCartesianEqn(headerRow, basisToCartesianLatex(vectorsToSpan));
 
     /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
     "drawSpan" also returns an array containing the ref to the graphics representing the span
@@ -520,13 +537,9 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
     /* Wrap the graphic and labels in a subspace object */
     const subspObj = {
-      label: cartesianEqnLabel,
+      label: descriptorLabel,
       graphic: subspGraphic
     };
-
-    /* now, work on the basisVectors object */
-    /* determine the number of basis vectors */
-    const numVectors = arr.length - 1;
 
     /* create placeholders to hold the basis vector labels and graphics */
     const vLabels = [];
@@ -543,11 +556,8 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
       const y = vectorsToSpan[1][i-1];
       const z = vectorsToSpan[2][i-1];
 
-      const vLabel = document.createElement("p");
-      vLabel.setAttribute("class", "label");
-      vLabel.textContent = 
-        "Vector" + i + ": (" + x + ", " 
-        +  y + ", " + z + ")";
+      const vLabel = makeLabel("p",  "Vector" + i + ": (" + x 
+                                      + ", " +  y + ", " + z + ")");
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
@@ -563,19 +573,23 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     spanObj.subsp = subspObj;
     spanObj.basisVectors = basisVectors;
 
-    rowLabels[4](rowLabels[3].scrollHeight);
+    makeRowCollapsible(headerRow);
    
 }
 
-/* This function sets up 2 rows in a given table, making way for a new Span / Matrix space / Plot object 
-   The row will be collapsible via a button click, and MAY have a checkbox 
+/* This function sets up 2 rows in a given table, intended for a new Span / Matrix space / Plot object 
+   The first row will be the "headerRow" and will have a descriptorLabel, and a button.
+   The second row will be the "infoRow" and will have 2 columns -> one for the Cartesian Equation and one 
+   for the vector information. 
  
    precond:
      - tableBody: the table where the rows should be inserted
      - headerLabelDesc: The label for the header row
-     - needCheckBox: a Boolean. If true, a checkbox will be added 
-     - (optional) checkList: the checkboxes will be placed into this checklist */
-function createTableRow(tableBody, headerLabelDesc, needCheckBox, checkList) {
+     - vectorMatrix: A 4*n matrix, with n column vectors. 
+       In the case of spans, all column vectors are basis vectors.
+       In the case of plots, the first column is the position vector, and subsequent columns are direction
+       vectors. */
+function createTableRow(tableBody, headerLabelDesc) {
 
     /* create a header row */    
     const headerRow = document.createElement("tr");
@@ -585,35 +599,20 @@ function createTableRow(tableBody, headerLabelDesc, needCheckBox, checkList) {
 
     /* create a new row and two columns */    
     /* one row for the Cartesian Equation, and one for the basis vectors */
-    const row = document.createElement("tr");
-    row.className = "collapsible";
-    const firstCol = document.createElement("td");
-    const secondCol = document.createElement("td");
-    firstCol.style.width = "50%";
-    secondCol.style.width = "50%";
+    const infoRow = document.createElement("tr");
+    const cartesianCol = document.createElement("td");
+    const vectorCol = document.createElement("td");
 
-    row.appendChild(firstCol);
-    row.appendChild(secondCol); 
-    tableBody.appendChild(row);
+    /* set the column widths equally */
+    cartesianCol.style.width = "50%";
+    vectorCol.style.width = "50%";
 
-    /* create a button that will collapse / un-collapse the r information */
-    const collapseBtn = document.createElement("button");
-    collapseBtn.className = "ui circular icon button";
-    collapseBtn.appendChild(makeIcon("minus icon"));
-
-    /* add the button to the header row */
-    headerRow.appendChild(collapseBtn);
-
-    if (needCheckBox) {
-      const intersectCheckBox = makeCheckBox();
-      checkList.push(intersectCheckBox);
-      headerRow.appendChild(intersectCheckBox);
-    }
+    infoRow.appendChild(cartesianCol);
+    infoRow.appendChild(vectorCol); 
+    tableBody.appendChild(infoRow);
 
     /* Create a label that will read "Subp: X", where X is number of the subspace */
-    const descriptorLabel = document.createElement("p");
-    descriptorLabel.textContent = headerLabelDesc;
-    descriptorLabel.setAttribute("class", "label");
+    const descriptorLabel = makeLabel("p", headerLabelDesc);
 
     /* Create an empty Cartesian equation label */
     const cartesianEqnLabel = document.createElement("p");
@@ -625,29 +624,65 @@ function createTableRow(tableBody, headerLabelDesc, needCheckBox, checkList) {
 
     /* add labels into the HTML page */    
     headerCol.appendChild(descriptorLabel);
-    firstCol.appendChild(cartesianEqnLabel);
-    secondCol.appendChild(vLabelContainer);
+    cartesianCol.appendChild(cartesianEqnLabel);
+    vectorCol.appendChild(vLabelContainer);
 
+    return headerRow;
+
+}
+
+/* Adds a latex expression to a table. 
+   Precond:
+     - headerRow: The row above the row where the latex expression will be placed
+     - cartesianLatexExpr: A string containing the LaTeX expression of the equation */
+function fillCartesianEqn(headerRow, cartesianLatexExpr) {
+    
+  const cartesianEqnLabel = headerRow.nextElementSibling
+                                     .getElementsByTagName("p")[0];  
+
+  cartesianEqnLabel.textContent = cartesianLatexExpr; 
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]);   
+
+}
+
+/* Makes a row collapsible into its header row. A button is added to the header row.
+   
+   precond: the header row
+   postcond: the row below the header row can collapse into the header row */
+function makeRowCollapsible(headerRow) {
+
+    const infoRow = headerRow.nextElementSibling;
+    const cartesianEqnLabel = infoRow.getElementsByTagName("p")[0];
+    const vLabelContainer = infoRow.getElementsByTagName("div")[0];
+
+    /* create a button that will collapse / un-collapse the row information */
+    const collapseBtn = document.createElement("button");
+    collapseBtn.className = "ui circular icon button";
+    collapseBtn.appendChild(makeIcon("minus icon"));
+
+    /* add the button to the header row */
+    headerRow.appendChild(collapseBtn);
 
     /* At this point, the labels, cartesian equation and graphic
        have been added onto the webpage. Now, we need to make the span info
        collapsible */
+    
+    const rowHeight = infoRow.scrollHeight;
 
-    let collapseCurried = (rowHeight) => () => {
-      if(row.style.height !== "0px") {
+    collapseBtn.onclick = () => {
+      if(infoRow.style.height !== "0px") {
         cartesianEqnLabel.style.opacity = "0";
         vLabelContainer.style.opacity = "0";
         
         setTimeout(() => {
           cartesianEqnLabel.style.display = "none";
           vLabelContainer.style.display = "none";
-          row.style.height = row.scrollHeight;
-          row.style.height = "0px";
+          infoRow.style.height = "0px";
           collapseBtn.children[0].className = "plus icon";
         }, 400);
 
       } else {
-        row.style.height = "" + rowHeight + "px";
+        infoRow.style.height = "" + rowHeight + "px";
 
         setTimeout(() => {
           cartesianEqnLabel.style.display = "";
@@ -658,16 +693,7 @@ function createTableRow(tableBody, headerLabelDesc, needCheckBox, checkList) {
          }, 1200);
       }
     };
-
-    let attachCollapseBtnListener = (rowHeight) => {
-      
-      collapseBtn.onclick = collapseCurried(rowHeight);
-    };
-
-    return [descriptorLabel, cartesianEqnLabel, vLabelContainer, row, attachCollapseBtnListener];
 }
-
-
 
 /*This function is triggered when the Span button is clicked. 
   When Span button is pressed
@@ -999,15 +1025,15 @@ function drawEqn() {
   // get a reference to the plotter display table body
   const eqnTableBody = document.getElementById("eqnTableBody");
 
-  const rowLabels = createTableRow(eqnTableBody, "Equation " + numEqns, true, eqnCheckList);
-  const descriptorLabel = rowLabels[0];
-  const cartesianEqnLabel = rowLabels[1];
-  const vectorLabelContainer = rowLabels[2];
- 
-  const cartesianCoeffs = readEqn();
+  const headerRow = createTableRow(eqnTableBody, "Equation " + numEqns);
+  const descriptorLabel = headerRow.getElementsByTagName("p")[0];
+  const infoRow = headerRow.nextElementSibling;
+  const vectorLabelContainer = infoRow.getElementsByTagName("div")[0];
 
-  cartesianEqnLabel.textContent = printCartesianEqn(cartesianCoeffs);
-  MathJax.Hub.Queue(['Typeset', MathJax.Hub, cartesianEqnLabel]); 
+  addCheckBox(headerRow, eqnCheckList);
+
+  const cartesianCoeffs = readEqn();
+  fillCartesianEqn(headerRow, printCartesianEqn(cartesianCoeffs));
   
   // an object containing 0. matrix containing position and 
   //direction vectors ...{reference : .., hex:...} 
@@ -1025,7 +1051,6 @@ function drawEqn() {
     const y = vectors[1][i];
     const z = vectors[2][i];
 
-    const vectorLabel = document.createElement("p");
     let vectorDesc; 
     
     if (i === 0) {
@@ -1034,11 +1059,13 @@ function drawEqn() {
       vectorDesc = "Direction Vector: (";
     }
 
-    vectorLabel.textContent = vectorDesc + x + ", " + y + ", " + z + ")";
-    vectorLabelContainer.appendChild(vectorLabel);
-   }
+    const vectorLabel = makeLabel("p", vectorDesc + x + ", " + y + ", " + z + ")");
+    const vectorGraphic = parsedLinearSystem[2 + i].reference;
+    addLabelEffects(vectorLabel, vectorGraphic);
 
-   rowLabels[4](rowLabels[3].scrollHeight);
+    vectorLabelContainer.appendChild(vectorLabel);
+
+   }
 
    const eqnObj = {       
      eqnGraphic: eqnGraphic,
@@ -1046,6 +1073,8 @@ function drawEqn() {
    };
 
    eqnList.push(eqnObj); 
+  
+   makeRowCollapsible(headerRow);
 
 }
 
