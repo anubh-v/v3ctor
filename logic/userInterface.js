@@ -80,7 +80,7 @@ function enableTextBox(textBox) {
 function addCheckBox(headerRow, checkList) {
   console.log("added");
   const checkBox = makeCheckBox();
-  checkList.unshift(checkBox.children[0]);
+  checkList.push(checkBox.children[0]);
   headerRow.appendChild(checkBox);
 
 }
