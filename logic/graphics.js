@@ -593,6 +593,8 @@ function drawGraphicsFromLinearSystem(augmentedMatrix,container) {
   } else if (solutions[0].length == 2) {
     solutionGraphic = linePlotter(solutions);
   } else if (solutions[0].length == 3) {
+  	// if solutions gives rise to a plane, modify to the position vector to the normal vector
+    transformPositionVector(solutions);
     solutionGraphic = planePlotter(solutions);
   } else {
     solutionGraphic = {reference:createCube(), hex: undefined};

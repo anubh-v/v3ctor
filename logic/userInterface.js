@@ -79,7 +79,7 @@ function enableTextBox(textBox) {
    Can we generalise this further?  */
 function addCheckBox(headerRow, checkList) {
   const checkBox = makeCheckBox();
-  checkList.unshift(checkBox.children[0]);
+  checkList.push(checkBox.children[0]);
   headerRow.appendChild(checkBox);
 }
 
