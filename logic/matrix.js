@@ -72,6 +72,15 @@ function appendColumn(matrix, colVector) {
 		matrix[row].push(colVector[row]);
 	}
 }
+
+// function mutation matrix by prepending a row vector to the existing m*n matrix consisting of n column vectors
+// matrix: 2d array m*n, colVector: 1d array 1*m
+function prependColumn(matrix, colVector) {
+	for (var row = 0; row < matrix.length; row++ ) {
+		matrix[row].unshift(colVector[row]);
+	}
+}
+
 // function mutating m1 by appending m2 to m1, where m1 & m2 are both 2d array
 function appendMatrix(m1,m2) {
 	for (var row = 0; row < m1.length; row++) {
@@ -94,7 +103,7 @@ function appendArr (arr1, arr2) {
 shifted column as a 1d array / row vector.
 */
 function shiftColumn(matrix) {
-	var outputArr = new Array()
+	var outputArr = new Array();
 	for (var row = 0; row < matrix.length; row++) {
 		outputArr.push(matrix[row].shift());
 	}
@@ -806,7 +815,6 @@ function lineVectorToCartesian(vectorA, pointOnLine) {
     /* there will be 2 vectors in nullSpaceBasis */
 
     /* retrieve the 2 vectors */
-    printMatrix(nullSpaceBasis);
     let vectorB = [nullSpaceBasis[0][0], nullSpaceBasis[1][0], nullSpaceBasis[2][0]];
     let vectorC = [nullSpaceBasis[0][1], nullSpaceBasis[1][1], nullSpaceBasis[2][1]];
 
