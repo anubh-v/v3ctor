@@ -25,7 +25,7 @@ document.addEventListener( 'mousemove' , onDocumentMouseMove, false);
 
 Vectorize.addEventListener = function(type,func,scene,camera){
     function f(event){
-    	//console.log("(" + Vectorize.mouse.x + "," + Vectorize.mouse.y + ")");
+    	console.log("(" + Vectorize.mouse.x + "," + Vectorize.mouse.y + ")");
         var vector = new THREE.Vector3( Vectorize.mouse.x, Vectorize.mouse.y, -1 ).unproject( camera );
        	
        	// draw line simulating the ray projected by the raycaster
@@ -35,69 +35,26 @@ Vectorize.addEventListener = function(type,func,scene,camera){
     		currentRow.push(vector.getComponent(x));
     		currentRow.push(vector.getComponent(x) - camera.position.getComponent(x));
     	}
-    	//linePlotter(lineMatrix);	
+    	linePlotter(lineMatrix);	
 
         Vectorize.mousePath = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
         var intersects = Vectorize.mousePath.intersectObject(sphere,true);
-        //console.log(intersects);
+        console.log(intersects);
         func(intersects);
     }
     document.addEventListener(type,f,false);
 }
 var test;
-
-// global boolean checking if an object is being dragged.
-var isDragging = false;
-Vectorize.addEventListener('mousedown', 
-	// enlarge the 1st element when clicked
-	function (intersects) {
-        if (intersects.length == 0) {
-            console.log("no intersection upon mousedown");
-            return;
-        }
-
-        isDragging = true;
-        console.log("dragging activated upon mousedown");
-		test = intersects;
-		var mesh = intersects[0].object;
-		var position = new THREE.Vector3( Vectorize.mouse.x, Vectorize.mouse.y, -1 ).unproject( camera );
-		//console.log("(" + position.getComponent(0) + "," + position.getComponent(1) + "," + position.getComponent(2)+ ")");
-		mesh.scale.x *= 1.2;mesh.scale.y *= 1.2;mesh.scale.z *= 1.2; 
-	}, scene,camera
-	); 
-
-Vectorize.addEventListener('mouseup', 
-    function(intersects) {
-        if (intersects.length == 0 || !isDragging) {
-            console.log("no intersection upon mouseup or nothing being dragged");
-            return;
-        }
-        test = intersects;
-        let mesh = intersects[0].object;
-        mesh.scale.x *= 1/1.2;mesh.scale.y *= 1/1.2;mesh.scale.z *= 1/1.2;
-        let intersectionPoint = intersects[0].point;
-        console.log("object has been dragged to: (" + 
-            intersectionPoint.getComponent(0) + "," + 
-            intersectionPoint.getComponent(1) + "," + 
-            intersectionPoint.getComponent(2) + ")"
-            );
-
-        isDragging = false;
-    },
-    scene,camera);
-/*
-Vectorize.addEventListener('mouseup', 
+Vectorize.addEventListener('click', 
 	// enlarge the 1st element when clicked
 	function (intersects) {
 		test = intersects;
 		var mesh = intersects[0].object;
-		mesh.scale.x *= 1/1.2;
-		mesh.scale.y *= 1/1.2;
-		mesh.scale.z *= 1/1.2; 
+		mesh.scale.x *= 1.2;
+		mesh.scale.y *= 1.2;
+		mesh.scale.z *= 1.2; 
 	}, scene,camera
 	); 
-*/
-
 /*
 
 Vectorize.addEventListener = function(type,camera){
