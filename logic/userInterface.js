@@ -114,7 +114,6 @@ function rotateX() {
     }
 
     rotateGridXBtn.onclick = stopRotation;
-
 }
 
 function rotateY() {
@@ -131,7 +130,6 @@ function rotateY() {
     }
 
     rotateGridYBtn.onclick = stopRotation;
-
 }
 
 function rotateZ() {
@@ -148,7 +146,6 @@ function rotateZ() {
     }
 
     rotateGridZBtn.onclick = stopRotation;
-
 }
 
 
@@ -189,8 +186,7 @@ function vectorsToCartesianCoeffs(vectorMatrix, pointOnObject) {
         const cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnObject);
 
         return cartesianCoeffs;
-    }
-    
+    }  
 }
 
 function coeffsToCartesianLatex(coeffsArray) {
@@ -234,7 +230,7 @@ function getRandomColour() {
 
     function decimalToHex(decimalNum) {
 
-      const symbolsMap = {
+      const symbolsMap = [
         "0" : "0",
         "1" : "1",
         "2" : "2",
@@ -251,7 +247,7 @@ function getRandomColour() {
         "13" : "d",
         "14" : "e",
         "15" : "f"
-      }
+      ];
 
       const remainder = decimalNum % 16;
       const quotient = (decimalNum - remainder) / 16;
