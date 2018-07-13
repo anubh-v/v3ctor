@@ -339,69 +339,94 @@ function lc(a,b,v1,v2) {
 precond: 1. m: 3 * n matrix of n LI column vectors, where  1<= n <= 3
          2. container: the Object3D to put all graphics generated into
          3. no entries should be NaN
-postcond : generating graphics of vectors and subsp in the canvas, then return an array containing 
-their ref. index 0: ref to subp graphic ; >=index 1 : reference to basis vectors(orders are preserved)  
+postcond: For the subspace and each basis vector, generate a hex colour code and the graphic. Then return an array containing 
+          one object for each graphic.
+   
+          graphic object:= {reference: undefined, hex: undefined }
+
+          ref. index 0: ref to subp graphic object ; >=index 1 : reference to basis vectors graphic objects(orders are preserved)  
  */
 function drawSpan(m,container) {
-  var arr = [];
-  var obj = new THREE.Object3D();
+  const arr = [];
+  const obj = new THREE.Object3D();
+
   // identify the number of vectors to span
-  var numVectors = m[0].length
+  const numVectors = m[0].length
+
+  const spanColour = getRandomColour();
+  const vectorColour = getRandomColour();
+
   if (numVectors == 1) {
-    var x = m[0][0];
-    var y = m[1][0];
-    var z = m[2][0];
-    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),getRandomColour());
-    var line = createSpannedLine(new THREE.Vector3(x,y,z),36,getRandomColour());
-    arr.push(line);
-    arr.push(v);
+    const x = m[0][0];
+    const y = m[1][0];
+    const z = m[2][0];
+
+    const line = createSpannedLine(new THREE.Vector3(x,y,z),36, spanColour);
+    const lineGraphicObj = {reference: v, hex: vColour};
+    arr.push(lineGraphicObj);
     obj.add(line);
+
+    const v = createVector(x,y,z,new THREE.Vector3(0,0,0), vectorColour);
+    const vGraphicObj = {reference: v, hex: vColour};
+    arr.push(vGraphicObj);
     obj.add(v);
 
-    lineVectorToCartesian([x, y, z], [0, 0, 0]);
-
   } else if (numVectors == 2) {
-    var x1 = m[0][0];
-    var y1 = m[1][0];
-    var z1 = m[2][0];
-    var x2 = m[0][1];
-    var y2 = m[1][1];
-    var z2 = m[2][1];
-    var plane = createSpannedPlane(
+    const x1 = m[0][0];
+    const y1 = m[1][0];
+    const z1 = m[2][0];
+    const x2 = m[0][1];
+    const y2 = m[1][1];
+    const z2 = m[2][1];
+
+    const plane = createSpannedPlane(
         new THREE.Vector3(x1,y1,z1),
         new THREE.Vector3(x2,y2,z2),
-        100,getRandomColour()
-        )
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
-    arr.push(plane);
-    arr.push(v1);
-    arr.push(v2);
+        100, spanColour
+        );
+    const planeGraphicObj = {reference: plane, hex: spanColour};
+    arr.push(planeGraphicObj);
     obj.add(plane);
+
+    const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorColour);
+    const v1GraphicObj = {reference: plane, hex: spanColour};
+    arr.push(v1GraphicObj);
     obj.add(v1);
+
+    const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorColour);
+    const v2GraphicObj = {reference: plane, hex: spanColour};
+    arr.push(v2GraphicObj);
     obj.add(v2);
 
   } else {
-    var x1 = m[0][0];
-    var y1 = m[1][0];
-    var z1 = m[2][0];
-    var x2 = m[0][1];
-    var y2 = m[1][1];
-    var z2 = m[2][1];
-    var x3 = m[0][2];
-    var y3 = m[1][2];
-    var z3 = m[2][2];
-    var cube = createCube();
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
-    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),getRandomColour());
+    const x1 = m[0][0];
+    const y1 = m[1][0];
+    const z1 = m[2][0];
+    const x2 = m[0][1];
+    const y2 = m[1][1];
+    const z2 = m[2][1];
+    const x3 = m[0][2];
+    const y3 = m[1][2];
+    const z3 = m[2][2];
+
+    const cube = createCube();
+    const cubeGraphic = {reference: cube, hex: undefined};
     arr.push(cube);
-    arr.push(v1);
-    arr.push(v2);
-    arr.push(v3);
     obj.add(cube);
+
+    const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorColour);
+    const v1GraphicObj = {reference: v1, hex: vectorColour};
+    arr.push(v1GraphicObj);
     obj.add(v1);
+
+    const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorColour);
+    const v2GraphicObj = {reference: v2, hex: vectorColour};
+    arr.push(v2GraphicObj);
     obj.add(v2);
+
+    const v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0), vectorColour);
+    const v3GraphicObj = {reference: v3, hex: vectorColour};
+    arr.push(v3GraphicObj);
     obj.add(v3);
   }
   //adding graphics into subpaceObjs
