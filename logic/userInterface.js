@@ -1048,11 +1048,11 @@ function addEqn() {
 
   eqnList.push(eqnObj); 
   
-  drawEqn(parsedLinearSystem, cartesianLatex);
+  generalEqnHelper(parsedLinearSystem, cartesianLatex);
 
 }
 
-function drawEqn(parsedLinearSystem, cartesianLatex) {
+function generalEqnHelper(parsedLinearSystem, cartesianLatex) {
   numEqns++;    
     
   // get a reference to the plotter display table body
@@ -1150,7 +1150,7 @@ function drawIntersection() {
   const cartesianLatex = coeffsToCartesianLatex(cartesianCoeffs);
    
   prependColumn(vectorMatrix, pointOnObject);
-  drawEqn(parsedLinearSystem, cartesianLatex);
+  generalEqnHelper(parsedLinearSystem, cartesianLatex);
   
   const eqnObj = {       
     eqnGraphic: parsedLinearSystem[1].reference,
