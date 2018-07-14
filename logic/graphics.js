@@ -36,7 +36,6 @@ let vectorObject = {coordinates: [7,0,0],graphicRef: undefined};
 let imageObject = {coordinates: undefined, graphicRef: undefined};
 
 function onMouseMove(event) {
-
 	// calculate mouse position in normalized device coordinates
 	// (-1 to +1) for both components
     var stage = document.getElementById("stage");

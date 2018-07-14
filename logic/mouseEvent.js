@@ -112,6 +112,7 @@ Vectorize.addEventListener('mouseup',
     function(intersects) {
         if (intersects.length == 0 || !isDragging) {
             console.log("no intersection upon mouseup or nothing being dragged");
+            isDragging = false;
             return;
         }
         test = intersects;
