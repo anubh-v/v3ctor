@@ -1,7 +1,7 @@
 /*------------------GENERAL SETUP -------------------------------*/
 
 /* key variables for a basic threejs scene */
-var camera, scene, renderer, controls;
+var camera, scene, renderer, controls, dragControls, sphere;
 
 /* raycaster contains methods to handle mouse input */
 var raycaster = new THREE.Raycaster();
@@ -30,6 +30,10 @@ var spanGraphics = new THREE.Object3D;
 var matricesGraphics = new THREE.Object3D;
 
 let equationGraphics = new THREE.Object3D;
+
+let vectorObject = {coordinates: [7,0,0],graphicRef: undefined};
+
+let imageObject = {coordinates: undefined, graphicRef: undefined};
 
 function onMouseMove(event) {
 
@@ -115,6 +119,27 @@ function init() {
   axes.add(yLabel);
   var zLabel = makeTextSprite("z", undefined, 0,0,55);
   axes.add(zLabel);
+
+  // set up spheres
+  sphere = new THREE.Object3D();
+  scene.add(sphere);
+
+  let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
+  sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
+  sphere.add(sphere1);
+
+  // set up the original vector
+  let vector = createVector(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2], new THREE.Vector3(0,0,0), 0xffffff)
+  scene.add(vector);
+  vectorObject.graphicRef = vector;
+
+  // use DragControls.js
+  let objects = sphere.children;
+  dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+  dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
+  dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
+
+
 }
 
 function setObjOpacity(obj, newOpacity) {
