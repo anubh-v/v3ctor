@@ -231,22 +231,10 @@ function getRandomColour() {
     function decimalToHex(decimalNum) {
 
       const symbolsMap = [
-        "0" : "0",
-        "1" : "1",
-        "2" : "2",
-        "3" : "3",
-        "4" : "4",
-        "5" : "5",
-        "6" : "6",
-        "7" : "7",
-        "8" : "8",
-        "9" : "9",
-        "10" : "a",
-        "11" : "b",
-        "12" : "c",
-        "13" : "d",
-        "14" : "e",
-        "15" : "f"
+        "0", "1", "2", "3",
+        "4", "5", "6", "7",
+        "8", "9", "a", "b",
+        "c", "d", "e", "f"
       ];
 
       const remainder = decimalNum % 16;
@@ -260,7 +248,7 @@ function getRandomColour() {
     }
     
     const prelimHex = (decimalToHex(red) + decimalToHex(green) + decimalToHex(blue));
-    return +('0x' + prelimHex);
+    return "0x" + prelimHex;
   }
 
   const redGreenFlag = getRandomInt(0, 1);
@@ -461,8 +449,14 @@ spanBtn.onclick = spanBtnHelper;
 /* This function adds a mouseover effect on a given HTML label and its 
    corresponding threejs graphic.
    precond: the HTML label and the threejs graphic object
-   postcod: a mouseover function is added to the HTML label */
-function addLabelEffects(labelElement, graphic) {
+   postcod: a mouseover function is added to the HTML label
+            A colour can be specified for the label. If not, black
+            colour will be used  */
+function addLabelEffects(labelElement, graphic, labelColour) {
+    
+    /* labelColour is of the format "0x------"
+       For HTML, we need "#------" */
+    labelElement.style.color = "#" + labelColour.substr(2);
     // adding hide/unhide & labelling features
     labelElement.onclick = () => {
       
@@ -546,8 +540,8 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     const arr = drawSpan(vectorsToSpan, spanGraphics);    
 
    /* Extract the span's graphic from the array */
-    const subspGraphic = arr[0];
-    addLabelEffects(descriptorLabel, subspGraphic);
+    const subspGraphic = arr[0].reference;
+    addLabelEffects(descriptorLabel, subspGraphic, arr[0].hex);
 
     /* Wrap the graphic and labels in a subspace object */
     const subspObj = {
@@ -563,7 +557,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
        for each basis vector */
     for (let i = 1; i < arr.length; i++) {
        
-      const vGraphic = arr[i];
+      const vGraphic = arr[i].reference;
       vGraphics.push(vGraphic);
 
       const x = vectorsToSpan[0][i-1];
@@ -575,7 +569,8 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
-      addLabelEffects(vLabel, vGraphic);
+      
+      addLabelEffects(vLabel, vGraphic, arr[i].hex);
       vLabels.push(vLabel);
     }
 
@@ -1055,8 +1050,6 @@ function addEqn() {
 
 function drawEqn(parsedLinearSystem, cartesianLatex) {
   numEqns++;    
-
-  console.log(parsedLinearSystem);
     
   // get a reference to the plotter display table body
   const eqnTableBody = document.getElementById("eqnTableBody");
@@ -1071,7 +1064,7 @@ function drawEqn(parsedLinearSystem, cartesianLatex) {
   fillCartesianEqn(headerRow, cartesianLatex);
   
   const eqnGraphic = parsedLinearSystem[1].reference;
-  addLabelEffects(descriptorLabel, eqnGraphic);
+  addLabelEffects(descriptorLabel, eqnGraphic, parsedLinearSystem[1].hex);
 
   /* create vector labels */
   const vectors = parsedLinearSystem[0];
@@ -1098,7 +1091,7 @@ function drawEqn(parsedLinearSystem, cartesianLatex) {
        No vector Graphics are provided for Points and Cubes */
     if (parsedLinearSystem.length > 2) {
       const vectorGraphic = parsedLinearSystem[2 + i].reference;
-      addLabelEffects(vectorLabel, vectorGraphic);
+      addLabelEffects(vectorLabel, vectorGraphic, parsedLinearSystem[2 + i].hex);
     }
 
     vectorLabelContainer.appendChild(vectorLabel);
