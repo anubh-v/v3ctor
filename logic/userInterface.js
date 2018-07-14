@@ -75,12 +75,11 @@ function enableTextBox(textBox) {
     textBox.className = "ui input";
 }
 
-/* Given a <tr> element, add a Semantic UI checkbox to it
-   Can we generalise this further?  */
-function addCheckBox(headerRow, checkList) {
+/* Given a HTML element, add a Semantic UI checkbox to it */
+function addCheckBox(container, checkList) {
   const checkBox = makeCheckBox();
   checkList.push(checkBox.children[0]);
-  headerRow.appendChild(checkBox);
+  container.appendChild(checkBox);
 }
 
 /* register event handlers */
@@ -90,8 +89,6 @@ resetCameraBtn.onclick = () => {
     setGrid();
     controls.reset();
 };
-
-const opacSlider = document.getElementById("opacitySlider");
 
 const rotateGridXBtn = document.getElementById("rotateXButton");
 const rotateGridYBtn = document.getElementById("rotateYButton");
@@ -320,8 +317,7 @@ function addControls() {
   vectorsInnerForm.appendChild(inputCoeff);
   
   // create and add 1 checkbox to webpage
-  var checkBoxContainer = makeCheckBox();
-  vectorsInnerForm.appendChild(checkBoxContainer);
+  addCheckBox(vectorsInnerForm, checkBoxList);
 
 
   // wrap key data into an object  
@@ -569,12 +565,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
-<<<<<<< HEAD
-      
       addLabelEffects(vLabel, vGraphic, arr[i].hex);
-=======
-      addLabelEffects(vLabel, vGraphic.reference);
->>>>>>> 51576cc476479d4c219436a32f7ab3f50c21024a
       vLabels.push(vLabel);
     }
 
@@ -586,8 +577,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     spanObj.subsp = subspObj;
     spanObj.basisVectors = basisVectors;
 
-    makeRowCollapsible(headerRow);
-   
+    makeRowCollapsible(headerRow);   
 }
 
 /* This function sets up 2 rows in a given table, intended for a new Span / Matrix space / Plot object 
@@ -1157,7 +1147,5 @@ function drawIntersection() {
     cartesianCoeffs: cartesianCoeffs
   };
 
-  eqnList.push(eqnObj);    
- 
-      
+  eqnList.push(eqnObj);         
 }
