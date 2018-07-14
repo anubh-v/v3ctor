@@ -362,12 +362,12 @@ function drawSpan(m,container) {
     const z = m[2][0];
 
     const line = createSpannedLine(new THREE.Vector3(x,y,z),36, spanColour);
-    const lineGraphicObj = {reference: v, hex: vColour};
+    const lineGraphicObj = {reference: line, hex: spanColour};
     arr.push(lineGraphicObj);
     obj.add(line);
 
     const v = createVector(x,y,z,new THREE.Vector3(0,0,0), vectorColour);
-    const vGraphicObj = {reference: v, hex: vColour};
+    const vGraphicObj = {reference: v, hex: vectorColour};
     arr.push(vGraphicObj);
     obj.add(v);
 
@@ -389,12 +389,12 @@ function drawSpan(m,container) {
     obj.add(plane);
 
     const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorColour);
-    const v1GraphicObj = {reference: plane, hex: spanColour};
+    const v1GraphicObj = {reference: v1, hex: vectorColour};
     arr.push(v1GraphicObj);
     obj.add(v1);
 
     const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorColour);
-    const v2GraphicObj = {reference: plane, hex: spanColour};
+    const v2GraphicObj = {reference: v2, hex: vectorColour};
     arr.push(v2GraphicObj);
     obj.add(v2);
 

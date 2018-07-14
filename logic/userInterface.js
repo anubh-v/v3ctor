@@ -231,22 +231,22 @@ function getRandomColour() {
     function decimalToHex(decimalNum) {
 
       const symbolsMap = [
-        "0" : "0",
-        "1" : "1",
-        "2" : "2",
-        "3" : "3",
-        "4" : "4",
-        "5" : "5",
-        "6" : "6",
-        "7" : "7",
-        "8" : "8",
-        "9" : "9",
-        "10" : "a",
-        "11" : "b",
-        "12" : "c",
-        "13" : "d",
-        "14" : "e",
-        "15" : "f"
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
       ];
 
       const remainder = decimalNum % 16;
@@ -547,7 +547,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
    /* Extract the span's graphic from the array */
     const subspGraphic = arr[0];
-    addLabelEffects(descriptorLabel, subspGraphic);
+    addLabelEffects(descriptorLabel, subspGraphic.reference);
 
     /* Wrap the graphic and labels in a subspace object */
     const subspObj = {
@@ -575,7 +575,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
-      addLabelEffects(vLabel, vGraphic);
+      addLabelEffects(vLabel, vGraphic.reference);
       vLabels.push(vLabel);
     }
 
