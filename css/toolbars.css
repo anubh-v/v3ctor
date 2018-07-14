@@ -28,11 +28,14 @@
   z-index: 2; /* the menu being hovered upon should rise above the other menus */
 }
 
+.label {
+  font-weight: bold;
+}
+
 .label:hover {
   background-color: yellow;
   cursor: pointer;
 }
-
 
 #vectorsMenu {
   top: 10%;
