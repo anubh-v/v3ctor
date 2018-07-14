@@ -8,16 +8,38 @@ Vectorize.mouse = new THREE.Vector2();
 var canvas = document.getElementById("stage");
 Vectorize.dimensions = [canvas.width,canvas.height];
 
+
+/*Idea to transform vector dynamically by dragging the point
+initilize a global 3-elements array named point.
+when mousemoves, update mousecoordinates.
+if isDragged is true(i.e. something is being dragged), update the point, and then 
+update the graphic& textbox of the input vector, and graphic of the output vector been
+transformed
+*/
 function onDocumentMouseMove( event ) {
     event.preventDefault();
+
     //findout the canvas position so that we can make adjustments to 
     // mouseX and mouseY accordingly to find out the mouse coordinate
     var canvasPosition = renderer.domElement.getBoundingClientRect();
 	var mouseX = event.clientX - canvasPosition.left;
 	var mouseY = event.clientY - canvasPosition.top;
-
     Vectorize.mouse.x = ( mouseX / Vectorize.dimensions[0] ) * 2 - 1;
     Vectorize.mouse.y = - ( mouseY / Vectorize.dimensions[1] ) * 2 + 1; 
+
+    // if an obj is being dragged, when mouse moves, the vector coordinate and graphic will be adjusted
+    if (isDragging) {
+        // update coordinates of vector according to things being dragged
+        vectorObject.coordinates = findIntersection();
+        // update the graphic
+        scene.remove(vectorObject.graphicRef);
+        vectorObject.graphicRef = createArrow(
+                                vectorObject.coordinates[0],
+                                vectorObject.coordinates[1],
+                                vectorObject.coordinates[2]);
+        scene.add(vectorObject.graphicRef);
+
+    }
 }
 document.addEventListener( 'mousemove' , onDocumentMouseMove, false); 
 
@@ -85,6 +107,25 @@ Vectorize.addEventListener('mouseup',
         isDragging = false;
     },
     scene,camera);
+
+/*
+postcond: return the coordinate of intersection as 3 element array,
+if no intersection return null
+*/
+function findIntersection() {
+    var worldCoord = new THREE.Vector3( Vectorize.mouse.x, Vectorize.mouse.y, -1 ).unproject( camera );
+    Vectorize.mousePath = new THREE.Raycaster(camera.position, worldCoord.sub(camera.position).normalize());
+    var intersects = Vectorize.mousePath.intersectObject(sphere,true); 
+    if (intersects.length == 0) {
+        return null;
+    } else {
+        let intersectionPoint = intersects[0].point;
+        return [intersectionPoint.getComponent(0),
+                intersectionPoint.getComponent(1),
+                intersectionPoint.getComponent(2)];
+    }
+}
+
 /*
 Vectorize.addEventListener('mouseup', 
 	// enlarge the 1st element when clicked

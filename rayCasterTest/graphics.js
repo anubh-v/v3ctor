@@ -1,7 +1,9 @@
 
 var camera, scene, renderer, controls, dragControls,sphere;
-      var axes = new THREE.Object3D;
-      var allObjects = new THREE.Object3D;
+var axes = new THREE.Object3D;
+var allObjects = new THREE.Object3D;
+// initialize the vectorObject
+var vectorObject = {coordinates: [7,0,0],graphicRef: undefined};
 
 init();
 animate();
@@ -24,28 +26,40 @@ function init() {
   sphere = new THREE.Object3D();
   scene.add(sphere);
   sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
-  sphere1.position.set(7, 0, 0);
+  sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
   sphere.add(sphere1);
-  sphere2 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
+  /*sphere2 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
   sphere2.position.set(-10, 0, 0);
-  sphere.add(sphere2);
+  sphere.add(sphere2);*/
 
+  // set up the original vector
+  let vector = createArrow(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2])
+  scene.add(vector);
+  vectorObject.graphicRef = vector;
 
   //setting up xyz axis
   //GridHelper( size of the entire grid, divisions : number of divisions on the grid, colorCenterLine : Color, colorGrid : Color (0x00ff00) ) --> 
   // green central line
   var gridXZ = new THREE.GridHelper(100, 10,0x000000,0x00ff00);
   gridXZ.position.set(0,0,0);
+  gridXZ.material.transparent = true;
+  gridXZ.material.opacity = 0.3
   axes.add(gridXZ);
   // red central line
   var gridXY = new THREE.GridHelper(100,10,0x000000,0xff0000);
   gridXY.position.set(0,0,0);
+  gridXY.material.transparent = true;
+  gridXY.material.opacity = 0.3
   // rotation about x axis by 90 degrees
   gridXY.rotation.x = Math.PI/2;
   axes.add(gridXY);
+
   // blue central line
   var gridYZ = new THREE.GridHelper(100,10,0x000000,0x0000FF);
   gridYZ.position.set(0,0,0);
+  gridYZ.material.transparent = true;
+  gridYZ.material.opacity = 0.3
+
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
   axes.add(gridYZ); 
@@ -110,7 +124,9 @@ function makeTextSprite(message, opts, xCoord, yCoord, zCoord) {
 }
 
 
-function createArrow(x,y,z,origin,hex) {
+function createArrow(x,y,z) {
+  var origin = new THREE.Vector3(0,0,0);
+  var hex = 0x00ffff;
   var v = new THREE.Vector3(x,y,z);
   var length = v.length();
 

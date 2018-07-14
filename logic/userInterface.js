@@ -569,8 +569,12 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
+<<<<<<< HEAD
       
       addLabelEffects(vLabel, vGraphic, arr[i].hex);
+=======
+      addLabelEffects(vLabel, vGraphic.reference);
+>>>>>>> 51576cc476479d4c219436a32f7ab3f50c21024a
       vLabels.push(vLabel);
     }
 
