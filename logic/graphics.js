@@ -1,7 +1,7 @@
 /*------------------GENERAL SETUP -------------------------------*/
 
 /* key variables for a basic threejs scene */
-var camera, scene, renderer, controls;
+var camera, scene, renderer, controls, dragControls, sphere;
 
 /* raycaster contains methods to handle mouse input */
 var raycaster = new THREE.Raycaster();
@@ -31,8 +31,11 @@ var matricesGraphics = new THREE.Object3D;
 
 let equationGraphics = new THREE.Object3D;
 
-function onMouseMove(event) {
+let vectorObject = {coordinates: [7,0,0],graphicRef: undefined};
 
+let imageObject = {coordinates: undefined, graphicRef: undefined};
+
+function onMouseMove(event) {
 	// calculate mouse position in normalized device coordinates
 	// (-1 to +1) for both components
     var stage = document.getElementById("stage");
@@ -115,6 +118,27 @@ function init() {
   axes.add(yLabel);
   var zLabel = makeTextSprite("z", undefined, 0,0,55);
   axes.add(zLabel);
+
+  // set up spheres
+  sphere = new THREE.Object3D();
+  scene.add(sphere);
+
+  let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
+  sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
+  sphere.add(sphere1);
+
+  // set up the original vector
+  let vector = createVector(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2], new THREE.Vector3(0,0,0), 0xffffff)
+  scene.add(vector);
+  vectorObject.graphicRef = vector;
+
+  // use DragControls.js
+  let objects = sphere.children;
+  dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+  dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
+  dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
+
+
 }
 
 function setObjOpacity(obj, newOpacity) {
@@ -339,69 +363,96 @@ function lc(a,b,v1,v2) {
 precond: 1. m: 3 * n matrix of n LI column vectors, where  1<= n <= 3
          2. container: the Object3D to put all graphics generated into
          3. no entries should be NaN
-postcond : generating graphics of vectors and subsp in the canvas, then return an array containing 
-their ref. index 0: ref to subp graphic ; >=index 1 : reference to basis vectors(orders are preserved)  
+postcond: For the subspace and each basis vector, generate a hex colour code and the graphic. Then return an array containing 
+          one object for each graphic.
+   
+          graphic object:= {reference: undefined, hex: undefined }
+
+          ref. index 0: ref to subp graphic object ; >=index 1 : reference to basis vectors graphic objects(orders are preserved)  
  */
 function drawSpan(m,container) {
-  var arr = [];
-  var obj = new THREE.Object3D();
+  const arr = [];
+  const obj = new THREE.Object3D();
+
   // identify the number of vectors to span
-  var numVectors = m[0].length
+  const numVectors = m[0].length
+
+  const spanColour = getRandomColour();
+  const spanHexLiteral = +(spanColour);
+  const vectorColour = getRandomColour();
+  const vectorHexLiteral = +(vectorColour);
+
   if (numVectors == 1) {
-    var x = m[0][0];
-    var y = m[1][0];
-    var z = m[2][0];
-    var v = createVector(x,y,z,new THREE.Vector3(0,0,0),getRandomColour());
-    var line = createSpannedLine(new THREE.Vector3(x,y,z),36,getRandomColour());
-    arr.push(line);
-    arr.push(v);
+    const x = m[0][0];
+    const y = m[1][0];
+    const z = m[2][0];
+
+    const line = createSpannedLine(new THREE.Vector3(x,y,z),36, spanHexLiteral);
+    const lineGraphicObj = {reference: line, hex: spanColour};
+    arr.push(lineGraphicObj);
     obj.add(line);
+
+    const v = createVector(x,y,z,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const vGraphicObj = {reference: v, hex: vectorColour};
+    arr.push(vGraphicObj);
     obj.add(v);
 
-    lineVectorToCartesian([x, y, z], [0, 0, 0]);
-
   } else if (numVectors == 2) {
-    var x1 = m[0][0];
-    var y1 = m[1][0];
-    var z1 = m[2][0];
-    var x2 = m[0][1];
-    var y2 = m[1][1];
-    var z2 = m[2][1];
-    var plane = createSpannedPlane(
+    const x1 = m[0][0];
+    const y1 = m[1][0];
+    const z1 = m[2][0];
+    const x2 = m[0][1];
+    const y2 = m[1][1];
+    const z2 = m[2][1];
+
+    const plane = createSpannedPlane(
         new THREE.Vector3(x1,y1,z1),
         new THREE.Vector3(x2,y2,z2),
-        100,getRandomColour()
-        )
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
-    arr.push(plane);
-    arr.push(v1);
-    arr.push(v2);
+        100, spanHexLiteral
+        );
+    const planeGraphicObj = {reference: plane, hex: spanColour};
+    arr.push(planeGraphicObj);
     obj.add(plane);
+
+    const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const v1GraphicObj = {reference: plane, hex: vectorColour};
+    arr.push(v1GraphicObj);
     obj.add(v1);
+
+    const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const v2GraphicObj = {reference: plane, hex: vectorColour};
+    arr.push(v2GraphicObj);
     obj.add(v2);
 
   } else {
-    var x1 = m[0][0];
-    var y1 = m[1][0];
-    var z1 = m[2][0];
-    var x2 = m[0][1];
-    var y2 = m[1][1];
-    var z2 = m[2][1];
-    var x3 = m[0][2];
-    var y3 = m[1][2];
-    var z3 = m[2][2];
-    var cube = createCube();
-    var v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0),getRandomColour());
-    var v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0),getRandomColour());
-    var v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0),getRandomColour());
-    arr.push(cube);
-    arr.push(v1);
-    arr.push(v2);
-    arr.push(v3);
+    const x1 = m[0][0];
+    const y1 = m[1][0];
+    const z1 = m[2][0];
+    const x2 = m[0][1];
+    const y2 = m[1][1];
+    const z2 = m[2][1];
+    const x3 = m[0][2];
+    const y3 = m[1][2];
+    const z3 = m[2][2];
+
+    const cube = createCube();
+    const cubeGraphicObj = {reference: cube, hex: "0x000000"};
+    arr.push(cubeGraphicObj);
     obj.add(cube);
+
+    const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const v1GraphicObj = {reference: v1, hex: vectorColour};
+    arr.push(v1GraphicObj);
     obj.add(v1);
+
+    const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const v2GraphicObj = {reference: v2, hex: vectorColour};
+    arr.push(v2GraphicObj);
     obj.add(v2);
+
+    const v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0), vectorHexLiteral);
+    const v3GraphicObj = {reference: v3, hex: vectorColour};
+    arr.push(v3GraphicObj);
     obj.add(v3);
   }
   //adding graphics into subpaceObjs
@@ -416,18 +467,19 @@ precond: pointMatrix: 3*1 array
 postcond: return an object describing the graphic
 */
 function pointPlotter(pointMatrix) {
-  var sizeOfPoint = 1.0;
-  var hex = getRandomColour();
-  var geometry = new THREE.Geometry();
-  var material = new THREE.PointsMaterial({ color: hex, size: sizeOfPoint});
-  var vector = new THREE.Vector3();
+  const sizeOfPoint = 1.0;
+  const hex = getRandomColour();
+  const geometry = new THREE.Geometry();
+  const material = new THREE.PointsMaterial({ color: +(hex), size: sizeOfPoint});
+  const vector = new THREE.Vector3();
+
   vector.x = pointMatrix[0][0];
   vector.y = pointMatrix[1][0];
   vector.z = pointMatrix[2][0];
+
   geometry.vertices.push(vector);
-  var point = new THREE.Points(geometry,material);
-  var graphic = {reference: point, hex: hex};
-  return graphic;
+  const point = new THREE.Points(geometry,material);
+  return {reference: point, hex: hex};
 }
 
 /*
@@ -437,18 +489,19 @@ method1: plot a line through origin and then translate position by the postion v
 method2: determine 2 points on the line by a suitable proportion
 */
 function linePlotter(lineMatrix) {
-  var scaleOfAxis = 50; 
-  var hex = getRandomColour();
+  const scaleOfAxis = 50; 
+  const hex = getRandomColour();
+
   // find point and direction as 3-elements 1d array
-  var positionV = getCol(lineMatrix,0);
-  var directionV = getCol(lineMatrix,1);
-  var spannedLine = createSpannedLine(
+  const positionV = getCol(lineMatrix,0);
+  const directionV = getCol(lineMatrix,1);
+  const spannedLine = createSpannedLine(
                       new THREE.Vector3(directionV[0],directionV[1],directionV[2]),
-                      scaleOfAxis,hex);
+                      scaleOfAxis, +(hex));
+
   // traverse the spannedline by the position vector
   spannedLine.position.set(positionV[0],positionV[1],positionV[2]);
-  var graphic = {reference: spannedLine, hex: hex};
-  return graphic;
+  return {reference: spannedLine, hex: hex};
 }
 
 
@@ -471,21 +524,21 @@ postcond: return a planehelper described by the parameters
 method1: create a subspace using createSpannedPlane() and then translate accordingly
 */
 function planePlotter(planeMatrix) {
-  var hex = getRandomColour();
-  var sizeOfPlane = 100;
-  // 3 1d arrays with 3 elements each.
-  var positionV =  getCol(planeMatrix,0);
-  var directionV1 = getCol(planeMatrix,1);
-  var directionV2 = getCol(planeMatrix,2);
+  const hex = getRandomColour();
+  const sizeOfPlane = 100;
 
-  var spannedPlane = createSpannedPlane(
-                      new THREE.Vector3(directionV1[0],directionV1[1],directionV1[2]),
-                      new THREE.Vector3(directionV2[0],directionV2[1],directionV2[2]),
-                      sizeOfPlane, hex
-                     );
+  // 3 1d arrays with 3 elements each.
+  const positionV =  getCol(planeMatrix,0);
+  const directionV1 = getCol(planeMatrix,1);
+  const directionV2 = getCol(planeMatrix,2);
+
+  const spannedPlane = createSpannedPlane(
+                         new THREE.Vector3(directionV1[0], directionV1[1], directionV1[2]),
+                         new THREE.Vector3(directionV2[0], directionV2[1], directionV2[2]),
+                         sizeOfPlane, +(hex)
+                       );
   spannedPlane.position.set(positionV[0],positionV[1],positionV[2]);
-  var graphic = {reference: spannedPlane, hex: hex};
-  return graphic;                  
+  return {reference: spannedPlane, hex: hex};               
 }
 
 
@@ -538,14 +591,16 @@ graphics, where order is preserved as of that in vectorMatrix. graphics :=
 function drawVectors(vectorMatrix, container) {
   let outputArr = new Array();
   // 1d array indicating the postionVector of the vectorMatrix
+
   let positionV = getCol(vectorMatrix,0); 
+  let color = getRandomColour(); // use same colour for all vectors
+
   // for each column vector, generate 
   for (var col = 0; col < vectorMatrix[0].length; col++) {
-    let color = getRandomColour();
     let origin = (col == 0)? new THREE.Vector3(0,0,0) :
                   new THREE.Vector3(positionV[0],positionV[1],positionV[2]);
     let ref = createVector(vectorMatrix[0][col],vectorMatrix[1][col],
-                           vectorMatrix[2][col],origin,color);
+                           vectorMatrix[2][col],origin, +(color));
     container.add(ref);
     let vectorGraphic = {reference: ref, hex: color};
     outputArr.push(vectorGraphic);
@@ -597,7 +652,9 @@ function drawGraphicsFromLinearSystem(augmentedMatrix,container) {
     transformPositionVector(solutions);
     solutionGraphic = planePlotter(solutions);
   } else {
-    solutionGraphic = {reference:createCube(), hex: undefined};
+    
+    /* use black colour for the cube's label */
+    solutionGraphic = {reference:createCube(), hex: "0x000000"};
   }
   // add graphic to the scene
   container.add(solutionGraphic.reference);

@@ -75,14 +75,11 @@ function enableTextBox(textBox) {
     textBox.className = "ui input";
 }
 
-/* Given a <tr> element, add a Semantic UI checkbox to it
-   Can we generalise this further?  */
-function addCheckBox(headerRow, checkList) {
-  console.log("added");
+/* Given a HTML element, add a Semantic UI checkbox to it */
+function addCheckBox(container, checkList) {
   const checkBox = makeCheckBox();
   checkList.push(checkBox.children[0]);
-  headerRow.appendChild(checkBox);
-
+  container.appendChild(checkBox);
 }
 
 /* register event handlers */
@@ -114,7 +111,6 @@ function rotateX() {
     }
 
     rotateGridXBtn.onclick = stopRotation;
-
 }
 
 function rotateY() {
@@ -131,7 +127,6 @@ function rotateY() {
     }
 
     rotateGridYBtn.onclick = stopRotation;
-
 }
 
 function rotateZ() {
@@ -148,12 +143,63 @@ function rotateZ() {
     }
 
     rotateGridZBtn.onclick = stopRotation;
-
 }
 
-/* precond: a 3*n matrix, where n is the number of basis vectors in a given subspace. 
-            Each column is a basis vector.
-   
+
+function vectorsToCartesianCoeffs(vectorMatrix, pointOnObject) {
+    
+    /* identify number of basis vectors */
+    const numVectors = vectorMatrix[0].length;
+       
+    if (numVectors === 0) {
+    	/* case where it is a zero space */
+    	return [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]]; // [x = 0, y = 0, z = 0]
+
+    } else if (numVectors === 3) {       
+        /* if the subspace is the whole space, generate the zero equation */
+        return [[0, 0, 0, 0]]; // [0x + 0y + 0z = 0]
+    
+    } else if (numVectors === 2) {
+
+        /* if the subspace is a plane, pass the basis vectors and the origin into the 
+           'planeVectorToCartesian' function in matrix.js */
+
+        /* extract both basis vectors for the given matrix */
+        const vectorA = [vectorMatrix[0][0], vectorMatrix[1][0], vectorMatrix[2][0]];
+        const vectorB = [vectorMatrix[0][1], vectorMatrix[1][1], vectorMatrix[2][1]];
+
+        /* 'planeVectorToCartesian' returns the coefficients of the plane's cartesian eqn,
+           given the plane's 2 direction vectors and a point on the plane */
+        const cartesianCoeffs = planeVectorToCartesian(vectorA, vectorB, pointOnObject);
+
+        return [cartesianCoeffs];
+    } else {
+
+        /* if the subspace is a line, pass 1 basis vector and the origin into the 
+           'lineVectorToCartesian' function in matrix.js */
+        const vectorA = [vectorMatrix[0][0], vectorMatrix[1][0], vectorMatrix[2][0]];
+        const pointOnLine = [0, 0, 0];
+        
+        const cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnObject);
+
+        return cartesianCoeffs;
+    }  
+}
+
+function coeffsToCartesianLatex(coeffsArray) {
+  
+  return coeffsArray.map(coeffs => printCartesianEqn(coeffs))
+                    .reduce((accumulatedEqn, eqnB) => {
+                      return accumulatedEqn + " " + eqnB;
+                      });
+}
+
+/* precond: 
+     vectorMatrix: a 3*n matrix, where n is the number of direction / basis vectors.
+                   Each Column is a direction / basis vector
+     pointOnObject: a 1d 3-element array representing a point on the line / plane / cube
+                    In the case of spans, this will be [0, 0, 0]
+
    postcond: 1 string containing the LaTeX expression for the Cartesian equation
              Note: To use the equation element, add it as the text content of an HTML element
              After adding it to the page, we need to ask MathJax to render the newly added
@@ -161,49 +207,8 @@ function rotateZ() {
              This is done using: MathJax.Hub.Queue(["Typeset",MathJax.Hub, "ref-to-equation-element"]);
 
              For more info, see: http://docs.mathjax.org/en/latest/advanced/typeset.html */
-function basisToCartesianLatex(basisMatrix) {
-    
-    /* identify number of basis vectors */
-    const numVectors = basisMatrix[0].length;
-       
-    if (numVectors === 0) {
-    	/* case where it is a zero space */
-    	return "\\[x = 0, y = 0, z = 0\\]";
-    } else if (numVectors === 3) {       
-        /* if the subspace is the whole space, generate the zero equation */
-        return "\\[0x + 0y + 0z = 0\\]";    
-    } else if (numVectors === 2) {
-
-        /* if the subspace is a plane, pass the basis vectors and the origin into the 
-           'planeVectorToCartesian' function in matrix.js */
-
-        /* extract both basis vectors for the given matrix */
-        const vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
-        const vectorB = [basisMatrix[0][1], basisMatrix[1][1], basisMatrix[2][1]];
-
-        /* since this plane is a span, the origin is one point that lies on the plane */
-        const pointOnPlane = [0, 0, 0];
-
-        /* 'planeVectorToCartesian' returns the coefficients of the plane's cartesian eqn,
-           given the plane's 2 direction vectors and a point on the plane */
-        const cartesianCoeffs = planeVectorToCartesian(vectorA, vectorB, pointOnPlane);
-
-        /* add the equation text to the equation <h2> element */
-        return printCartesianEqn(cartesianCoeffs);
-    } else {
-
-        /* if the subspace is a line, pass 1 basis vector and the origin into the 
-           'lineVectorToCartesian' function in matrix.js */
-        const vectorA = [basisMatrix[0][0], basisMatrix[1][0], basisMatrix[2][0]];
-        const pointOnLine = [0, 0, 0];
-        
-        const cartesianCoeffs = lineVectorToCartesian(vectorA, pointOnLine);
-
-        /* add the equation text to the equation <h2> element */
-        return printCartesianEqn(cartesianCoeffs[0]) 
-                                      + " " + printCartesianEqn(cartesianCoeffs[1]);
-    }
-    
+function vectorsToCartesianLatex(vectors, pointOnPlane) { 
+  return coeffsToCartesianLatex(vectorsToCartesianCoeffs(vectors, pointOnPlane));
 }
 
 
@@ -222,24 +227,12 @@ function getRandomColour() {
 
     function decimalToHex(decimalNum) {
 
-      const symbolsMap = {
-        "0" : "0",
-        "1" : "1",
-        "2" : "2",
-        "3" : "3",
-        "4" : "4",
-        "5" : "5",
-        "6" : "6",
-        "7" : "7",
-        "8" : "8",
-        "9" : "9",
-        "10" : "a",
-        "11" : "b",
-        "12" : "c",
-        "13" : "d",
-        "14" : "e",
-        "15" : "f"
-      }
+      const symbolsMap = [
+        "0", "1", "2", "3",
+        "4", "5", "6", "7",
+        "8", "9", "a", "b",
+        "c", "d", "e", "f"
+      ];
 
       const remainder = decimalNum % 16;
       const quotient = (decimalNum - remainder) / 16;
@@ -252,7 +245,7 @@ function getRandomColour() {
     }
     
     const prelimHex = (decimalToHex(red) + decimalToHex(green) + decimalToHex(blue));
-    return +('0x' + prelimHex);
+    return "0x" + prelimHex;
   }
 
   const redGreenFlag = getRandomInt(0, 1);
@@ -324,8 +317,7 @@ function addControls() {
   vectorsInnerForm.appendChild(inputCoeff);
   
   // create and add 1 checkbox to webpage
-  var checkBoxContainer = makeCheckBox();
-  vectorsInnerForm.appendChild(checkBoxContainer);
+  addCheckBox(vectorsInnerForm, checkBoxList);
 
 
   // wrap key data into an object  
@@ -453,8 +445,14 @@ spanBtn.onclick = spanBtnHelper;
 /* This function adds a mouseover effect on a given HTML label and its 
    corresponding threejs graphic.
    precond: the HTML label and the threejs graphic object
-   postcod: a mouseover function is added to the HTML label */
-function addLabelEffects(labelElement, graphic) {
+   postcod: a mouseover function is added to the HTML label
+            A colour can be specified for the label. If not, black
+            colour will be used  */
+function addLabelEffects(labelElement, graphic, labelColour) {
+    
+    /* labelColour is of the format "0x------"
+       For HTML, we need "#------" */
+    labelElement.style.color = "#" + labelColour.substr(2);
     // adding hide/unhide & labelling features
     labelElement.onclick = () => {
       
@@ -528,7 +526,9 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     const infoRow = headerRow.nextElementSibling;
     const vLabelContainer = infoRow.getElementsByTagName("div")[0];
 
-    fillCartesianEqn(headerRow, basisToCartesianLatex(vectorsToSpan));
+    /* create the LaTeX expression for the Cartesian Equation using "vectorsToCartesianLatex"
+       and then fill the Cartesian Equation element with it */
+    fillCartesianEqn(headerRow, vectorsToCartesianLatex(vectorsToSpan, [0, 0, 0]));
 
     /* Using the filtered vectors, use "drawSpan" to draw the graphic for this span on the grid.
     "drawSpan" also returns an array containing the ref to the graphics representing the span
@@ -536,8 +536,8 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     const arr = drawSpan(vectorsToSpan, spanGraphics);    
 
    /* Extract the span's graphic from the array */
-    const subspGraphic = arr[0];
-    addLabelEffects(descriptorLabel, subspGraphic);
+    const subspGraphic = arr[0].reference;
+    addLabelEffects(descriptorLabel, subspGraphic, arr[0].hex);
 
     /* Wrap the graphic and labels in a subspace object */
     const subspObj = {
@@ -553,7 +553,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
        for each basis vector */
     for (let i = 1; i < arr.length; i++) {
        
-      const vGraphic = arr[i];
+      const vGraphic = arr[i].reference;
       vGraphics.push(vGraphic);
 
       const x = vectorsToSpan[0][i-1];
@@ -565,7 +565,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
-      addLabelEffects(vLabel, vGraphic);
+      addLabelEffects(vLabel, vGraphic, arr[i].hex);
       vLabels.push(vLabel);
     }
 
@@ -577,8 +577,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     spanObj.subsp = subspObj;
     spanObj.basisVectors = basisVectors;
 
-    makeRowCollapsible(headerRow);
-   
+    makeRowCollapsible(headerRow);   
 }
 
 /* This function sets up 2 rows in a given table, intended for a new Span / Matrix space / Plot object 
@@ -604,6 +603,7 @@ function createTableRow(tableBody, headerLabelDesc) {
     /* create a new row and two columns */    
     /* one row for the Cartesian Equation, and one for the basis vectors */
     const infoRow = document.createElement("tr");
+    infoRow.className = "collapsible";
     const cartesianCol = document.createElement("td");
     const vectorCol = document.createElement("td");
 
@@ -996,7 +996,7 @@ function eigenSpaceBtnHelper(valueObj) {
 
 /* register event handlers */
 const addEqnBtn = document.getElementById("addEqnBtn");
-addEqnBtn.onclick = drawEqn;
+addEqnBtn.onclick = addEqn;
 
 const deleteEqnBtn = document.getElementById("deleteEqnBtn");
 deleteEqnBtn.onclick = deleteLastEqn;
@@ -1023,8 +1023,26 @@ function readEqn() {
   return [xCoeff, yCoeff, zCoeff, dConstant];
 }
 
-function drawEqn() {
+function addEqn() {
+  
+  const cartesianCoeffs = readEqn();
+  const cartesianLatex = printCartesianEqn(cartesianCoeffs);
+  // an object containing 0. matrix containing position and 
+  //direction vectors ...{reference : .., hex:...} 
+  const parsedLinearSystem = drawGraphicsFromLinearSystem([cartesianCoeffs], equationGraphics);
 
+  const eqnObj = {       
+    eqnGraphic: parsedLinearSystem[1].reference,
+    cartesianCoeffs: [cartesianCoeffs]
+  };
+
+  eqnList.push(eqnObj); 
+  
+  generalEqnHelper(parsedLinearSystem, cartesianLatex);
+
+}
+
+function generalEqnHelper(parsedLinearSystem, cartesianLatex) {
   numEqns++;    
     
   // get a reference to the plotter display table body
@@ -1037,14 +1055,10 @@ function drawEqn() {
 
   addCheckBox(headerRow, eqnCheckList);
 
-  const cartesianCoeffs = readEqn();
-  fillCartesianEqn(headerRow, printCartesianEqn(cartesianCoeffs));
+  fillCartesianEqn(headerRow, cartesianLatex);
   
-  // an object containing 0. matrix containing position and 
-  //direction vectors ...{reference : .., hex:...} 
-  const parsedLinearSystem = drawGraphicsFromLinearSystem([cartesianCoeffs], equationGraphics);
   const eqnGraphic = parsedLinearSystem[1].reference;
-  addLabelEffects(descriptorLabel, eqnGraphic);
+  addLabelEffects(descriptorLabel, eqnGraphic, parsedLinearSystem[1].hex);
 
   /* create vector labels */
   const vectors = parsedLinearSystem[0];
@@ -1065,19 +1079,18 @@ function drawEqn() {
     }
 
     const vectorLabel = makeLabel("p", vectorDesc + x + ", " + y + ", " + z + ")");
-    const vectorGraphic = parsedLinearSystem[2 + i].reference;
-    addLabelEffects(vectorLabel, vectorGraphic);
+
+    /* Only link the vector labels with vector graphics if vector graphics exist.
+       Vector graphics only exist for Planes and Lines.
+       No vector Graphics are provided for Points and Cubes */
+    if (parsedLinearSystem.length > 2) {
+      const vectorGraphic = parsedLinearSystem[2 + i].reference;
+      addLabelEffects(vectorLabel, vectorGraphic, parsedLinearSystem[2 + i].hex);
+    }
 
     vectorLabelContainer.appendChild(vectorLabel);
 
    }
-
-   const eqnObj = {       
-     eqnGraphic: eqnGraphic,
-     cartesianCoeffs: cartesianCoeffs
-   };
-
-   eqnList.push(eqnObj); 
   
    makeRowCollapsible(headerRow);
 
@@ -1087,6 +1100,7 @@ function drawEqn() {
 function deleteLastEqn() {
 
   const toBeDeleted = eqnList.pop();
+  eqnCheckList.pop();
 
   equationGraphics.remove(toBeDeleted.eqnGraphic);
 
@@ -1100,24 +1114,38 @@ function deleteLastEqn() {
 
 function drawIntersection() {
 
-  let linearSystem = [];
+  const linearSystem = [];
 
   for (let i = 0; i < eqnCheckList.length; i++) {
-  
-   if (eqnCheckList[i].checked) {
 
-     linearSystem.push(eqnList[i].cartesianCoeffs);
+   if (eqnCheckList[i].checked) {
+     eqnList[i].cartesianCoeffs.forEach(coeffs => linearSystem.push(coeffs));
    }
 
   }
 
   if (linearSystem.length == 0) {
-
     alert("No objects selected for intersection");
     return;
   }
 
-  const parsedLinearSystem = drawGraphicsFromLinearSystem(linearSystem, equationGraphics);
 
-      
+  const parsedLinearSystem = drawGraphicsFromLinearSystem(linearSystem, equationGraphics);
+  let vectorMatrix = parsedLinearSystem[0];
+  const pointOnObject = shiftColumn(vectorMatrix);
+
+  console.log(vectorMatrix);
+
+  const cartesianCoeffs = vectorsToCartesianCoeffs(vectorMatrix, pointOnObject);
+  const cartesianLatex = coeffsToCartesianLatex(cartesianCoeffs);
+   
+  prependColumn(vectorMatrix, pointOnObject);
+  generalEqnHelper(parsedLinearSystem, cartesianLatex);
+  
+  const eqnObj = {       
+    eqnGraphic: parsedLinearSystem[1].reference,
+    cartesianCoeffs: cartesianCoeffs
+  };
+
+  eqnList.push(eqnObj);         
 }
