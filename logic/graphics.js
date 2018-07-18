@@ -1,33 +1,36 @@
 /*------------------GENERAL SETUP -------------------------------*/
 
 /* key variables for a basic threejs scene */
-var camera, scene, renderer, controls, dragControls, sphere;
+let camera, scene, renderer, controls, dragControls, sphere;
 
 /* raycaster contains methods to handle mouse input */
-var raycaster = new THREE.Raycaster();
+const raycaster = new THREE.Raycaster();
 
 /* track the user's cursor coordinates globally */
-var mouse = new THREE.Vector2();
+const mouse = new THREE.Vector2();
 mouse.x = 1000;
 mouse.y = 1000;
 /* renderQueue contains list of functions to be executed on each frame. 
    'render' function must be executed last */
-var renderQueue = [render];
+let renderQueue = [render];
 
-/* axes is the root object of our scene */
-var axes = new THREE.Object3D;
+/* sceneRoot is the root object of our scene */
+const sceneRoot = new THREE.Object3D;
+
+/* axes contains the XY, YX, YZ planes and the text labels along the x, y, z axes */
+const axes = new THREE.Object3D;
 
 /* stores references to all graphical elements related to the vectors section */
    // NOTE: needs renaming 
-var allObjects = new THREE.Object3D;
+let allObjects = new THREE.Object3D;
 
 /* a separate var storing ref to an obj3d for containing all graphical elements 
  related to the span section */
-var spanGraphics = new THREE.Object3D;
+let spanGraphics = new THREE.Object3D;
 
 /* a separate var storing ref to an obj3d for containing all graphical elements 
  related to the matrices section */
-var matricesGraphics = new THREE.Object3D;
+let matricesGraphics = new THREE.Object3D;
 
 let equationGraphics = new THREE.Object3D;
 
@@ -38,7 +41,7 @@ let imageObject = {coordinates: undefined, graphicRef: undefined};
 function onMouseMove(event) {
 	// calculate mouse position in normalized device coordinates
 	// (-1 to +1) for both components
-    var stage = document.getElementById("stage");
+    const stage = document.getElementById("stage");
 
 	mouse.x = ( event.clientX / stage.innerWidth ) * 2 - 1;
 	mouse.y = - ( event.clientY / stage.innerHeight ) * 2 + 1;
@@ -47,16 +50,18 @@ function onMouseMove(event) {
 
 window.addEventListener( 'click', onMouseMove, false );
 
-// add eventListener to adjust 
+// add eventListener to adjust the canvas size when the window is resized
 window.addEventListener("resize", function() {
-	var width = 3*(window.innerWidth / 4);
-	var height = 8*(window.innerHeight / 9);
+	const width = 3*(window.innerWidth / 4);
+	const height = 8*(window.innerHeight / 9);
 	renderer.setSize(width, height);
 	camera.aspect = width/height;
 	camera.updateProjectionMatrix();
 });
 
+/* set up the scene */
 init();
+/* start the render loop */
 animate();
 
 function init() {
@@ -65,28 +70,26 @@ function init() {
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
   setCamera();
 
-  var stage = document.getElementById("stage");
+  const stage = document.getElementById("stage");
 
   renderer = new THREE.WebGLRenderer({canvas: stage, antialias: true});
   renderer.setSize(3*(window.innerWidth / 4), 8*(window.innerHeight / 9));
   controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-  var gridObj = new THREE.Object3D;
-
   //setting up xyz axis
   //GridHelper( size of the entire grid, divisions : number of divisions on the grid, colorCenterLine : Color, colorGrid : Color (0x00ff00) ) --> 
   // green central line
-  var gridXZ = new THREE.GridHelper(100, 10,0xffffff, 0x33bbff);
+  const gridXZ = new THREE.GridHelper(100, 10,0xffffff, 0x33bbff);
   gridXZ.material.transparent = true;
   setObjOpacity(gridXZ, 0.2);
   // red central line
-  var gridXY = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
+  const gridXY = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   // rotation about x axis by 90 degrees
   gridXY.rotation.x = Math.PI/2;
   gridXY.material.transparent = true;
   setObjOpacity(gridXY, 0.2);
   // blue central line
-  var gridYZ = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
+  const gridYZ = new THREE.GridHelper(100,10,0xffffff,0x33bbff);
   // rotation about z axis by 90 degrees
   gridYZ.rotation.z = Math.PI/2;
   gridYZ.material.transparent = true;
@@ -96,27 +99,42 @@ function init() {
   axes.add(gridXY);
   axes.add(gridYZ);
 
-  axes.add(allObjects);
-  axes.add(spanGraphics);
-  axes.add(matricesGraphics);
-  axes.add(equationGraphics);
+  sceneRoot.add(axes);
+  sceneRoot.add(allObjects);
+  sceneRoot.add(spanGraphics);
+  sceneRoot.add(matricesGraphics);
+  sceneRoot.add(equationGraphics);
+
   setGrid();
-  scene.add(axes);
+
+  scene.add(sceneRoot);
 
   // create labels for axes
-  for (var i = -55; i <= 55; i = i + 10) {
-    var sprX = makeTextSprite(i - 5, undefined, i, 0, 0);
-    var sprY = makeTextSprite(i - 5, undefined, 5, i - 5, 0);
-    var sprZ = makeTextSprite(i - 5, undefined, 0, 0, i - 5);
+  for (let i = -50; i < 0; i = i + 10) {
+    const sprX = makeTextSprite(i, undefined, i, 0, 0);
+    const sprY = makeTextSprite(i, undefined, 0, i, 0);
+    const sprZ = makeTextSprite(i, undefined, 0, 0, i);
     axes.add(sprX);
     axes.add(sprY);   
     axes.add(sprZ);
   }
-  var xLabel = makeTextSprite("x", undefined, 60,0,0);
+
+  for (let i = 10; i <= 50; i = i + 10) {
+    const sprX = makeTextSprite(i, undefined, i, 0, 0);
+    const sprY = makeTextSprite(i, undefined, 0, i, 0);
+    const sprZ = makeTextSprite(i, undefined, 0, 0, i);
+    axes.add(sprX);
+    axes.add(sprY);   
+    axes.add(sprZ);
+  }
+
+  const sprZero = makeTextSprite(0, undefined, 0, 0, 0);
+  axes.add(sprZero);
+  const xLabel = makeTextSprite("x", undefined, 60,0,0);
   axes.add(xLabel);
-  var yLabel = makeTextSprite("y", undefined,5,60,0);
+  const yLabel = makeTextSprite("y", undefined,5,60,0);
   axes.add(yLabel);
-  var zLabel = makeTextSprite("z", undefined, 0,0,55);
+  const zLabel = makeTextSprite("z", undefined, 0,0,55);
   axes.add(zLabel);
 
   // set up spheres
@@ -176,8 +194,8 @@ function render() {
 
 /* Sets the Grid to the default rotation */
 function setGrid() {
-  axes.position.set(0, 0, 0);
-  axes.rotation.set(0, 0, 0);
+  sceneRoot.position.set(0, 0, 0);
+  sceneRoot.rotation.set(0, 0, 0);
 }
 
 /* Sets the Camera to the Default View */
@@ -255,9 +273,9 @@ function drawOneVector(x,y,z,hex, container) {
 /* read the vectorlist and draw the vectors on the grid */
 function drawAllVectors(vectorQueue) {
   // first, clear existing vectors
-  axes.remove(allObjects);
+  sceneRoot.remove(allObjects);
   allObjects = new THREE.Object3D;
-  axes.add(allObjects);
+  sceneRoot.add(allObjects);
 
   for (var i = 0; i < vectorQueue.length; i++) {
 

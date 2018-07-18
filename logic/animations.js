@@ -148,5 +148,5 @@ function removeFromRenderQueue(funcToBeRemoved) {
 
 /* add this function to the renderQueue to rotate the grid about a specified axis */
 function rotateGrid(axisToRotate) {
-    axes.rotation[axisToRotate] += 0.01;
+    sceneRoot.rotation[axisToRotate] += 0.01;
 }
