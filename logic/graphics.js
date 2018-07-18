@@ -123,7 +123,7 @@ function init() {
   sphere = new THREE.Object3D();
   scene.add(sphere);
 
-  let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red", wireframe: true}));
+  let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red"}));
   sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
   sphere.add(sphere1);
 
@@ -137,7 +137,6 @@ function init() {
   dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
   dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
   dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
-
 
 }
 
