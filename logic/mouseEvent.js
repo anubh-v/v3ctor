@@ -16,9 +16,8 @@ update the graphic& textbox of the input vector, and graphic of the output vecto
 transformed
 */
 function onDocumentMouseMove( event ) {
-    event.preventDefault();
 
-    //findout the canvas position so that we can make adjustments to 
+    //find out the canvas position so that we can make adjustments to 
     // mouseX and mouseY accordingly to find out the mouse coordinate
     var canvasPosition = renderer.domElement.getBoundingClientRect();
 	var mouseX = event.clientX - canvasPosition.left;
