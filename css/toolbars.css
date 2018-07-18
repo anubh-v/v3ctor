@@ -154,8 +154,12 @@
   width: 20%;
   height: 5%;
   z-index: 1;
+  
+  display: grid;
+  grid-template-columns: 15% 15% 15% 15% 15%;
+  grid-column-gap: 0%;
 
-  transition: 0.2s;
+  transition: 0.2s opacity;
 }
 
 #controlsMenu:hover {
