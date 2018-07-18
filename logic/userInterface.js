@@ -84,11 +84,21 @@ function addCheckBox(container, checkList) {
 
 /* register event handlers */
 const resetCameraBtn = document.getElementById("resetCameraButton");
-resetCameraBtn.onclick = () => {
+resetCameraBtn.onchange = () => {
 
     setGrid();
     controls.reset();
 };
+
+const opacSlider = document.getElementById("opacitySlider");
+
+opacSlider.oninput = () => {
+  const newOpacity = parseInt(opacSlider.value) / 100;
+  axes.children.forEach(child => {
+    setObjOpacity(child, newOpacity);
+  });
+}
+
 
 const rotateGridXBtn = document.getElementById("rotateXButton");
 const rotateGridYBtn = document.getElementById("rotateYButton");
@@ -211,7 +221,8 @@ function vectorsToCartesianLatex(vectors, pointOnPlane) {
   return coeffsToCartesianLatex(vectorsToCartesianCoeffs(vectors, pointOnPlane));
 }
 
-
+/* Returns a random hexadecimal string in the format "Ox------"
+   representing a hexadecimal colour in threejs */
 function getRandomColour() {
       
       function getRandomInt(lowerLimit, upperLimit) {
