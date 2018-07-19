@@ -34,7 +34,7 @@ let matricesGraphics = new THREE.Object3D;
 
 let equationGraphics = new THREE.Object3D;
 
-let vectorObject = {coordinates: [7,0,0],graphicRef: undefined};
+let vectorObject = {coordinates: [7,0,0], graphicRef: undefined};
 
 let imageObject = {coordinates: undefined, graphicRef: undefined};
 
