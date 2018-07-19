@@ -45,10 +45,9 @@ function onDocumentMouseMove( event ) {
                                 0xffffff);
         scene.add(vectorObject.graphicRef);
 
-
-        const givenMatrix = getMatrix();
-
-        if (!hasNaN(givenMatrix)) {
+        /* if the matrix inputs are fulled filled, calculate and draw the image vector */
+        if (!matricesObj.hasNaN) {
+            const givenMatrix = getMatrix();
 
             let resultant = multiply(givenMatrix, [[vectorX], [vectorY], [vectorZ]]);
             imageObject.graphicRef = createVector(resultant[0][0], resultant[1][0], resultant[2][0], 
@@ -60,7 +59,7 @@ function onDocumentMouseMove( event ) {
 
     }
 }
-document.addEventListener( 'mousemove' , onDocumentMouseMove, false); 
+document.addEventListener('mousemove', onDocumentMouseMove, false); 
 
 /* adds a function func to an event of your choice. func takes a paramter which is passed the raycaster intercepts */
 

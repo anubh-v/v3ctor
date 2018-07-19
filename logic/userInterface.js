@@ -84,8 +84,7 @@ function addCheckBox(container, checkList) {
 
 /* register event handlers */
 const resetCameraBtn = document.getElementById("resetCameraButton");
-resetCameraBtn.onchange = () => {
-
+resetCameraBtn.onclick = () => {
     setGrid();
     controls.reset();
 };
@@ -755,6 +754,7 @@ function spanBtnHelper() {
 /* obj caching all info for matrices section , may need to modify it*/ 
 /* menu effects*/
 var buttonsMenu = document.getElementById("buttonsMenu");
+
 var dropdown = document.getElementById("buttonDropDown");
 dropdown.onmouseenter = () => {
     buttonsMenu.style.display = "grid";
@@ -762,8 +762,6 @@ dropdown.onmouseenter = () => {
 dropdown.onmouseleave = () => {
   buttonsMenu.style.display = "none";
 };
-
-
 
 // initializing the object
 var matricesObj= {
@@ -779,8 +777,23 @@ var matricesObj= {
   transformedSubspace: {subsp: {label: undefined, graphic: undefined}, 
                         basisVectors: {labels: [], graphics: []}},
   eigenValues: [],
-  eigenSpaces: []
+  eigenSpaces: [],
+  hasNaN: true // stores true iff the current matrix is not fully filled
 };
+
+/* For each cell of the matrix inputs, attach an event listener that is triggered
+   when input is entered / deleted from the cell.
+   On each such event, we want to read the matrix inputs and determine if they are
+   fully filled */
+matricesObj.matrix.forEach(row => {
+  row.forEach(item => {
+    item.oninput = () => {
+      const updatedMatrix = getMatrix();
+      matricesObj.hasNaN = hasNaN(updatedMatrix);
+    }
+  });
+});
+  
 
 
 // function checking if a matrix contain NaN
