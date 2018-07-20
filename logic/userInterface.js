@@ -768,7 +768,7 @@ var matricesObj= {
   matrix:  [[document.getElementById("m11"), document.getElementById("m12"), document.getElementById("m13")],
             [document.getElementById("m21"), document.getElementById("m22"), document.getElementById("m23")],
             [document.getElementById("m31"), document.getElementById("m32"), document.getElementById("m33")]],
-  vector: [document.getElementById("x"), document.getElementById("y"), document.getElementById("z")],
+  vector: [document.getElementById("domX"), document.getElementById("domY"), document.getElementById("domZ")],
   transformedVector: {coordinate: [], label: undefined, graphic: undefined },
   columnSpace: {subsp: {label: undefined, graphic: undefined}, 
                 basisVectors: {labels: [], graphics: []}},
