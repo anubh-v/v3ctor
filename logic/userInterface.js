@@ -779,7 +779,8 @@ var matricesObj= {
                         basisVectors: {labels: [], graphics: []}},
   eigenValues: [],
   eigenSpaces: [],
-  hasNaN: true // stores true iff the current matrix is not fully filled
+  hasNaN: true, // stores true iff the current matrix is not fully filled
+  isDragging: false
 };
 
 /* For each cell of the matrix inputs, attach an event listener that is triggered
@@ -795,7 +796,13 @@ matricesObj.matrix.forEach(row => {
   });
 });
   
-
+matricesObj.vector.forEach(coordInput => {
+  coordInput.oninput = () => {
+    if (!matricesObj.isDragging) {
+      tranformVButnhelper();
+    } 
+  }
+});
 
 // function checking if a matrix contain NaN
 function hasNaN(m) {
@@ -837,37 +844,49 @@ tranformBtn.onclick = tranformVButnhelper;
 
 
 function tranformVButnhelper() {
+
+  /* clear current alerts */
+  document.getElementById("matricesTextDisplay").children[0].textContent = "";
+
   //update the coordinate attribute of the transformedVector field 
-  var currentMatrix = getMatrix();
+  const currentMatrix = getMatrix();
   if (hasNaN(currentMatrix)) {
-    alert("please fill in all fields in the matrix inputs");
+    document.getElementById("matricesTextDisplay").children[0].textContent = "Please fill in all matrix fields";
     return;
   }
-  var currentVector = getVector();
-  if (hasNaN(currentVector)) {
-    alert("please fill in all fields in the vector inputs");
+
+  const domainVector = getVector();
+  if (hasNaN(domainVector)) {
+    document.getElementById("matricesTextDisplay").children[0].textContent = "Fill in all vector fields";
     return;
   }
-  var currentResult = multiply(currentMatrix,currentVector);
-  var vectorArr = matricesObj.transformedVector.coordinate;
-  for (var i = 0; i < 3; i++) {
-    vectorArr[0] = currentResult[0][0];
-    vectorArr[1] = currentResult[1][0];
-    vectorArr[2] = currentResult[2][0];
+
+  /* remove old graphics */
+  scene.remove(vectorObject.graphicRef);
+  scene.remove(imageObject.graphicRef);
+
+  vectorObject.coordinates = [domainVector[0][0], domainVector[1][0], domainVector[2][0]];
+  vectorObject.graphicRef = 
+    createVector(vectorObject.coordinates[0], vectorObject.coordinates[1], vectorObject.coordinates[2],
+                 new THREE.Vector3(0, 0, 0),
+                 0xffffff);
+
+  /* obtain resultant vector as a 3*1 array */
+  const currentResult = multiply(currentMatrix, domainVector);
+
+  imageObject.coordinates = [currentResult[0][0], currentResult[1][0], currentResult[2][0]];
+  imageObject.graphicRef = 
+    createVector(imageObject.coordinates[0], imageObject.coordinates[1], imageObject.coordinates[2],
+                 new THREE.Vector3(0, 0, 0),
+                 0xffffff);
+
+  // add the coordinates of the vector into the given array of HTML textboxes
+  for (let i = 0; i < 3; i++) {
+    matricesObj.image[i].value = imageObject.coordinates[i];
   }
 
-  // add graphic
-  var graphic = drawOneVector(vectorArr[0],vectorArr[1],vectorArr[2],0xff0066,matricesGraphics);
-  matricesObj.transformedVector.graphic = graphic;
-
-  // add label and its eventListener
-  var display = document.getElementById("matricesTextDisplay");
-  var label = document.createElement("h1");
-  label.innerHTML = "VectorTransformed to: (" + vectorArr[0]+ ", "+ vectorArr[1]+ ", " + vectorArr[2] + ")";  
-  label.setAttribute("class","label");
-  display.appendChild(label);
-  matricesObj.transformedVector.label = label;
-  addLabelEffects(label,graphic);
+  scene.add(vectorObject.graphicRef);
+  scene.add(imageObject.graphicRef);
 }
 
 
