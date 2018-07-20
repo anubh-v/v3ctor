@@ -111,6 +111,7 @@
   grid-column-gap: 4%;
   position: absolute;
   top: 100%;
+  margin: 2% 0% 0% 0%;
 }
 
 #vectorInput {
@@ -119,6 +120,7 @@
   position: absolute;
   top: 100%;
   left: 40%;
+  margin: 2% 0% 0% 0%;
 }
 
 #imageVector {
@@ -127,13 +129,26 @@
   position: absolute;
   top: 100%;
   left: 60%;
+  margin: 2% 0% 0% 0%;
 }
 
-#matricesTable {
+#matricesDisplay {
   width: 100%;
   position: absolute;
-  top: 200%;
-  margin: 2% 0% 0% 0%;
+  top: 300%;
+  margin: 5% 0% 0% 0%;
+}
+
+.active {
+  border-style: solid;
+  border-color: #ff0000;
+  background-color: #ffa5a5;
+}
+
+.inactive {
+  border: 0;
+  background-color: #f19f4d;
+  border-color: #ffa5a5;
 }
 
 #plotterInputs {
