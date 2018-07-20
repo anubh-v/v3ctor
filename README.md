@@ -3,7 +3,14 @@
 ### Proposed Level of achievement: Project Gemini
 
 ### Motivation:   
-Ideas in linear algebra often have a “simple” geometrical meaning, as well as a more “pure” mathematical meaning. As students, we felt that some concepts were easier to grasp once their geometrical meaning became clear. We wanted a tool that  allows students to toy around with these concepts and get visual results. Current alternatives are limited to math software suites like MATLAB which are powerful, but not very friendly to new students.
+Beginners often find linear algebra rather abstract. Many ideas, though, can be interpreted geometrically. 
+For example, here are some standard facts:
+  1. Vectors from the rowspace are orthogonal to vectors from the nullspace.
+  2. The columnspace is the range of a matrix.
+  3. For symmetric matrices, the eigenvectors of distinct eigenvalues are orthogonal to each other. 
+
+These facts can be logically proven, but we felt that visualising such ideas provides a more intuitive basis for understanding.
+We wanted a tool that allows students to toy around with these concepts and get visual results. Current alternatives are limited to math software suites like MATLAB which are powerful, but not very friendly to new students.
 
 ### Aim  
 To create a web application with a user-friendly interface that allows new students to toy with various concepts and get visual feedback.
@@ -49,4 +56,7 @@ Matrices
     As a student, I should be able to specify a 3-by-3 matrix, and then restrict the domain to a subspace of the Euclidean space. Then, I should see the new range (instead of the range in user story 6).
         I.e, Restricting the domain to a subspace spanned by vectors v1,v2, draw the subspace first, then to find out and draw the restricted range is equivalent to finding the span{ Av1, Av2}.
 
+
+###Acknowledgements
+We used the following tools to build our product
 
