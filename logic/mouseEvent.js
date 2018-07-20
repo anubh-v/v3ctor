@@ -5,7 +5,7 @@ Vectorize.mouse = new THREE.Vector2();
 //Vectorize.mousePath = new THREE.Raycaster();
 
 /* this should be set to the dimensions of the canvas element you're monitoring */
-var canvas = document.getElementById("stage");
+const canvas = document.getElementById("stage");
 Vectorize.dimensions = [canvas.width,canvas.height];
 
 /*Idea to transform vector dynamically by dragging the point
@@ -15,59 +15,59 @@ if isDragged is true(i.e. something is being dragged), update the point, and the
 update the graphic& textbox of the input vector, and graphic of the output vector been
 transformed
 */
-function onDocumentMouseMove( event ) {
+function onDocumentMouseMove(event) {
 
-    //find out the canvas position so that we can make adjustments to 
-    // mouseX and mouseY accordingly to find out the mouse coordinate
-    var canvasPosition = renderer.domElement.getBoundingClientRect();
-	var mouseX = event.clientX - canvasPosition.left;
-	var mouseY = event.clientY - canvasPosition.top;
-    Vectorize.mouse.x = ( mouseX / Vectorize.dimensions[0] ) * 2 - 1;
-    Vectorize.mouse.y = - ( mouseY / Vectorize.dimensions[1] ) * 2 + 1; 
+  //find out the canvas position so that we can make adjustments to 
+  // mouseX and mouseY accordingly to find out the mouse coordinate
+  const canvasPosition = renderer.domElement.getBoundingClientRect();
+  const mouseX = event.clientX - canvasPosition.left;
+  const mouseY = event.clientY - canvasPosition.top;
+  Vectorize.mouse.x = ( mouseX / Vectorize.dimensions[0] ) * 2 - 1;
+  Vectorize.mouse.y = - ( mouseY / Vectorize.dimensions[1] ) * 2 + 1; 
 
-    // if an obj is being dragged, when mouse moves, the vector coordinate and graphic will be adjusted
-    if (isDragging) {
-        // update coordinates of vector according to things being dragged
-        vectorObject.coordinates = findIntersection();
-        // update the graphic
-        scene.remove(vectorObject.graphicRef);
-        scene.remove(imageObject.graphicRef);
+  // if an obj is being dragged, when mouse moves, the domain vector coordinate and graphic will be adjusted
+  if (matricesObj.isDragging) {
+    // update coordinates of domain according to sphere being dragged
+    vectorObject.coordinates = findIntersection();
 
-        const vectorX = vectorObject.coordinates[0];
-        const vectorY = vectorObject.coordinates[1];
-        const vectorZ = vectorObject.coordinates[2];
+    // store coordinates of domain vector 
+    const domainX = vectorObject.coordinates[0];
+    const domainY = vectorObject.coordinates[1];
+    const domainZ = vectorObject.coordinates[2];
 
-        vectorObject.graphicRef = createVector(
-                                vectorX, vectorY, vectorZ,
-                                new THREE.Vector3(0, 0, 0),
-                                0xffffff);
-        scene.add(vectorObject.graphicRef);
+    // remove the old graphics from the scene
+    scene.remove(vectorObject.graphicRef);
+    scene.remove(imageObject.graphicRef);
+    
+    // draw the domain vector, add it to the scene, and write its coordinates into the textboxes
+    vectorMakerHelper(vectorObject.coordinates, matricesObj.vector, vectorObject);  
+    /* if the matrix inputs are fully filled, calculate and create the image vector */
+    if (!matricesObj.hasNaN) {
+      // read the matrix inputs
+      const givenMatrix = getMatrix();
+      // calculate coordinates of the image vector, as a 3*1 matrix
+      const resultant = multiply(givenMatrix, [[domainX], [domainY], [domainZ]]);
+      imageObject.coordinates = [resultant[0][0], resultant[1][0], resultant[2][0]];
 
-        // add the coordinates of the domain vector onto the HTML form 
-        for (let i = 0; i < 3; i++) {
-          matricesObj.vector[i].value = vectorObject.coordinates[i];
-        }
-      
-        /* if the matrix inputs are fulled filled, calculate and create the image vector */
-        if (!matricesObj.hasNaN) {
-            // read the matrix inputs
-            const givenMatrix = getMatrix();
-            // calculate image and use threeJS to create the vector graphic
-            let resultant = multiply(givenMatrix, [[vectorX], [vectorY], [vectorZ]]);
-            imageObject.graphicRef = createVector(resultant[0][0], resultant[1][0], resultant[2][0], 
-                                                  new THREE.Vector3(0, 0, 0), 0xffffff);
-            imageObject.coordinates = [resultant[0][0], resultant[1][0], resultant[2][0]];                                                  
-            scene.add(imageObject.graphicRef);
-
-            // add the coordinates of the image vector onto the HTML form
-            for (let i = 0; i < 3; i++) {
-              matricesObj.image[i].value = imageObject.coordinates[i];
-            }
-        
-        }
-        
-
+      // draw the domain vector, add it to the scene, and write its coordinates into the textboxes
+      vectorMakerHelper(imageObject.coordinates, matricesObj.image, imageObject);        
     }
+  }
+
+  function vectorMakerHelper(coordinatesArray, textBoxArray, containerObj) {
+  
+    containerObj.graphicRef = 
+      createVector(coordinatesArray[0], coordinatesArray[1], coordinatesArray[2],
+                   new THREE.Vector3(0, 0, 0),
+                   0xffffff);
+
+    scene.add(containerObj.graphicRef);
+     
+    // add the coordinates of the vector into the given array of HTML textboxes
+    for (let i = 0; i < 3; i++) {
+      textBoxArray[i].value = containerObj.coordinates[i];
+    }       
+  }  
 }
 document.addEventListener('mousemove', onDocumentMouseMove, false); 
 
@@ -75,52 +75,37 @@ document.addEventListener('mousemove', onDocumentMouseMove, false);
 
 Vectorize.addEventListener = function(type,func,scene,camera){
     function f(event){
-    	//console.log("(" + Vectorize.mouse.x + "," + Vectorize.mouse.y + ")");
         var vector = new THREE.Vector3( Vectorize.mouse.x, Vectorize.mouse.y, -1 ).unproject( camera );
-       	
-       	// draw line simulating the ray projected by the raycaster
-    	var lineMatrix = [[],[],[]];
-    	for (var x = 0; x < 3; x++) {
-    		var currentRow = lineMatrix[x];
-    		currentRow.push(vector.getComponent(x));
-    		currentRow.push(vector.getComponent(x) - camera.position.getComponent(x));
-    	}
-    	//linePlotter(lineMatrix);	
-
+       
         Vectorize.mousePath = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
         var intersects = Vectorize.mousePath.intersectObject(sphere,true);
-        //console.log(intersects);
         func(intersects);
     }
     document.addEventListener(type,f,false);
 }
-var test;
 
 // global boolean checking if an object is being dragged.
-var isDragging = false;
 Vectorize.addEventListener('mousedown', 
 	// enlarge the 1st element when clicked
 	function (intersects) {
         if (intersects.length == 0) {
-            console.log("no intersection upon mousedown");
+            // console.log("no intersection upon mousedown");
             return;
         }
 
-        isDragging = true;
-        console.log("dragging activated upon mousedown");
-		test = intersects;
+        matricesObj.isDragging = true;
+        // console.log("dragging activated upon mousedown");
 		var mesh = intersects[0].object;
 		var position = new THREE.Vector3( Vectorize.mouse.x, Vectorize.mouse.y, -1 ).unproject( camera );
-		//console.log("(" + position.getComponent(0) + "," + position.getComponent(1) + "," + position.getComponent(2)+ ")");
 		mesh.scale.x *= 1.2;mesh.scale.y *= 1.2;mesh.scale.z *= 1.2; 
 	}, scene,camera
-	); 
+); 
 
 Vectorize.addEventListener('mouseup', 
     function(intersects) {
-        if (intersects.length == 0 || !isDragging) {
-            console.log("no intersection upon mouseup or nothing being dragged");
-            isDragging = false;
+        if (intersects.length == 0 || !matricesObj.isDragging) {
+            // console.log("no intersection upon mouseup or nothing being dragged");
+            matricesObj.isDragging = false;
             return;
         }
         test = intersects;
@@ -133,9 +118,9 @@ Vectorize.addEventListener('mouseup',
             intersectionPoint.getComponent(2) + ")"
             );
 
-        isDragging = false;
-    },
-    scene,camera);
+        matricesObj.isDragging = false;
+    }, scene,camera
+);
 
 /*
 postcond: return the coordinate of intersection as 3 element array,
