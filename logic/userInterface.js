@@ -769,6 +769,7 @@ var matricesObj= {
             [document.getElementById("m21"), document.getElementById("m22"), document.getElementById("m23")],
             [document.getElementById("m31"), document.getElementById("m32"), document.getElementById("m33")]],
   vector: [document.getElementById("domX"), document.getElementById("domY"), document.getElementById("domZ")],
+  image: [document.getElementById("imgX"), document.getElementById("imgY"), document.getElementById("imgZ")],
   transformedVector: {coordinate: [], label: undefined, graphic: undefined },
   columnSpace: {subsp: {label: undefined, graphic: undefined}, 
                 basisVectors: {labels: [], graphics: []}},

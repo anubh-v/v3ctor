@@ -38,22 +38,32 @@ function onDocumentMouseMove( event ) {
         const vectorZ = vectorObject.coordinates[2];
 
         vectorObject.graphicRef = createVector(
-                                vectorObject.coordinates[0],
-                                vectorObject.coordinates[1],
-                                vectorObject.coordinates[2],
+                                vectorX, vectorY, vectorZ,
                                 new THREE.Vector3(0, 0, 0),
                                 0xffffff);
         scene.add(vectorObject.graphicRef);
 
-        /* if the matrix inputs are fulled filled, calculate and draw the image vector */
+        // add the coordinates of the domain vector onto the HTML form 
+        for (let i = 0; i < 3; i++) {
+          matricesObj.vector[i].value = vectorObject.coordinates[i];
+        }
+      
+        /* if the matrix inputs are fulled filled, calculate and create the image vector */
         if (!matricesObj.hasNaN) {
+            // read the matrix inputs
             const givenMatrix = getMatrix();
-
+            // calculate image and use threeJS to create the vector graphic
             let resultant = multiply(givenMatrix, [[vectorX], [vectorY], [vectorZ]]);
             imageObject.graphicRef = createVector(resultant[0][0], resultant[1][0], resultant[2][0], 
                                                   new THREE.Vector3(0, 0, 0), 0xffffff);
-                                                  
+            imageObject.coordinates = [resultant[0][0], resultant[1][0], resultant[2][0]];                                                  
             scene.add(imageObject.graphicRef);
+
+            // add the coordinates of the image vector onto the HTML form
+            for (let i = 0; i < 3; i++) {
+              matricesObj.image[i].value = imageObject.coordinates[i];
+            }
+        
         }
         
 
