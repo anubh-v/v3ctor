@@ -57,6 +57,13 @@ Matrices
         I.e, Restricting the domain to a subspace spanned by vectors v1,v2, draw the subspace first, then to find out and draw the restricted range is equivalent to finding the span{ Av1, Av2}.
 
 
-###Acknowledgements
-We used the following tools to build our product
+### Acknowledgements
+We used the following tools to build our application:
+- [threeJS](https://threejs.org/): a Javascript 3D library, used for to create our graphics
+- [Numeric JS](http://www.numericjs.com/): Javascript library that helps with numerical computations
+- [MathJax](https://www.mathjax.org/): Engine for displaying mathematical equations
+- [Semantic UI](https://semantic-ui.com/): CSS library used in our user interface
+
+The following pages were especially useful, when we were starting out with threeJS
+- https://bocoup.com/blog/learning-three-js-with-real-world-challenges-that-have-already-been-solved
 
