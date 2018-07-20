@@ -729,12 +729,17 @@ function spanBtnHelper() {
 
   if (checkedVectors[0].length == 0) {
     /* if no input vectors, alert the user */
-    alert("no vector input!");
+    const msg = "Please select some vectors in the Vectors tab.";
+    enablePrompt(document.getElementById("spanTextDisplay").children[0], msg);
   } else if (hasNaN(checkedVectors)) {
-  	alert("please fill in all checked input boxes!");
+  	const msg = "Please fill in all the selected vector inputs.";
+    enablePrompt(document.getElementById("spanTextDisplay").children[0], msg);
   } else {   
     /* increment the global counter */
     numSubps++;
+   
+    /* disable error prompts */
+    disablePrompt(document.getElementById("spanTextDisplay").children[0]);
     
     /* create the current row and two columns */
     var tableBody = document.getElementById("spanTableBody");
@@ -970,7 +975,7 @@ function transformSubspButnhelper() {
   // original set of basis vectors of the subspace as a 3 * r matrix
   var originalBasis = filterRedundancy(checkedVectors);
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "Transformed Subspace", matricesObj.nullSpace); 
+  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "Transformed", matricesObj.nullSpace); 
 }
 
 
