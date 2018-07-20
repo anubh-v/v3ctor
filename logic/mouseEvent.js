@@ -108,7 +108,6 @@ Vectorize.addEventListener('mouseup',
             matricesObj.isDragging = false;
             return;
         }
-        test = intersects;
         let mesh = intersects[0].object;
         mesh.scale.x *= 1/1.2;mesh.scale.y *= 1/1.2;mesh.scale.z *= 1/1.2;
         let intersectionPoint = intersects[0].point;
