@@ -96,39 +96,44 @@
   width: 90%;
 }
 
-
-#matricesInputs {
-  grid-template-columns: 66% auto;
-  grid-column-gap: 1%;
-
-  font-size:8px;
+#matricesInnerForm {
+  position: relative;
 }
 
-#matricesTextsInputs {
-  display: grid ;
-  grid-template-columns: 66% auto;
-  grid-column-gap: 1%;
-}
-
-#matricesTextsInputs input {
-  width : 145px;
+#matricesTextInputs {
+  margin: 2% 0% 0% 0%;
+  grid-template-columns: 60% 3% 3%; 
 }
 
 #matrixInput {
   display: grid;
-  grid-template-columns: 20% 20% 20%;
-  grid-column-gap: 1%;
+  grid-template-columns: 10% 10% 10%;
+  grid-column-gap: 4%;
+  position: absolute;
+  top: 100%;
 }
 
 #vectorInput {
   display: grid;
-  grid-template-columns: 20%;
-  grid-column-gap: 1%;
+  grid-template-columns: 5%; 
+  position: absolute;
+  top: 100%;
+  left: 40%;
 }
 
-#matricesTextsInputs input {
-  width : 10px;
-  height : 20px;
+#imageVector {
+  display: grid;
+  grid-template-columns: 5%;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+}
+
+#matricesTable {
+  width: 100%;
+  position: absolute;
+  top: 200%;
+  margin: 2% 0% 0% 0%;
 }
 
 #plotterInputs {
