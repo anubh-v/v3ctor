@@ -789,18 +789,17 @@ var matricesObj= {
    fully filled */
 matricesObj.matrix.forEach(row => {
   row.forEach(item => {
-    item.oninput = () => {
-      const updatedMatrix = getMatrix();
-      matricesObj.hasNaN = hasNaN(updatedMatrix);
-    }
+    item.oninput = transformVButnHelper;
+    item.onblur = item.oninput;
   });
 });
   
 matricesObj.vector.forEach(coordInput => {
   coordInput.oninput = () => {
     if (!matricesObj.isDragging) {
-      tranformVButnhelper();
-    } 
+      transformVButnHelper();
+    }
+  coordInput.onblur = coordInput.oninput;   
   }
 });
 
@@ -835,31 +834,35 @@ function getVector() {
   return m;
 }
 
-/*adding event listeners for vTransform butn.
-when butn is pressed,
-1. create vector graphic and vector label, add eventListeners to the label
-*/
-var tranformBtn = document.getElementById("vTransform");
-tranformBtn.onclick = tranformVButnhelper;
+function verifyMatrix(m, message) {
+  if (hasNaN(m)) {
+    matricesObj.hasNaN = true;
+    document.getElementById("matricesTextDisplay").children[0].textContent = message;
+    document.getElementById("matricesTextDisplay").children[0].className = "active";
+    return false;
+  } else {
+    return true;
+  }
+}
 
 
-function tranformVButnhelper() {
+function transformVButnHelper() {
 
-  /* clear current alerts */
-  document.getElementById("matricesTextDisplay").children[0].textContent = "";
-
-  //update the coordinate attribute of the transformedVector field 
   const currentMatrix = getMatrix();
-  if (hasNaN(currentMatrix)) {
-    document.getElementById("matricesTextDisplay").children[0].textContent = "Please fill in all matrix fields";
+  if (!verifyMatrix(currentMatrix, "Please fill in all matrix fields.")) {
     return;
   }
 
   const domainVector = getVector();
-  if (hasNaN(domainVector)) {
-    document.getElementById("matricesTextDisplay").children[0].textContent = "Fill in all vector fields";
+  if (!verifyMatrix(domainVector, "Fill in all vector fields to manually set the domain vector.")) {
     return;
   }
+
+  matricesObj.hasNaN = false;
+  document.getElementById("matricesTextDisplay").children[0].className = "inactive";
+  /* clear current alerts */
+  document.getElementById("matricesTextDisplay").children[0].textContent = "";
+
 
   /* remove old graphics */
   scene.remove(vectorObject.graphicRef);

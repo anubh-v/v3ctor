@@ -75,38 +75,34 @@
             </div>
         </div>
 
+
         <div id=matricesMenu class=menus> 
             <text> Matrices </text> 
             <div id=matricesSideBar class=form>
 
               <div id="matricesInnerForm">
                 <div id=matricesControls>              
-                   
-                    <div class="ui vertical menu">
-                        <div id="buttonDropDown" class="ui dropdown item"> Choose Action
-                            <i class="dropdown icon"></i>
-                            <div id="buttonsMenu" class="menu" style="display:none;" >
-                                <button id=vTransform class="ui button" data-tooltip="Transform the input vector using the input matrix" data-position="bottom right">
-                                    <i class="angle double right icon"></i> Transform Vector
-                                </button>
-                                <button id=columnSpace class="ui button" data-tooltip="Generate the input matrix columnspace" data-position="bottom right">
-                                    <i class="paint brush icon" > </i>Draw Columnspace 
-                                </button>
-                                <button id=nullSpace class="ui button" data-tooltip="Generate the input matrix nullspace" data-position="bottom right">
-                                    <i class="paint brush icon"> </i> Draw Nullspace
-                                </button>
-                                <button id=restrictedRange class="ui button" data-tooltip="Restrict the matrix domain and find the new range" data-position="bottom left">                              <i class="angle double right icon"> </i> Transform Range
-                                </button>
-                                <button id=eigenValues class="ui button" data-tooltip="Find eigenvalues of the input matrix" data-position="bottom right">
-                                    <i class="angle search icon"></i> Find eigenvalues 
-                                </button>
-                                <button id=eigenSpace class="ui button" data-tooltip="Select an eigenvalue and find its eigenspace" data-position="bottom right">
-                                    <i class="paint brush icon"> </i> Draw Eigenspace 
-                                </button>
-                            </div>
+                    <div id="buttonDropDown" class="ui labeled icon dropdown compact button" style="display:inline;"> 
+                        Choose Action
+                        <i class="dropdown icon"></i>
+                        <div id="buttonsMenu" class="ui menu">
+                            <button id=columnSpace class="ui button" data-tooltip="Generate the input matrix columnspace" data-position="right center">
+                                <i class="pencil icon" > </i>Draw Columnspace 
+                            </button>
+                            <button id=nullSpace class="ui button" data-tooltip="Generate the input matrix nullspace" data-position="right center">
+                                <i class="pencil icon"> </i> Draw Nullspace
+                            </button>
+                            <button id=restrictedRange class="ui button" data-tooltip="Restrict the matrix domain and find the new range" data-position="right center">                          <i class="angle double right icon"> </i> Transform Range
+                            </button>
+                            <button id=eigenValues class="ui button" data-tooltip="Find eigenvalues of the input matrix" data-position="right center">
+                                <i class="angle search icon"></i> Find eigenvalues 
+                            </button>
+                            <button id=eigenSpace class="ui button" data-tooltip="Select an eigenvalue and find its eigenspace" data-position="right center">
+                                <i class="pencil icon"> </i> Draw Eigenspace 
+                            </button>
                         </div>
                     </div>
-                    <div id=eigenValueSelector> 
+                    <div id=eigenValueSelector style="display:inline;"> 
                         <select id=evSelector class= "ui dropdown"> 
                             <option value = "" disabled selected hidden> Please Select... </option>
                         </select>
@@ -159,7 +155,7 @@
                     <div id=matricesTextDisplay>
                       <p></p>
                     </div>
-                    <table class="table" id=matricesTable>
+                    <table class="table" id=matricesTable width="100%">
                         <thead id="matricesTableHeader">
                             <tr>
                                 <th>Subspace No</th>
