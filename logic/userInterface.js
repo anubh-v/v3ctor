@@ -834,35 +834,49 @@ function getVector() {
   return m;
 }
 
+/* Checks a given matrix for NaN values.
+   If NaN exists, returns false. Else, returns true.
+   If NaN exists, it also enables the error label with the specified message */
 function verifyMatrix(m, message) {
   if (hasNaN(m)) {
     matricesObj.hasNaN = true;
-    document.getElementById("matricesTextDisplay").children[0].textContent = message;
-    document.getElementById("matricesTextDisplay").children[0].className = "active";
+    enablePrompt(document.getElementById("matricesTextDisplay").children[0], message);
     return false;
   } else {
     return true;
   }
 }
 
+function enablePrompt(promptElement, message) {
+  promptElement.textContent = message;
+  promptElement.className = "active";
+}
 
+function disablePrompt(promptElement) {
+  promptElement.textContent = "";
+  promptElement.className = "inactive"
+}
+
+/* Multiplies a given matrix (from the matrix textboxes)
+   with a given vector (from the domain vector textboxes)
+   and draws the resultant graphic */
 function transformVButnHelper() {
 
   const currentMatrix = getMatrix();
+  /* check the matrix inputs for any NaN values */
   if (!verifyMatrix(currentMatrix, "Please fill in all matrix fields.")) {
     return;
   }
 
   const domainVector = getVector();
+  /* check the domain vector inputs for any NaN values */
   if (!verifyMatrix(domainVector, "Fill in all vector fields to manually set the domain vector.")) {
     return;
   }
 
   matricesObj.hasNaN = false;
-  document.getElementById("matricesTextDisplay").children[0].className = "inactive";
   /* clear current alerts */
-  document.getElementById("matricesTextDisplay").children[0].textContent = "";
-
+  disablePrompt(document.getElementById("matricesTextDisplay").children[0]);
 
   /* remove old graphics */
   scene.remove(vectorObject.graphicRef);
@@ -904,10 +918,10 @@ columnSpaceBtn.onclick = columnSpaceButnhelper;
 
 function columnSpaceButnhelper(){
   var currentMatrix = getMatrix();
-  if (hasNaN(currentMatrix)) {
-    alert("please fill in all fields in the matrix inputs");
+  if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
+
   var display = document.getElementById("matricesTableBody");
   // assign subsp and basisVectors attributes
   generalSpanHelper(findColumnSpace(currentMatrix), display, "Column Space", matricesObj.columnSpace);
@@ -923,8 +937,7 @@ nullSpaceBtn.onclick = nullSpaceButnhelper;
 
 function nullSpaceButnhelper(){
   var currentMatrix = getMatrix();
-  if (hasNaN(currentMatrix)) {
-    alert("please fill in all fields in the matrix inputs");
+  if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
   var display = document.getElementById("matricesTableBody");
@@ -942,8 +955,7 @@ transformSubspBtn.onclick = transformSubspButnhelper;
 
 function transformSubspButnhelper() {
   var currentMatrix = getMatrix();
-  if (hasNaN(currentMatrix)) {
-    alert("please fill in all fields in the matrix inputs");
+  if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
 
@@ -951,13 +963,14 @@ function transformSubspButnhelper() {
 
   var checkedVectors = getCheckedVectors(checkBoxList,vectorList);
   if (checkedVectors[0].length == 0) {
-    alert("no subspace to be tranformed, please check vectors under the Vectors Tab to generate a subspace");
+    const msg = "No subspace to be transformed, please check vectors under the Vectors Tab to generate a subspace";
+    enablePrompt(document.getElementById("matricesTextDisplay").children[0], msg);
     return;
   }
   // original set of basis vectors of the subspace as a 3 * r matrix
   var originalBasis = filterRedundancy(checkedVectors);
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "transformedSubspace", matricesObj.nullSpace); 
+  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "Transformed Subspace", matricesObj.nullSpace); 
 }
 
 
