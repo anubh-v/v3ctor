@@ -1,4 +1,4 @@
-# v3ctor
+# v3ctor - Linear algebra visualised
 
 ### Proposed Level of achievement: Project Gemini
 
