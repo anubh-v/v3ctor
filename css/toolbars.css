@@ -53,15 +53,6 @@
   top: 40%;
 }
 
-#homeMenu {
-   background-color: #002233;
-   position: absolute;
-   right: 1%;
-   width: 7%;
-   height: 9%;
-   z-index: 1;
-}
-
 .form {
   background-color: #F19F4D;
   opacity: 0.9;
@@ -140,18 +131,6 @@
   margin: 5% 0% 0% 0%;
 }
 
-.active {
-  border-style: solid;
-  border-color: #ff0000;
-  background-color: #ffa5a5;
-}
-
-.inactive {
-  border: 0;
-  background-color: #f19f4d;
-  border-color: #ffa5a5;
-}
-
 #plotterInputs {
   position: absolute;
   width: 90%;
@@ -202,4 +181,16 @@ table {
 
 tr:hover {
   background-color: #eeeeee;
+}
+
+.active {
+  border-style: solid;
+  border-color: #ff0000;
+  background-color: #ffa5a5;
+}
+
+.inactive {
+  border: 0;
+  background-color: #f19f4d;
+  border-color: #ffa5a5;
 }
