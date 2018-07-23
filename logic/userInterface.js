@@ -873,13 +873,14 @@ function transformVButnHelper() {
     return;
   }
 
+  matricesObj.hasNaN = false;
+
   const domainVector = getVector();
   /* check the domain vector inputs for any NaN values */
   if (!verifyMatrix(domainVector, "Fill in all vector fields to manually set the domain vector.")) {
     return;
   }
 
-  matricesObj.hasNaN = false;
   /* clear current alerts */
   disablePrompt(document.getElementById("matricesTextDisplay").children[0]);
 
