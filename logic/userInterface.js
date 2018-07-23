@@ -27,7 +27,6 @@ function makeTextBox() {
   const container = makeDiv("ui input");
   container.appendChild(makeInputBox("text"));
   return container;
-
 }
 
 /* Used to create a label (of a given type such as <p>, <h1>, <h2>, etc)
@@ -40,7 +39,6 @@ function makeLabel(labelType, labelText="") {
   label.className = "label";
   label.textContent = labelText;
   return label;
-
 }
 /* used to create a Semantic UI checkbox */
 function makeCheckBox() {
@@ -50,7 +48,6 @@ function makeCheckBox() {
   container.appendChild(makeInputBox("checkbox"));
   container.appendChild(emptyLabel);
   return container;
-
 }
 
 /* used to create a Semantic UI icon element
@@ -98,7 +95,6 @@ opacSlider.oninput = () => {
   });
 }
 
-
 const rotateGridXBtn = document.getElementById("rotateXButton");
 const rotateGridYBtn = document.getElementById("rotateYButton");
 const rotateGridZBtn = document.getElementById("rotateZButton");
@@ -108,12 +104,14 @@ rotateGridYBtn.onclick = rotateY;
 rotateGridZBtn.onclick = rotateZ;
 
 function rotateX() {
+    $("#rotateXButton").toggleClass("active");
     const rotateFunc = () => rotateGrid("x");
     renderQueue.unshift(rotateFunc);
 
     rotateGridXBtn.removeEventListener("onclick", rotateX);
     
     function stopRotation() {
+        $("#rotateXButton").toggleClass("active");
         removeFromRenderQueue(rotateFunc);
         rotateGridXBtn.removeEventListener("onclick", stopRotation);
         rotateGridXBtn.onclick = rotateX;
@@ -123,13 +121,14 @@ function rotateX() {
 }
 
 function rotateY() {
-    
+    $("#rotateYButton").toggleClass("active");
     const rotateFunc = () => rotateGrid("y");
     renderQueue.unshift(rotateFunc);
 
     rotateGridYBtn.removeEventListener("onclick", rotateY);
     
     function stopRotation() {
+        $("#rotateYButton").toggleClass("active");
         removeFromRenderQueue(rotateFunc);
         rotateGridYBtn.removeEventListener("onclick", stopRotation);
         rotateGridYBtn.onclick = rotateY;
@@ -139,13 +138,14 @@ function rotateY() {
 }
 
 function rotateZ() {
-    
+    $("#rotateZButton").toggleClass("active");
     const rotateFunc = () => rotateGrid("z");
     renderQueue.unshift(rotateFunc);
 
     rotateGridZBtn.removeEventListener("onclick", rotateZ);
     
     function stopRotation() {
+        $("#rotateZButton").toggleClass("active");
         removeFromRenderQueue(rotateFunc);
         rotateGridZBtn.removeEventListener("onclick", stopRotation);
         rotateGridZBtn.onclick = rotateZ;
