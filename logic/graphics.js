@@ -66,7 +66,7 @@ animate();
 
 function init() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x002233 );
+  scene.background = new THREE.Color(0x002233);
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
   setCamera();
 
@@ -139,7 +139,7 @@ function init() {
 
   // set up spheres
   sphere = new THREE.Object3D();
-  scene.add(sphere);
+  sceneRoot.add(sphere);
 
   let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red"}));
   sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
@@ -147,7 +147,7 @@ function init() {
 
   // set up the original vector
   let vector = createVector(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2], new THREE.Vector3(0,0,0), 0xffffff)
-  scene.add(vector);
+  sceneRoot.add(vector);
   vectorObject.graphicRef = vector;
 
   // use DragControls.js
@@ -346,38 +346,8 @@ function createCube() {
   return cube;
 }
 
-//how to represent vector addition in an intuitive way? how to add labels to it?
-// function returning a linear combination of two Vector3 objects, which is a 3D object consisting of 2 intermediate vectors and 1 resultant vector, av1+bv2
-function lc(a,b,v1,v2) {
-  var allObjects = new THREE.Object3D();
-  //local function wrapping v into allObjects
-  function push(v,origin,hex) {
-    allObjects.add(createVector(v.getComponent(0),v.getComponent(1),v.getComponent(2),origin,hex));
-  }
 
-  // wrapping two arrows in 3d obj ---> in black
-  push(v1,new THREE.Vector3( 0, 0, 0 ),0x000000);
-  push(v2,new THREE.Vector3( 0, 0, 0 ),0x000000);
-
-  // mutating the two vectors and wrapping two mutated vectors in 3d obj, in blue
-  v1.multiplyScalar(a);
-  v2.multiplyScalar(b);
-  push(v1,new THREE.Vector3( 0, 0, 0 ),0x00ffff);
-  push(v2,new THREE.Vector3( 0, 0, 0 ),0x00ffff);
-
-  // adding two arrows further to form a parallelogram, in yellow 
-  push(v1,v2,0xffff00);
-  push(v2,v1,0xffff00);
-
-  // mutating v1 by adding it to v2, and add it to 3d object, in black
-  push(v1.add(v2),new THREE.Vector3( 0, 0, 0 ),0x000000);
-
-  return allObjects;
-}
-
-
-/*
-precond: 1. m: 3 * n matrix of n LI column vectors, where  1<= n <= 3
+/* precond: 1. m: 3 * n matrix of n LI column vectors, where  1<= n <= 3
          2. container: the Object3D to put all graphics generated into
          3. no entries should be NaN
 postcond: For the subspace and each basis vector, generate a hex colour code and the graphic. Then return an array containing 
