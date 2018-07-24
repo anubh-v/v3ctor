@@ -1,0 +1,25 @@
+.about {
+  position: relative;
+  left: 5%;
+  width: 75%;
+  color: #33bbff;
+  font-family: Arial, sans-serif;
+
+}
+
+h1 {
+  font-size: 5vw;
+}
+
+p {
+  font-size: 2vw;
+}
+
+ol {
+  font-size: 2vw;
+}
+
+img {
+  max-width: 25%;
+  max-height: 50%;
+}
