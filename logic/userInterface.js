@@ -53,8 +53,7 @@ function makeCheckBox() {
 /* used to create a Semantic UI icon element
    The icon to be created can be specified by passing 
    a string 'iconClass' into the function */
-function makeIcon(iconClass) {
-    
+function makeIcon(iconClass) {   
     const icon = document.createElement("i");
     icon.className = iconClass;
     return icon;
@@ -278,24 +277,24 @@ function getRandomColour() {
 /*------------------VECTORS SECTION-------------------------------*/
 
 /* Key variables for the Vectors Tab */
-var numVectors = 0; // store the number of vectors 
+let numVectors = 0; // store the number of vectors 
 
-var vectorList = []; // store the list of vectors entered by the user
-var checkBoxList = []; // store the list of checkboxes on the Vectors Form
+let vectorList = []; // store the list of vectors entered by the user
+let checkBoxList = []; // store the list of checkboxes on the Vectors Form
 
 /* register event handlers */
-var addVectorBtn = document.getElementById("addVector");
+const addVectorBtn = document.getElementById("addVector");
 addVectorBtn.onclick = addControls;
 
-var renderBtn = document.getElementById("renderVectors");
+const renderBtn = document.getElementById("renderVectors");
 renderBtn.onclick = () => { drawAllVectors(vectorList); };
 
-var deleteVectorBtn = document.getElementById("deleteVector");
+const deleteVectorBtn = document.getElementById("deleteVector");
 deleteVectorBtn.onclick = deleteLastVector;
 
-var animateComboBtn = document.getElementById("animateCombo");
+const animateComboBtn = document.getElementById("animateCombo");
 animateComboBtn.onclick = () => { 
-    var linComboAnimation = new linComboPlayable(vectorList); 
+    let linComboAnimation = new linComboPlayable(vectorList); 
 };
  
 /* add a set of text input boxes representing 1 vector to the web page
@@ -342,8 +341,6 @@ function addControls() {
   };
 
   vectorList.push(vectorObj);
-  checkBoxList.push(checkBoxContainer.firstElementChild);
-
 
   /* clicking the vector's label should hide or unhide the vector 
      add a function to handle this */
@@ -371,17 +368,13 @@ function addControls() {
   };
 
   vectorLabel.onmouseover = () => {
-      console.log("enlarged");
-      scale(vectorObj.graphic,2);
+      scale(vectorObj.graphic, 2);
     };
     
   vectorLabel.onmouseleave = () => {
-      console.log("smallened");
-      scale(vectorObj.graphic,0.5);
+      scale(vectorObj.graphic, 0.5);
     };
-    
 }
-
 
 /* Remove the last vector from the Scene and the Web page.
    This means: 
@@ -420,7 +413,7 @@ function deleteLastVector() {
 /*------------------SPANS SECTION-------------------------------*/
 
 /* global states for span section */
-var numSubps = 0;
+let numSubps = 0;
 
 
 /* an arr containing references to subpace objs.
@@ -442,13 +435,13 @@ var numSubps = 0;
                         labels: vectorLabels (array of HTML labels)
                         graphics: vectorGraphics (array of threejs graphics)
                       } */
-var subspList = [];
+let subspList = [];
 
 /* When span button is pressed
    1. Wrap all checked vectors as columns to form a matrix 
    2. If no input/ matrix empty,alert the user, else create a subspObj, and push it into subspList
 */
-var spanBtn = document.getElementById("span");
+const spanBtn = document.getElementById("span");
 spanBtn.onclick = spanBtnHelper;
 
 
@@ -758,9 +751,9 @@ function spanBtnHelper() {
 /*------------------MATRICES SECTION-------------------------------*/
 /* obj caching all info for matrices section , may need to modify it*/ 
 /* menu effects*/
-var buttonsMenu = document.getElementById("buttonsMenu");
+const buttonsMenu = document.getElementById("buttonsMenu");
 
-var dropdown = document.getElementById("buttonDropDown");
+const dropdown = document.getElementById("buttonDropDown");
 dropdown.onmouseenter = () => {
     buttonsMenu.style.display = "grid";
   };
@@ -769,7 +762,7 @@ dropdown.onmouseleave = () => {
 };
 
 // initializing the object
-var matricesObj= {
+let matricesObj= {
   matrix:  [[document.getElementById("m11"), document.getElementById("m12"), document.getElementById("m13")],
             [document.getElementById("m21"), document.getElementById("m22"), document.getElementById("m23")],
             [document.getElementById("m31"), document.getElementById("m32"), document.getElementById("m33")]],
@@ -918,7 +911,7 @@ columnSpace: {subsp: {label: undefined, graphic: undefined},
                 basisVectors: {labels: [], graphics: []}},
 1. add in graphic and labels(with event helper)
 */
-var columnSpaceBtn = document.getElementById("columnSpace");
+const columnSpaceBtn = document.getElementById("columnSpace");
 columnSpaceBtn.onclick = columnSpaceButnhelper;
 
 
@@ -938,7 +931,7 @@ function columnSpaceButnhelper(){
   nullSpace: {subsp: {label: undefined, graphic: undefined}, 
               basisVectors: {labels: [], graphics: []}},
 */
-var nullSpaceBtn = document.getElementById("nullSpace");
+const nullSpaceBtn = document.getElementById("nullSpace");
 nullSpaceBtn.onclick = nullSpaceButnhelper;
 
 function nullSpaceButnhelper(){
@@ -956,7 +949,7 @@ function nullSpaceButnhelper(){
 transformedSubspace: {subp: {label: undefined, graphic: undefined}, 
                         basisVectors: {labels: [], graphics: []}},
 */
-var transformSubspBtn = document.getElementById("restrictedRange");
+const transformSubspBtn = document.getElementById("restrictedRange");
 transformSubspBtn.onclick = transformSubspButnhelper;
 
 function transformSubspButnhelper() {
@@ -987,8 +980,8 @@ function transformSubspButnhelper() {
 2. assign eigenValueArr into matricesObj.eigenValues: [] and at the same time create 
 Option element with value as eigenvalue and add it to the eigenValueSelector element
 */
-var eigenValueSelector = document.getElementById("evSelector");
-var eigenValuesBtn = document.getElementById("eigenValues");
+const eigenValueSelector = document.getElementById("evSelector");
+const eigenValuesBtn = document.getElementById("eigenValues");
 eigenValuesBtn.onclick = eigenValuesBtnhelper;
 
 function eigenValuesBtnhelper() {
@@ -1034,9 +1027,9 @@ function findSelectedEigenValue() {
 1. based on an eigenValue and matrix, output the matrix representing basis vectors to span
 2. with helper function, create an subsp object and assign it to matricesObj.eigenSpaces at the correct index
 */
-var eigenSpaceBtn = document.getElementById("eigenSpace");
+const eigenSpaceBtn = document.getElementById("eigenSpace");
 eigenSpaceBtn.onclick = () => {
-  var valueObj = findSelectedEigenValue();
+  const valueObj = findSelectedEigenValue();
   eigenSpaceBtnHelper(valueObj);
 }
 // valueObj: eigenValue and corresponding index of the subspace to be added.
