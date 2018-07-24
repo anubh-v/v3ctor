@@ -27,6 +27,11 @@ function onDocumentMouseMove(event) {
 
   // if an obj is being dragged, when mouse moves, the domain vector coordinate and graphic will be adjusted
   if (matricesObj.isDragging) {
+
+    matricesObj.matrix.forEach(row => {
+      row.forEach(el => el.onblur())
+    });
+
     // update coordinates of domain according to sphere being dragged
     vectorObject.coordinates = findIntersection();
 
@@ -40,7 +45,8 @@ function onDocumentMouseMove(event) {
     scene.remove(imageObject.graphicRef);
     
     // draw the domain vector, add it to the scene, and write its coordinates into the textboxes
-    vectorMakerHelper(vectorObject.coordinates, matricesObj.vector, vectorObject);  
+    vectorMakerHelper(vectorObject.coordinates, matricesObj.vector, vectorObject); 
+ 
     /* if the matrix inputs are fully filled, calculate and create the image vector */
     if (!matricesObj.hasNaN) {
       // read the matrix inputs
