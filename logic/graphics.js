@@ -139,7 +139,7 @@ function init() {
 
   // set up spheres
   sphere = new THREE.Object3D();
-  sceneRoot.add(sphere);
+  scene.add(sphere);
 
   let sphere1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 8), new THREE.MeshBasicMaterial({color: "red"}));
   sphere1.position.set(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2]);
@@ -147,7 +147,7 @@ function init() {
 
   // set up the original vector
   let vector = createVector(vectorObject.coordinates[0],vectorObject.coordinates[1],vectorObject.coordinates[2], new THREE.Vector3(0,0,0), 0xffffff)
-  sceneRoot.add(vector);
+  scene.add(vector);
   vectorObject.graphicRef = vector;
 
   // use DragControls.js
@@ -184,8 +184,6 @@ function render() {
 	// calculate objects intersecting the picking ray
 	var intersects = raycaster.intersectObjects(allObjects.children, true);
         
-   // console.log(intersects.length);
-  
 	for ( var i = 0; i < intersects.length; i++ ) {
 		intersects[ i ].object.material.color.set( 0xffff00 );
 
