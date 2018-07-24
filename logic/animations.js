@@ -1,19 +1,18 @@
 function linComboPlayable(vectorList) {
-    
-    this.conditions = [];
-    this.actions = [];
-    this.postActions = [];
-    
-    var conditions = this.conditions;
-    var actions = this.actions;
-    var postActions = this.postActions;
+        
+    const conditions = [];
+    const actions = [];
+    const postActions = [];
+
+    /* use an interval of 180 steps --> complete both scaling and translation animation each in 3s */
+    const numSteps = 300;
  
     vectorList.map(function(vectorObj) {
 
-        var animatedObj = { };
+        const animatedObj = {};
 
-        var vector = createVector(vectorObj.xCoord.value, vectorObj.yCoord.value, vectorObj.zCoord.value,
-            new THREE.Vector3(0,0,0), getRandomColour());
+        const vector = createVector(vectorObj.xCoord.value, vectorObj.yCoord.value, vectorObj.zCoord.value,
+            new THREE.Vector3(0,0,0), +(getRandomColour()));
 
         /* add the endpoints of this vector as properties of the vector object */
         animatedObj.x = parseFloat(vectorObj.xCoord.value);
@@ -27,19 +26,23 @@ function linComboPlayable(vectorList) {
         allObjects.add(vector);
         
         /* obtain the intended scaling factor for this vector  */
-        var scale = parseFloat(vectorObj.coeff.value)
+        let scale = parseFloat(vectorObj.coeff.value);
+
+        const scaleStep = (scale - 1) / numSteps;
+        let steps = 0;
         
         /* add a comparator that indicates if the scaling animation has been completed */
         conditions.push(() => { 
-            return Math.floor(vector.scale.x) == scale;
+           // return Math.floor(vector.scale.x) == scale;
+           return steps === numSteps;
         });
             
         /* add the action to be taken on each frame of animation */
         actions.push(() => {
-            vector.scale.x += 0.05;
-            vector.scale.y += 0.05;
-            vector.scale.z += 0.05;
-
+            vector.scale.x += scaleStep;
+            vector.scale.y += scaleStep;
+            vector.scale.z += scaleStep;
+            steps++;
         });
 
         /* update the endpoints of this vector, after scaling */
@@ -48,29 +51,26 @@ function linComboPlayable(vectorList) {
         animatedObj.z = scale*animatedObj.z;
         
         /* add the postAction to be taken once the scaling animation is complete */
-        postActions.push(() => {            
+        postActions.push(() => {          
           vector.scale.set(scale, scale, scale);
-         });
+        });
         
         return animatedObj;
 
     }).reduce(function(prevVector, nextVector) {
       
-        /* use an interval of 180 steps --> complete animation in 3s */
-        var numOfSteps = 180;
-        var xDistance = nextVector.x - prevVector.graphic.position.x;
-        var xStep = xDistance / numOfSteps;
+        const xDistance = nextVector.x - prevVector.graphic.position.x;
+        const xStep = xDistance / numOfSteps;
 
-        var yDistance = nextVector.y - prevVector.graphic.position.y;
-        var yStep = yDistance / numOfSteps;
+        const yDistance = nextVector.y - prevVector.graphic.position.y;
+        const yStep = yDistance / numOfSteps;
 
-        var zDistance = nextVector.z - prevVector.graphic.position.z;
-        var zStep = zDistance / numOfSteps;
+        const zDistance = nextVector.z - prevVector.graphic.position.z;
+        const zStep = zDistance / numOfSteps;
 
-        var translationCounter = 0;
+        let translationCounter = 0;
 
         conditions.push(() => {
-          //return ((Math.floor(prevVector.graphic.position.x) == nextVector.x) && (Math.floor(prevVector.graphic.position.y) == nextVector.y) && (Math.floor     (prevVector.graphic.position.z) == nextVector.z));
           return translationCounter == numOfSteps;    
         });
 
@@ -84,12 +84,11 @@ function linComboPlayable(vectorList) {
         });
 
         /* calculate resultant vector */
-        var resX = prevVector.x + nextVector.x;
-        var resY = prevVector.y + nextVector.y;
-        var resZ = prevVector.z + nextVector.z;
+        const resX = prevVector.x + nextVector.x;
+        const resY = prevVector.y + nextVector.y;
+        const resZ = prevVector.z + nextVector.z;
 
-        var resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0), getRandomColour());
-
+        const resVector = createVector(resX, resY, resZ, new THREE.Vector3(0,0,0), +(getRandomColour()));
       
         postActions.push(() => {
           allObjects.add(resVector);
@@ -98,8 +97,7 @@ function linComboPlayable(vectorList) {
 
         });
 
-
-        var resVectorObj = { };
+        const resVectorObj = { };
         resVectorObj.graphic = resVector;
         resVectorObj.x = resX;
         resVectorObj.y = resY;
@@ -108,34 +106,34 @@ function linComboPlayable(vectorList) {
         return resVectorObj;
     });      
           
-      this.currentCondition = conditions[0];
-      this.currentAction = actions[0];
+      let currentCondition = conditions[0];
+      let currentAction = actions[0];
 
-      this.play = () => {
+      function play() {
         
         if (actions.length == 0) {
           // remove this Playable from the head of the render queue 
-          removeFromRenderQueue(this.play);
+          removeFromRenderQueue(play);
         } else {       
-          if (this.currentCondition() == false) {
+          if (currentCondition() == false) {
             // terminating condition not met, continue current animation
-            this.currentAction();
+            currentAction();
           } else {
             // terminating condition met, proceed to next action      
-            this.postActions[0]();
-            this.postActions.shift();
+            postActions[0]();
+            postActions.shift();
                     
-            this.conditions.shift();
-            this.actions.shift();
+            conditions.shift();
+            actions.shift();
 
-            this.currentCondition = conditions[0];
-            this.currentAction = actions[0];
+            currentCondition = conditions[0];
+            currentAction = actions[0];
           }
         }
       }
 
-      renderQueue.unshift(this.play);
-
+      /* add the play function into the render queue --> starts the animation */
+      renderQueue.unshift(play);
 }
 
 
