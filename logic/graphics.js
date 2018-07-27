@@ -59,9 +59,10 @@ window.addEventListener("resize", function() {
 	camera.updateProjectionMatrix();
 });
 
-var stats = new Stats();
-stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild( stats.dom );
+const stats = new Stats();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+stats.dom.id = "stats";
+document.body.appendChild(stats.dom);
 
 /* set up the scene */
 init();
@@ -407,12 +408,12 @@ function drawSpan(m,container) {
     container.add(plane);
 
     const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorHexLiteral);
-    const v1GraphicObj = {reference: plane, hex: vectorColour};
+    const v1GraphicObj = {reference: v1, hex: vectorColour};
     arr.push(v1GraphicObj);
     container.add(v1);
 
     const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorHexLiteral);
-    const v2GraphicObj = {reference: plane, hex: vectorColour};
+    const v2GraphicObj = {reference: v2, hex: vectorColour};
     arr.push(v2GraphicObj);
     container.add(v2);
 
