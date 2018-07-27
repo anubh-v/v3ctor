@@ -619,7 +619,6 @@ case2: consistent
 */
 function drawGraphicsFromLinearSystem(augmentedMatrix, container) {
   let outputArr = new Array();
-  let outputObj = new THREE.Object3D();
   let solutions = solveAugmentedMatrix(augmentedMatrix);
 
   // case where linear system is inconsistent 
