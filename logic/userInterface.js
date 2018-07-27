@@ -13,11 +13,16 @@ function makeInputBox(inputType) {
 
 /* used to create a Semantic UI div element
    for a Semantic UI textbox / checkbox */
-function makeDiv(type) {
+function makeDiv(type, id) {
   
   const container = document.createElement("div");
-  container.className = type;
+  if (type !== undefined) {
+    container.className = type;
+  }
 
+  if (id !== undefined) {
+    container.id = id;
+  }
   return container;
 }
 
@@ -310,6 +315,43 @@ function addLabelEffects(labelElement, graphic, labelColour) {
     };
 }
 
+
+document.getElementById("clearButton").onclick = clear;
+
+function clear() {
+ 
+  sceneRoot.remove(allObjects);
+  sceneRoot.remove(spanGraphics);
+  sceneRoot.remove(equationGraphics);
+
+  allObjects = new THREE.Object3D;
+  spanGraphics = new THREE.Object3D;
+  equationGraphics = new THREE.Object3D;
+
+  vectorList = [];
+  checkBoxList = [];
+  numVectors = 0;
+  subspList = [];
+  numSubps = 0;
+  matrixSpaceList = [];
+  eqnList = [];
+  eqnCheckList = [];
+  numEqns = 0;
+
+
+  replaceDiv("vectorsInnerForm", "vectorsForm");
+  replaceDiv("spanDisplay", "spansForm");
+  replaceDiv("matricesDisplay", "matricesInnerForm");
+  replaceDiv("eqnDisplay", "plotterForm");
+
+  function replaceDiv(targetID, parentID) {
+    document.getElementById(targetID).remove();
+    document.getElementById(parentID).appendChild(makeDiv(undefined, targetID));
+  }
+
+
+}
+
 /*------------------VECTORS SECTION-------------------------------*/
 
 /* Key variables for the Vectors Tab */
@@ -584,7 +626,10 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
 
 function deleteSpan(toBeDeleted, container) {
   container.remove(toBeDeleted.subsp.graphic);
-  toBeDeleted.basisVectors.graphics.forEach(vectorGraphic => container.remove(vectorGraphic));
+
+  while(toBeDeleted.basisVectors.graphics.length !== 0) {
+    container.remove(toBeDeleted.basisVectors.graphics.shift());
+  }
 }
 
 const deleteSpanBtn = document.getElementById("deleteSpan");
@@ -791,19 +836,13 @@ let matricesObj= {
             [document.getElementById("m31"), document.getElementById("m32"), document.getElementById("m33")]],
   vector: [document.getElementById("domX"), document.getElementById("domY"), document.getElementById("domZ")],
   image: [document.getElementById("imgX"), document.getElementById("imgY"), document.getElementById("imgZ")],
-  columnSpace: {subsp: {label: undefined, graphic: undefined}, 
-                basisVectors: {labels: [], graphics: []}},
-  nullSpace: {subsp: {label: undefined, graphic: undefined}, 
-              basisVectors: {labels: [], graphics: []}},
-  transformedSubspace: {subsp: {label: undefined, graphic: undefined}, 
-                        basisVectors: {labels: [], graphics: []}},
   eigenValues: [],
   eigenSpaces: [],
   hasNaN: true, // stores true iff the current matrix is not fully filled
   isDragging: false
 };
 
-const matrixSpaceList = [];
+let matrixSpaceList = [];
 
 /* For each cell of the matrix inputs, attach an event listener that is triggered
    when input is entered / deleted from the cell.
