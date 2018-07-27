@@ -5,7 +5,7 @@ function linComboPlayable(vectorList) {
     const postActions = [];
 
     /* use an interval of 180 steps --> complete both scaling and translation animation each in 3s */
-    const numSteps = 300;
+    const numOfSteps = 300;
  
     vectorList.map(function(vectorObj) {
 
@@ -28,13 +28,13 @@ function linComboPlayable(vectorList) {
         /* obtain the intended scaling factor for this vector  */
         let scale = parseFloat(vectorObj.coeff.value);
 
-        const scaleStep = (scale - 1) / numSteps;
+        const scaleStep = (scale - 1) / numOfSteps;
         let steps = 0;
         
         /* add a comparator that indicates if the scaling animation has been completed */
         conditions.push(() => { 
            // return Math.floor(vector.scale.x) == scale;
-           return steps === numSteps;
+           return steps === numOfSteps;
         });
             
         /* add the action to be taken on each frame of animation */
