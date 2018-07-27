@@ -59,6 +59,10 @@ window.addEventListener("resize", function() {
 	camera.updateProjectionMatrix();
 });
 
+var stats = new Stats();
+stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
+
 /* set up the scene */
 init();
 /* start the render loop */
@@ -167,11 +171,15 @@ function setObjOpacity(obj, newOpacity) {
    We must call this function once per frame of animation. This is done using 
    requestAnimationFrame. */
 function animate() {
+  stats.begin();
+
   requestAnimationFrame(animate);
   
   renderQueue.forEach(function(playable) {
     playable();
   });
+
+  stats.end();
 }
 
 /* add this function to the renderQueue to render the scene */
@@ -357,7 +365,6 @@ postcond: For the subspace and each basis vector, generate a hex colour code and
  */
 function drawSpan(m,container) {
   const arr = [];
-  const obj = new THREE.Object3D();
 
   // identify the number of vectors to span
   const numVectors = m[0].length
@@ -375,12 +382,12 @@ function drawSpan(m,container) {
     const line = createSpannedLine(new THREE.Vector3(x,y,z),36, spanHexLiteral);
     const lineGraphicObj = {reference: line, hex: spanColour};
     arr.push(lineGraphicObj);
-    obj.add(line);
+    container.add(line);
 
     const v = createVector(x,y,z,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const vGraphicObj = {reference: v, hex: vectorColour};
     arr.push(vGraphicObj);
-    obj.add(v);
+    container.add(v);
 
   } else if (numVectors == 2) {
     const x1 = m[0][0];
@@ -397,17 +404,17 @@ function drawSpan(m,container) {
         );
     const planeGraphicObj = {reference: plane, hex: spanColour};
     arr.push(planeGraphicObj);
-    obj.add(plane);
+    container.add(plane);
 
     const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const v1GraphicObj = {reference: plane, hex: vectorColour};
     arr.push(v1GraphicObj);
-    obj.add(v1);
+    container.add(v1);
 
     const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const v2GraphicObj = {reference: plane, hex: vectorColour};
     arr.push(v2GraphicObj);
-    obj.add(v2);
+    container.add(v2);
 
   } else {
     const x1 = m[0][0];
@@ -423,25 +430,23 @@ function drawSpan(m,container) {
     const cube = createCube();
     const cubeGraphicObj = {reference: cube, hex: "0x000000"};
     arr.push(cubeGraphicObj);
-    obj.add(cube);
+    container.add(cube);
 
     const v1 = createVector(x1,y1,z1,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const v1GraphicObj = {reference: v1, hex: vectorColour};
     arr.push(v1GraphicObj);
-    obj.add(v1);
+    container.add(v1);
 
     const v2 = createVector(x2,y2,z2,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const v2GraphicObj = {reference: v2, hex: vectorColour};
     arr.push(v2GraphicObj);
-    obj.add(v2);
+    container.add(v2);
 
     const v3 = createVector(x3,y3,z3,new THREE.Vector3(0,0,0), vectorHexLiteral);
     const v3GraphicObj = {reference: v3, hex: vectorColour};
     arr.push(v3GraphicObj);
-    obj.add(v3);
+    container.add(v3);
   }
-  //adding graphics into subpaceObjs
-  container.add(obj); 
 
   return arr;
 }
@@ -612,7 +617,7 @@ case2: consistent
         case2.3: plane, i.e. 2 nonPivotColumns among 1st 3 columns,return an array with 5 elements
         case2.4: cube, i.e 3 nonPivotColumns among 1st 3 columns, return an array with 2 elements(exclude position/ direction vectors)
 */
-function drawGraphicsFromLinearSystem(augmentedMatrix,container) {
+function drawGraphicsFromLinearSystem(augmentedMatrix, container) {
   let outputArr = new Array();
   let outputObj = new THREE.Object3D();
   let solutions = solveAugmentedMatrix(augmentedMatrix);
