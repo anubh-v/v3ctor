@@ -273,6 +273,42 @@ function getRandomColour() {
   return rgbToHex(red, green, blue);
 }
 
+/* This function adds a mouseover effect on a given HTML label and its 
+   corresponding threejs graphic.
+   precond: the HTML label and the threejs graphic object
+   postcod: a mouseover function is added to the HTML label
+            A colour can be specified for the label. If not, black
+            colour will be used  */
+function addLabelEffects(labelElement, graphic, labelColour) {
+    
+    /* labelColour is of the format "0x------"
+       For HTML, we need "#------" */
+    labelElement.style.color = "#" + labelColour.substr(2);
+    // adding hide/unhide & labelling features
+    labelElement.onclick = () => {
+      
+      // click once hide, click another time unhide.
+      var opac = window.getComputedStyle(labelElement).getPropertyValue("opacity");
+      if (opac === "1") {
+        labelElement.style.opacity = "0.5";
+        graphic.visible = false;
+      } else {
+        labelElement.style.opacity = "1";
+        graphic.visible = true;
+      }
+      
+    };
+    
+    // depending on the type of subp, changing the states of material of line, plane, or cube
+    // when mouse move over the label
+    labelElement.onmouseover = () => {
+      scale(graphic,2);
+    };
+
+    labelElement.onmouseleave = () => {
+      scale(graphic,0.5);
+    };
+}
 
 /*------------------VECTORS SECTION-------------------------------*/
 
@@ -445,43 +481,6 @@ const spanBtn = document.getElementById("span");
 spanBtn.onclick = spanBtnHelper;
 
 
-/* This function adds a mouseover effect on a given HTML label and its 
-   corresponding threejs graphic.
-   precond: the HTML label and the threejs graphic object
-   postcod: a mouseover function is added to the HTML label
-            A colour can be specified for the label. If not, black
-            colour will be used  */
-function addLabelEffects(labelElement, graphic, labelColour) {
-    
-    /* labelColour is of the format "0x------"
-       For HTML, we need "#------" */
-    labelElement.style.color = "#" + labelColour.substr(2);
-    // adding hide/unhide & labelling features
-    labelElement.onclick = () => {
-      
-      // click once hide, click another time unhide.
-      var opac = window.getComputedStyle(labelElement).getPropertyValue("opacity");
-      if (opac === "1") {
-        labelElement.style.opacity = "0.5";
-        graphic.visible = false;
-      } else {
-        labelElement.style.opacity = "1";
-        graphic.visible = true;
-      }
-      
-    };
-    
-    // depending on the type of subp, changing the states of material of line, plane, or cube
-    // when mouse move over the label
-    labelElement.onmouseover = () => {
-      scale(graphic,2);
-    };
-
-    labelElement.onmouseleave = () => {
-      scale(graphic,0.5);
-    };
-}
-
 /* precond:  checkBoxList: an array containing reference of checkBox element
              vectorsList: an array containing reference of vectorArr
              note: all vectors are in 3-space
@@ -581,6 +580,28 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
     spanObj.basisVectors = basisVectors;
 
     makeRowCollapsible(headerRow);   
+}
+
+function deleteSpan(toBeDeleted, container) {
+  container.remove(toBeDeleted.subsp.graphic);
+  toBeDeleted.basisVectors.graphics.forEach(vectorGraphic => container.remove(vectorGraphic));
+}
+
+const deleteSpanBtn = document.getElementById("deleteSpan");
+
+/* Deletion involves the following:
+   - remove the last item in the global list of subspace objects
+   - remove the graphics associated with this vector using "deleteSpan"
+   - remove the last 2 rows of the table body 
+   - edit the number of subspaces, which are tracked globally
+*/
+deleteSpanBtn.onclick = () => {
+
+  const toBeDeleted = subspList.pop();
+  deleteSpan(toBeDeleted, spanGraphics);
+  deleteTableRow(document.getElementById("spanTableBody"));
+  numSubps--;
+  
 }
 
 /* This function sets up 2 rows in a given table, intended for a new Span / Matrix space / Plot object 
@@ -718,7 +739,7 @@ function makeRowCollapsible(headerRow) {
 function spanBtnHelper() {
 
   /* wrap the selected vectors into a matrix */
-  var checkedVectors = getCheckedVectors(checkBoxList,vectorList);
+  const checkedVectors = getCheckedVectors(checkBoxList,vectorList);
 
   if (checkedVectors[0].length == 0) {
     /* if no input vectors, alert the user */
@@ -735,7 +756,7 @@ function spanBtnHelper() {
     disablePrompt(document.getElementById("spanTextDisplay").children[0]);
     
     /* create the current row and two columns */
-    var tableBody = document.getElementById("spanTableBody");
+    const tableBody = document.getElementById("spanTableBody");
     const subspObj = { };
 
     /*  Filter out the redundant vectors. Result is a 3*r matrix where 1 <= r <= 3 */
@@ -747,6 +768,8 @@ function spanBtnHelper() {
 
   }
 }
+
+
 
 /*------------------MATRICES SECTION-------------------------------*/
 /* obj caching all info for matrices section , may need to modify it*/ 
@@ -768,7 +791,6 @@ let matricesObj= {
             [document.getElementById("m31"), document.getElementById("m32"), document.getElementById("m33")]],
   vector: [document.getElementById("domX"), document.getElementById("domY"), document.getElementById("domZ")],
   image: [document.getElementById("imgX"), document.getElementById("imgY"), document.getElementById("imgZ")],
-  transformedVector: {coordinate: [], label: undefined, graphic: undefined },
   columnSpace: {subsp: {label: undefined, graphic: undefined}, 
                 basisVectors: {labels: [], graphics: []}},
   nullSpace: {subsp: {label: undefined, graphic: undefined}, 
@@ -780,6 +802,8 @@ let matricesObj= {
   hasNaN: true, // stores true iff the current matrix is not fully filled
   isDragging: false
 };
+
+const matrixSpaceList = [];
 
 /* For each cell of the matrix inputs, attach an event listener that is triggered
    when input is entered / deleted from the cell.
@@ -852,7 +876,7 @@ function enablePrompt(promptElement, message) {
 
 function disablePrompt(promptElement) {
   promptElement.textContent = "";
-  promptElement.className = "inactive"
+  promptElement.className = "inactive";
 }
 
 /* Multiplies a given matrix (from the matrix textboxes)
@@ -912,18 +936,21 @@ columnSpace: {subsp: {label: undefined, graphic: undefined},
 1. add in graphic and labels(with event helper)
 */
 const columnSpaceBtn = document.getElementById("columnSpace");
-columnSpaceBtn.onclick = columnSpaceButnhelper;
+columnSpaceBtn.onclick = columnSpaceButnHelper;
 
 
-function columnSpaceButnhelper(){
-  var currentMatrix = getMatrix();
+function columnSpaceButnHelper(){
+  const currentMatrix = getMatrix();
   if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
 
-  var display = document.getElementById("matricesTableBody");
+  const display = document.getElementById("matricesTableBody");
+  const columnSpaceObj = {};
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findColumnSpace(currentMatrix), display, "Column Space", matricesObj.columnSpace);
+  generalSpanHelper(findColumnSpace(currentMatrix), display, "Column Space", columnSpaceObj);
+  // add the created column space object to the global list 
+  matrixSpaceList.push(columnSpaceObj);
 }
 
 
@@ -932,16 +959,19 @@ function columnSpaceButnhelper(){
               basisVectors: {labels: [], graphics: []}},
 */
 const nullSpaceBtn = document.getElementById("nullSpace");
-nullSpaceBtn.onclick = nullSpaceButnhelper;
+nullSpaceBtn.onclick = nullSpaceButnHelper;
 
-function nullSpaceButnhelper(){
-  var currentMatrix = getMatrix();
+function nullSpaceButnHelper(){
+  const currentMatrix = getMatrix();
   if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
-  var display = document.getElementById("matricesTableBody");
+  const display = document.getElementById("matricesTableBody");
+  const nullSpaceObj = {};
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findNullSpace(currentMatrix), display, "Null Space", matricesObj.nullSpace);
+  generalSpanHelper(findNullSpace(currentMatrix), display, "Null Space", nullSpaceObj);
+  // add the created null space object to the global list 
+  matrixSpaceList.push(nullSpaceObj);
 }
 
 
@@ -950,26 +980,29 @@ transformedSubspace: {subp: {label: undefined, graphic: undefined},
                         basisVectors: {labels: [], graphics: []}},
 */
 const transformSubspBtn = document.getElementById("restrictedRange");
-transformSubspBtn.onclick = transformSubspButnhelper;
+transformSubspBtn.onclick = transformSubspButnHelper;
 
-function transformSubspButnhelper() {
-  var currentMatrix = getMatrix();
+function transformSubspButnHelper() {
+  const currentMatrix = getMatrix();
   if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
     return;
   }
 
-  var display = document.getElementById("matricesTableBody");
+  const display = document.getElementById("matricesTableBody");
 
-  var checkedVectors = getCheckedVectors(checkBoxList,vectorList);
+  const checkedVectors = getCheckedVectors(checkBoxList,vectorList);
   if (checkedVectors[0].length == 0) {
     const msg = "No subspace to be transformed, please check vectors under the Vectors Tab to generate a subspace";
     enablePrompt(document.getElementById("matricesTextDisplay").children[0], msg);
     return;
   }
   // original set of basis vectors of the subspace as a 3 * r matrix
-  var originalBasis = filterRedundancy(checkedVectors);
+  const originalBasis = filterRedundancy(checkedVectors);
+  const transformedRangeObj = {};
   // assign subsp and basisVectors attributes
-  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "Transformed", matricesObj.nullSpace); 
+  generalSpanHelper(findRestrictedRange(currentMatrix,originalBasis), display, "Transformed", transformedRangeObj); 
+  
+  matrixSpaceList.push(transformedRangeObj);
 }
 
 
@@ -980,39 +1013,35 @@ function transformSubspButnhelper() {
 2. assign eigenValueArr into matricesObj.eigenValues: [] and at the same time create 
 Option element with value as eigenvalue and add it to the eigenValueSelector element
 */
-const eigenValueSelector = document.getElementById("evSelector");
 const eigenValuesBtn = document.getElementById("eigenValues");
-eigenValuesBtn.onclick = eigenValuesBtnhelper;
+eigenValuesBtn.onclick = eigenValuesBtnHelper;
 
-function eigenValuesBtnhelper() {
-  var currentMatrix = getMatrix();
+function eigenValuesBtnHelper() {
+  const currentMatrix = getMatrix();
   if (hasNaN(currentMatrix)) {
     alert("please fill in all fields in the matrix inputs");
     return;
   }
-  var selector = document.getElementById("evSelector");
+  const selector = document.getElementById("evSelector");
   //check if there is already an option element in selector, if so clear it
   if(selector.length != 1) {
-    var length = selector.length;
-    for (var j = 1; j < length; j++) {
-      //console.log("counter++");
+    const length = selector.length;
+    for (let j = 1; j < length; j++) {
       selector.remove(1);
     }
   }
   // assign fields
-  var eigenValues = findEigenValue(currentMatrix);
+  const eigenValues = findEigenValue(currentMatrix);
   matricesObj.eigenValues = eigenValues;
   //create Option element with value as eigenvalue and add it to the eigenValueSelector element
-  for (var i = 0; i < eigenValues.length; i++) {
-    var value = eigenValues[i];
-    var option = document.createElement("option");
+  for (let i = 0; i < eigenValues.length; i++) {
+    const value = eigenValues[i];
+    const option = document.createElement("option");
     option.setAttribute("value", "" + value);
-    option.innerHTML = "" + value;
+    option.textContent = "" + value;
     selector.appendChild(option);
   }
-
 }
-
 
 // function returning an object with selected eigenvalue as a float and index of 
 //the corresponding eigenValue in the eigenvalue arr under matricesObj.eigenValues
@@ -1034,23 +1063,32 @@ eigenSpaceBtn.onclick = () => {
 }
 // valueObj: eigenValue and corresponding index of the subspace to be added.
 function eigenSpaceBtnHelper(valueObj) {
-  var M = getMatrix();
+  const M = getMatrix();
   if (hasNaN(M)) {
     alert("please fill in all fields in the matrix inputs");
     return;
   } 
-  var eigenValue = valueObj.value;
-  var display = document.getElementById("matricesTableBody");
+  const eigenValue = valueObj.value;
+  const display = document.getElementById("matricesTableBody");
   // get reference to the subspObj of this eigenspace at the ith index of matricesObj.eigenSpaces
-  var subspObj = {subsp: {label: undefined, graphic: undefined}, 
+  const eigenSpaceObj = {subsp: {label: undefined, graphic: undefined}, 
                 basisVectors: {labels: [], graphics: []}};
-  matricesObj.eigenSpaces[valueObj.index] = subspObj;
 
-  var vectorsToSpan = findEigenSpace(M,eigenValue);
+  const vectorsToSpan = findEigenSpace(M,eigenValue);
   // adding labels and graphics to fields subsp and basisVectors of subspObj
-  generalSpanHelper(vectorsToSpan,display, "Eigenspace", subspObj);
+  generalSpanHelper(vectorsToSpan, display, "Eigenspace", eigenSpaceObj);
+  matrixSpaceList.push(eigenSpaceObj);
 }
 
+const delMatrixSpaceBtn = document.getElementById("deleteMatrixSpace");
+delMatrixSpaceBtn.onclick = () => {
+
+  const toBeDeleted = matrixSpaceList.pop();
+  deleteSpan(toBeDeleted, spanGraphics);
+  const matrixDisplay = document.getElementById("matricesTableBody");
+  deleteTableRow(matrixDisplay);
+  
+}
 /*------------------PLOTTER SECTION-------------------------------*/
 
 /* register event handlers */
@@ -1091,17 +1129,14 @@ function addEqn() {
   const parsedLinearSystem = drawGraphicsFromLinearSystem([cartesianCoeffs], equationGraphics);
 
   const eqnObj = {       
-    eqnGraphic: parsedLinearSystem[1].reference,
     cartesianCoeffs: [cartesianCoeffs]
-  };
-
-  eqnList.push(eqnObj); 
+  }; 
   
-  generalEqnHelper(parsedLinearSystem, cartesianLatex);
-
+  generalEqnHelper(parsedLinearSystem, cartesianLatex, eqnObj);
+  eqnList.push(eqnObj);
 }
 
-function generalEqnHelper(parsedLinearSystem, cartesianLatex) {
+function generalEqnHelper(parsedLinearSystem, cartesianLatex, eqnObj) {
   numEqns++;    
     
   // get a reference to the plotter display table body
@@ -1119,8 +1154,14 @@ function generalEqnHelper(parsedLinearSystem, cartesianLatex) {
   const eqnGraphic = parsedLinearSystem[1].reference;
   addLabelEffects(descriptorLabel, eqnGraphic, parsedLinearSystem[1].hex);
 
+  const subsp = {
+    graphic: eqnGraphic,
+    labels: descriptorLabel
+  };
+
   /* create vector labels */
   const vectors = parsedLinearSystem[0];
+  const vGraphics = [];
 
   /* first, set up direction vector labels */  
   for(let i = 0; i < vectors[0].length; i++) {
@@ -1144,12 +1185,19 @@ function generalEqnHelper(parsedLinearSystem, cartesianLatex) {
        No vector Graphics are provided for Points and Cubes */
     if (parsedLinearSystem.length > 2) {
       const vectorGraphic = parsedLinearSystem[2 + i].reference;
+      vGraphics.push(vectorGraphic);
       addLabelEffects(vectorLabel, vectorGraphic, parsedLinearSystem[2 + i].hex);
     }
 
     vectorLabelContainer.appendChild(vectorLabel);
+  }
+   
+  const basisVectors = {
+   graphics: vGraphics
+  };
 
-   }
+   eqnObj.subsp = subsp;
+   eqnObj.basisVectors = basisVectors; 
   
    makeRowCollapsible(headerRow);
 
@@ -1161,14 +1209,18 @@ function deleteLastEqn() {
   const toBeDeleted = eqnList.pop();
   eqnCheckList.pop();
 
-  equationGraphics.remove(toBeDeleted.eqnGraphic);
+  deleteSpan(toBeDeleted, equationGraphics);
 
   const eqnTableBody = document.getElementById("eqnTableBody");
-  eqnTableBody.children[eqnTableBody.children.length - 1].remove();
-  eqnTableBody.children[eqnTableBody.children.length - 1].remove();
+  deleteTableRow(eqnTableBody);
 
   numEqns--;
 
+}
+
+function deleteTableRow(tableBody) {
+  tableBody.children[tableBody.children.length - 1].remove();
+  tableBody.children[tableBody.children.length - 1].remove();
 }
 
 function drawIntersection() {
@@ -1192,8 +1244,6 @@ function drawIntersection() {
   const parsedLinearSystem = drawGraphicsFromLinearSystem(linearSystem, equationGraphics);
   let vectorMatrix = parsedLinearSystem[0];
   const pointOnObject = shiftColumn(vectorMatrix);
-
-  console.log(vectorMatrix);
 
   const cartesianCoeffs = vectorsToCartesianCoeffs(vectorMatrix, pointOnObject);
   const cartesianLatex = coeffsToCartesianLatex(cartesianCoeffs);
