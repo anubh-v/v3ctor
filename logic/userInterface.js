@@ -337,6 +337,10 @@ function clear() {
   spanGraphics = new THREE.Object3D;
   equationGraphics = new THREE.Object3D;
 
+  sceneRoot.add(allObjects);
+  sceneRoot.add(spanGraphics);
+  sceneRoot.add(equationGraphics);
+
   vectorList = [];
   checkBoxList = [];
   numVectors = 0;
@@ -349,11 +353,11 @@ function clear() {
 
 
   replaceElement("vectorsInnerForm", "vectorsForm");
-  const vInnerForm = document.getElementByID("vectorsInnerForm");
+  const vInnerForm = document.getElementById("vectorsInnerForm");
   vInnerForm.appendChild(makeLabel("h1", " ", false));
-  vInnerForm.appendChild(makeLabel("h1", "x", false));
-  vInnerForm.appendChild(makeLabel("h1", "y", false));
-  vInnerForm.appendChild(makeLabel("h1", "z", false)); 
+  vInnerForm.appendChild(makeLabel("h1", "x:", false));
+  vInnerForm.appendChild(makeLabel("h1", "y:", false));
+  vInnerForm.appendChild(makeLabel("h1", "z:", false)); 
   vInnerForm.appendChild(makeLabel("h1", "Coefficient", false));
   vInnerForm.appendChild(makeLabel("h1", "Select Vector", false)); 
 
@@ -416,7 +420,7 @@ function addControls() {
   var vectorsInnerForm = document.getElementById("vectorsInnerForm");
 
   // create a label representing the new vector
-  var vectorLabel = makeLabel("h1", "Vector" + numVectors);
+  var vectorLabel = makeLabel("h1", "Vector" + numVectors, true);
   vectorsInnerForm.appendChild(vectorLabel);
   
   // create and add 4 textboxes
@@ -634,7 +638,7 @@ function generalSpanHelper(vectorsToSpan, tableBody, labelDesc, spanObj) {
       const z = vectorsToSpan[2][i-1];
 
       const vLabel = makeLabel("p",  "Vector" + i + ": (" + x 
-                                      + ", " +  y + ", " + z + ")");
+                                      + ", " +  y + ", " + z + ")", true);
 
       vLabelContainer.appendChild(vLabel);
       // adding hide/unhide & labelling features
