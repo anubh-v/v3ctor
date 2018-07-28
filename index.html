@@ -41,7 +41,7 @@
                     <button id="renderVectors" class="ui labeled icon button"> Draw Vectors
                         <i class="pencil alternate icon"></i>            
                     </button>
-                    <button id="animateCombo" class="ui button" data-tooltip="animate linear combination of checked vectors" data-position="bottom right"> Animate Linear Combo </button>
+                    <button id="animateCombo" class="ui button" data-tooltip="Scale the selected vectors by the given coefficients, then add them" data-position="bottom right"> Make Linear Combination</button>
                     <div id=vectorsInnerForm>
                         <h1>    </h1>
                         <h1> x: </h1>
@@ -235,10 +235,10 @@
                 <div id="rotateZButton" class="tiny compact inverted primary basic ui button">
                     z
                 </div>
-                <div id="resetCameraButton" class="tiny compact inverted primary basic ui button">
+                <div id="resetCameraButton" class="tiny compact inverted primary basic ui button" data-tooltip="Reset View">
                     <i class="redo icon"></i>
                 </div>
-                <div id="clearButton" class="tiny compact inverted primary basic ui button">
+                <div id="clearButton" class="tiny compact inverted primary basic ui button" data-tooltip="Clear all graphics">
                     <i class="eraser icon"></i>
                 </div>    
                 <input id="opacitySlider" type="range" min="0" max="100">
