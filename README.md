@@ -15,7 +15,22 @@ We wanted a tool that allows students to toy around with these concepts and get 
 ### Aim  
 To create a web application with a user-friendly interface that allows new students to toy with various concepts and get visual feedback.
 
- ### User stories/ features
+### Milestone 3 Key Updates
+  - Added 3 big features
+    - The application now renders equations using LaTeX
+    - Interactive linear transformation: When you visit the page, you will notice a white vector on the grid. This vector can be dragged freely by dragging
+      the sphere on the vector's arrowhead. Simply enter any matrix into the "Matrices" form, and drag this domain vector. The image vector is drawn
+      as you drag. 
+    - "Plotter" functionality: Enter any Cartesian Equation, and see the corresponding plane drawn on the grid. You can also find intersections between 
+       points/lines/planes
+  - Added Minor features 
+    - Tidied up the user interface
+    - Added ability to delete single graphics, or clear all graphics drawn
+    - Added an opacity slider to regulate the grid's opacity, and a performance monitor that tracks the frames per second
+  - Bugs squashed
+   
+
+### Full list of User Stories
 
 *All animations, vectors and vector spaces will be plotted on a 3D grid representing the Euclidean space.
 
