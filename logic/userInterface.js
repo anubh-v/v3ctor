@@ -37,11 +37,15 @@ function makeTextBox() {
 /* Used to create a label (of a given type such as <p>, <h1>, <h2>, etc)
    Users can pass in a "labelText" to set the text of the label.
    If no text is passed, the label text will be an empty string by default */
-function makeLabel(labelType, labelText="") {
+function makeLabel(labelType, labelText="", applyEffect) {
 
   const label = document.createElement(labelType);
-  // add the 'label' class so the CSS mouseover property is applied
-  label.className = "label";
+  
+  // add the 'label' class so the CSS mouseover property is applied  
+  if (applyEffect) {
+    label.className = "label";
+  }
+
   label.textContent = labelText;
   return label;
 }
@@ -318,6 +322,11 @@ function addLabelEffects(labelElement, graphic, labelColour) {
 
 document.getElementById("clearButton").onclick = clear;
 
+/* The clearing process consists of the followings steps:
+   - Remove graphics for all 4 sections from the threejs scene
+   - Reset global variables 
+   - Replace the HTML form elements with new empty elements 
+*/
 function clear() {
  
   sceneRoot.remove(allObjects);
@@ -339,14 +348,34 @@ function clear() {
   numEqns = 0;
 
 
-  replaceDiv("vectorsInnerForm", "vectorsForm");
-  replaceDiv("spanDisplay", "spansForm");
-  replaceDiv("matricesDisplay", "matricesInnerForm");
-  replaceDiv("eqnDisplay", "plotterForm");
+  replaceElement("vectorsInnerForm", "vectorsForm");
+  const vInnerForm = document.getElementByID("vectorsInnerForm");
+  vInnerForm.appendChild(makeLabel("h1", " ", false));
+  vInnerForm.appendChild(makeLabel("h1", "x", false));
+  vInnerForm.appendChild(makeLabel("h1", "y", false));
+  vInnerForm.appendChild(makeLabel("h1", "z", false)); 
+  vInnerForm.appendChild(makeLabel("h1", "Coefficient", false));
+  vInnerForm.appendChild(makeLabel("h1", "Select Vector", false)); 
 
-  function replaceDiv(targetID, parentID) {
-    document.getElementById(targetID).remove();
-    document.getElementById(parentID).appendChild(makeDiv(undefined, targetID));
+  replaceElement("spanTableBody", "spanTable");
+  replaceElement("matricesTableBody", "matricesTable");
+  replaceElement("eqnTableBody", "eqnTable");
+
+  /* precond: 
+       - targetID - ID of the element to be replaced
+       - parentID - ID of the parent of the element to be replaced
+     postcond: 
+       - Removes the element "targetID" and creates a blank copy of it.
+         This blank element is added back as a child of "parentID" */
+  function replaceElement(targetID, parentID) {
+    const toBeRemoved = document.getElementById(targetID);
+    const elementType = toBeRemoved.tagName;
+    toBeRemoved.remove();
+   
+    const newElement = document.createElement(elementType);  
+    newElement.id = targetID;
+
+    document.getElementById(parentID).appendChild(newElement);
   }
 
 
@@ -685,7 +714,7 @@ function createTableRow(tableBody, headerLabelDesc) {
     tableBody.appendChild(infoRow);
 
     /* Create a label that will read "Subp: X", where X is number of the subspace */
-    const descriptorLabel = makeLabel("p", headerLabelDesc);
+    const descriptorLabel = makeLabel("p", headerLabelDesc, true);
 
     /* Create an empty Cartesian equation label */
     const cartesianEqnLabel = document.createElement("p");
@@ -1217,7 +1246,7 @@ function generalEqnHelper(parsedLinearSystem, cartesianLatex, eqnObj) {
       vectorDesc = "Direction Vector: (";
     }
 
-    const vectorLabel = makeLabel("p", vectorDesc + x + ", " + y + ", " + z + ")");
+    const vectorLabel = makeLabel("p", vectorDesc + x + ", " + y + ", " + z + ")", true);
 
     /* Only link the vector labels with vector graphics if vector graphics exist.
        Vector graphics only exist for Planes and Lines.
