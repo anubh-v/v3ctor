@@ -50,20 +50,20 @@ Admin / user interface
     As a student, I should have a button to let the 3d grid rotate about its own axis automatically. (done)
     As a student, I should see the coordinates of vectors  / spans when I hover the mouse over them. 
     Features should be intuitive for users, using tooltips to provide guidance. (done, pending feedback)
-    Preserve session state - preserve a user's work when he / she refreshes or revists the page.
+    Preserve session state - preserve a user's work when he / she refreshes or revists the page. (incomplete)
 
 Vectors
 	
     As a student, I should be able to input a specific vector and view its geometric representation. (done)
-    As a student, I should be able to specify a linear combination of some vectors of my choice, and watch an animation constructing the resultant vector. (done, bug to be fixed)
+    As a student, I should be able to specify a linear combination of some vectors of my choice, and watch an animation constructing the resultant vector. (done)
     As a student, I should be able to hide / unhide vectors / spans on the grid using checkboxes (done)
 
 Spans
 	
 
     As a student, I should be able to specify a set of vectors and see a visual representation of the span of this set of vectors (either a line, plane or the whole space). (done)
-    I should be able to watch a simple animation of the span being constructed.
-    [Continuing from above] Next, I should be able to pick out a particular vector within the span and find out how this vector can be expressed in terms of the vectors I originally specified. If the vectors specified are LI, it should alert the user that the inputs are invalid.
+    I should be able to watch a simple animation of the span being constructed. (feature dropped)
+    [Continuing from above] Next, I should be able to pick out a particular vector within the span and find out how this vector can be expressed in terms of the vectors I originally specified. If the vectors specified are LI, it should alert the user that the inputs are invalid. (feature dropped)
     As a student, I should see the equations of lines and planes that are drawn for me. (done)
 
 Matrices
@@ -84,6 +84,10 @@ Plotter
     As a student, I should be able to specify a few planes / lines / points and ask for the intersections 
     of my selected objects to be drawn (done)
 
+
+### Challenges Faced
+- We wanted to use the browser's local storage to save the user's work. Currently, we are facing challenges in 
+  saving the threejs graphics in a format suitable for this purpose. 
 ### Acknowledgements
 We used the following tools to build our application:
 - [threeJS](https://threejs.org/): a Javascript 3D library, used for to create our graphics
