@@ -35,8 +35,8 @@ function filterRedundancy(matrix) {
 
 // initialize a 2D matrix with numRows rows, each row corresponds to a particular coordinate(either x,y,z) of a set of Vector3 
 function setMatrix(numRows) {
-	var matrix = new Array();
-	for (var i = 0; i < numRows; i++) {
+	const matrix = new Array();
+	for (let i = 0; i < numRows; i++) {
 		matrix.push(new Array());
 	}
 	return matrix;
@@ -55,11 +55,11 @@ function setZeroMatrix(m,n) {
 
 // return a duplicate of matrix
 function duplicate(matrix) {
-	var numRows = matrix.length;
-	var outputMatrix = setMatrix(numRows);
-	var numCols = matrix[0].length;
-	for (var r = 0; r < numRows; r++) {
-		for (var c = 0; c < numCols; c++) {
+	const numRows = matrix.length;
+	const outputMatrix = setMatrix(numRows);
+	const numCols = matrix[0].length;
+	for (let r = 0; r < numRows; r++) {
+		for (let c = 0; c < numCols; c++) {
 			outputMatrix[r].push(matrix[r][c]);
 		}	
 	}
@@ -190,15 +190,33 @@ function multiply(A,B) {
 }
 
 /*
+   precond: 1 m*n matrix A
+   postcond: 1 n*m matrix representing the transpose of A */ 
+function transpose(A) {
+
+  const numRows = A.length;
+  const numColumns = A[0].length;
+  const transposed = setMatrix(numColumns);
+
+  for (let i = 0; i < numColumns; i++) {
+ 
+    for (let j = 0; j < numRows; j++) {
+      transposed[i].push(A[j][i]);
+    }
+  }
+  return transposed;
+}
+
+/*
    precond: 2 m*n matrices A and B
    postcond: 1 m*n matrix representing A + B */
 function add(A, B) {
     
-    let numRows = A.length;
-    let numColumns = A[0].length;
+    const numRows = A.length;
+    const numColumns = A[0].length;
 
     // initialise the outputMatrix
-    let output = setMatrix(numRows);
+    const output = setMatrix(numRows);
 
     // iterate through each row
     for (let i = 0; i < numRows; i++) {
