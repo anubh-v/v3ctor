@@ -28,7 +28,12 @@ To create a web application with a user-friendly interface that allows new stude
     - Added ability to delete single graphics, or clear all graphics drawn
     - Added an opacity slider to regulate the grid's opacity, and a performance monitor that tracks the frames per second
   - Bugs squashed
+    
    
+### User Acceptance Test
+We have created a survey for users, which includes a checklist of common tasks that can be done with our application.
+Users will try to accomplish each task, and then give us their feedback on the experience. 
+
 
 ### Full list of User Stories
 
