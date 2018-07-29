@@ -1026,6 +1026,24 @@ function columnSpaceButnHelper(){
 }
 
 
+/* Row space is drawn by transposing the matrix and using the "findColumnSpace" method */
+const rowSpaceBtn = document.getElementById("rowSpace");
+rowSpaceBtn.onclick = rowSpaceButnHelper;
+
+function rowSpaceButnHelper() {
+  const currentMatrix = transpose(getMatrix());
+  if (!verifyMatrix(currentMatrix, "Please fill in all matrix inputs")) {
+    return;
+  }
+
+  const display = document.getElementById("matricesTableBody");
+  const rowSpaceObj = {};
+
+  generalSpanHelper(findColumnSpace(currentMatrix), display, "Row Space", rowSpaceObj);
+  matrixSpaceList.push(rowSpaceObj);
+}
+
+
 /* nullSpaceBtn
   nullSpace: {subsp: {label: undefined, graphic: undefined}, 
               basisVectors: {labels: [], graphics: []}},
