@@ -28,7 +28,8 @@ To create a web application with a user-friendly interface that allows new stude
     - Added ability to delete single graphics, or clear all graphics drawn
     - Added an opacity slider to regulate the grid's opacity, and a performance monitor that tracks the frames per second
   - Bugs squashed: We reviewed bugs encountered during our meetings, and tracked them on Google Docs
-    
+    Known remaining bugs
+    - Rotation along x, y, z axis no longer occur along the correct axes in some cases (still isolating the exact cases)
    
 ### User Acceptance Test
 We have created a survey for users, which includes a checklist of common tasks that can be done with our application.
@@ -88,6 +89,11 @@ Plotter
 ### Challenges Faced
 - We wanted to use the browser's local storage to save the user's work. Currently, we are facing challenges in 
   saving the threejs graphics in a format suitable for this purpose. 
+  
+### Future Extensions
+- Ability to "chain" multiple matrices, and decompose an invertible matrix into a "chain" of elementary matrices
+This would allow users to visualise matrix compositions. 
+
 ### Acknowledgements
 We used the following tools to build our application:
 - [threeJS](https://threejs.org/): a Javascript 3D library, used for to create our graphics
