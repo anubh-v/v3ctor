@@ -27,14 +27,14 @@ To create a web application with a user-friendly interface that allows new stude
     - Tidied up the user interface
     - Added ability to delete single graphics, or clear all graphics drawn
     - Added an opacity slider to regulate the grid's opacity, and a performance monitor that tracks the frames per second
-  - Bugs squashed
+  - Bugs squashed: We reviewed bugs encountered during our meetings, and tracked them on Google Docs
     
    
 ### User Acceptance Test
 We have created a survey for users, which includes a checklist of common tasks that can be done with our application.
 Users will try to accomplish each task, and then give us their feedback on the experience. 
 
-
+Please help us complete the survey at: https://goo.gl/forms/uoZUBDp3GQWbu9oZ2
 ### Full list of User Stories
 
 *All animations, vectors and vector spaces will be plotted on a 3D grid representing the Euclidean space.
