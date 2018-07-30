@@ -1337,14 +1337,13 @@ function drawIntersection() {
 
   const cartesianCoeffs = vectorsToCartesianCoeffs(vectorMatrix, pointOnObject);
   const cartesianLatex = coeffsToCartesianLatex(cartesianCoeffs);
-   
-  prependColumn(vectorMatrix, pointOnObject);
-  generalEqnHelper(parsedLinearSystem, cartesianLatex);
-  
   const eqnObj = {       
     eqnGraphic: parsedLinearSystem[1].reference,
     cartesianCoeffs: cartesianCoeffs
   };
-
+   
+  prependColumn(vectorMatrix, pointOnObject);
+  generalEqnHelper(parsedLinearSystem, cartesianLatex, eqnObj);
+  
   eqnList.push(eqnObj);         
 }
