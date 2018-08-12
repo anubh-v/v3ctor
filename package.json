@@ -1,0 +1,24 @@
+{
+  "name": "visual-vectors",
+  "version": "1.0.0",
+  "description": "### Proposed Level of achievement: Project Gemini",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anubhavnus/visual-vectors.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anubhavnus/visual-vectors/issues"
+  },
+  "homepage": "https://github.com/anubhavnus/visual-vectors#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "firebase-admin": "^6.0.0"
+  }
+}
