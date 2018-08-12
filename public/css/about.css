@@ -39,3 +39,9 @@ img {
   max-width: 25%;
   max-height: 50%;
 }
+
+label {
+  font-family: Arial;
+  font-size: 2vw;
+  color: #ffffff;
+}
