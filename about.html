@@ -28,12 +28,15 @@
                 <img src="public/assets/logo_darkBlue.jpg" alt="V3ctor logo" style="max-height:100%; max-width: 100%;"/>
             </a>
         </div>
-        <div id=votingMenu>       >
             <button id="upvote" class="ui icon button"><i class="thumbs up icon"></i></button>
             <button id="downvote" class="ui icon button"><i class="thumbs down icon"></i></button>
-        </div>
+
+            <label id="voteTally"> Net upvotes: </label>
 
         <script>
+          
+            window.onload = readVote;
+             
             const upBtn = document.getElementById("upvote");
             const downBtn = document.getElementById("downvote");
 
@@ -48,6 +51,23 @@
             function sendVote(votePath) {
               const httpReq = new XMLHttpRequest();
               httpReq.open("POST", votePath);
+              httpReq.send();
+              
+              httpReq.addEventListener("load", readVote);
+            }
+
+            function readVote() {
+            
+              const httpReq = new XMLHttpRequest();
+
+             httpReq.addEventListener("load", () => {
+                const record = document.getElementById("voteTally");
+                const result = JSON.parse(httpReq.response).votes;
+             
+                record.textContent = "Net upvotes: " + result;
+              });
+
+              httpReq.open("POST", "/getvotes");
               httpReq.send();
             }
 

@@ -21,19 +21,31 @@ app.get("/about", function(request, response) {
 });
 
 app.post("/upvote", function(request, response) {
-  changeVote(currentVote => currentVote + 1);
+  changeVote(response, currentVote => currentVote + 1);
 });
 
 app.post("/downvote", function(request, response) {
-  changeVote(currentVote => currentVote - 1);
+  changeVote(response, currentVote => currentVote - 1);
 });
 
-function changeVote(votingFunc) {
-  console.log("adding");
+app.post("/getvotes", function(request, response) {
+  response.setHeader("Content-Type", "application/json");
+
+  const db = firebase.database();
+  const ref = db.ref();
+
+  ref.once("value")
+     .then(snap => response.send({votes: snap.val().votes}));
+});
+
+function changeVote(response, votingFunc) {
   const db = firebase.database();
   const ref = db.ref();
 
   ref.once("value")
      .then(snap => votingFunc(snap.val().votes))
-     .then(newNum => ref.set({votes: newNum}));
+     .then(newNum => {
+       ref.set({votes: newNum})
+       response.end();
+     });
 }
