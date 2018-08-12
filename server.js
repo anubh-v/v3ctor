@@ -9,7 +9,7 @@ firebase.initializeApp({
   databaseURL: "https://visual-vector.firebaseio.com"
 });
 
-app.listen(4000);
+app.listen(process.env.PORT || 4000 );
 app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", function(request, response) {
