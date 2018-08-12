@@ -1326,7 +1326,7 @@ function drawIntersection() {
   }
 
   if (linearSystem.length == 0) {
-    alert("No objects selected for intersection");
+    enablePrompt(document.getElementById("matricesTextDisplay").children[0], "no objects selected for intersection");
     return;
   }
 

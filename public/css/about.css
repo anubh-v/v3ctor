@@ -11,7 +11,12 @@
   float: left;
   width: 50%;
   margin: 0% 1% 0% 0%;
+}
 
+#votingMenu {
+  position: absolute;
+  left: 92%;
+  top: 10%;
 }
 
 h1 {

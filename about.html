@@ -17,17 +17,42 @@
 
         <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'></script>
                
-        <link rel="stylesheet" href="css/admin.css"/>     
-        <link rel="stylesheet" href="css/about.css"/>      
+        <link rel="stylesheet" href="public/css/admin.css"/>     
+        <link rel="stylesheet" href="public/css/about.css"/>      
 
     </head>
     <body>
         
         <div id=homeMenu>
-            <a href="index.html">
-                <img src="assets/logo_darkBlue.jpg" alt="V3ctor logo" style="max-height:100%; max-width: 100%;"/>
+            <a href="/">
+                <img src="public/assets/logo_darkBlue.jpg" alt="V3ctor logo" style="max-height:100%; max-width: 100%;"/>
             </a>
         </div>
+        <div id=votingMenu>       >
+            <button id="upvote" class="ui icon button"><i class="thumbs up icon"></i></button>
+            <button id="downvote" class="ui icon button"><i class="thumbs down icon"></i></button>
+        </div>
+
+        <script>
+            const upBtn = document.getElementById("upvote");
+            const downBtn = document.getElementById("downvote");
+
+            upBtn.onclick = () => {
+              sendVote("/upvote");
+            };
+
+            downBtn.onclick = () => {
+              sendVote("/downvote");
+            };
+
+            function sendVote(votePath) {
+              const httpReq = new XMLHttpRequest();
+              httpReq.open("POST", votePath);
+              httpReq.send();
+            }
+
+        </script>
+
         <div class="about">
            <h1>Linear algebra visualised.</h1>
            <p>   
@@ -43,16 +68,16 @@ We wanted a tool that allows students to toy around with these concepts and get 
 
         <h2> Made possible by: </h2>
             <a href="https://threejs.org" class=source>
-                <img src="assets/three-logo.jpg"/>
+                <img src="public/assets/three-logo.jpg"/>
             </a>
             <a href="https://www.mathjax.org" class=source>
-                <img src="assets/mj-logo.svg"/>
+                <img src="public/assets/mj-logo.svg"/>
             </a>
             <a href="http://www.numericjs.com/" class=source>
-                <img src="assets/numeric-logo.png"/>
+                <img src="public/assets/numeric-logo.png"/>
             </a>
             <a href="https://semantic-ui.com/"class=source>
-                <img src="assets/semantic-logo.jpg"/>
+                <img src="public/assets/semantic-logo.jpg"/>
             </a>
 
 </div>
